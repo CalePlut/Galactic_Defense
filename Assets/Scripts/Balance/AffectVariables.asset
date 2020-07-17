@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a9e0dcc33807b34abc31aa40336adff, type: 3}
+  m_Name: AffectVariables
+  m_EditorClassIdentifier: 
+  resetSpeed: 0.05
+  weakValence: 11
+  moderateValence: 16
+  strongValence: 33
+  weakTension: 3
+  moderateTension: 6
+  strongTension: 12
+  arousalScalar: 2
+  V11: 35
+  A11: 35
+  T11: 10
+  V12: 40
+  A12: 35
+  T12: 35
+  V21: 35
+  A21: 40
+  T21: 20
+  V22: 40
+  A22: 40
+  T22: 30
+  V23: 45
+  A23: 45
+  T23: 35
+  V31: 40
+  A31: 40
+  T31: 20
+  V32: 40
+  A32: 40
+  T32: 30
+  V33: 45
+  A33: 50
+  T33: 35
+  V34: 50
+  A34: 60
+  T34: 40

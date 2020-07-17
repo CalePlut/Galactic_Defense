@@ -1,0 +1,46 @@
+SOFTWARE END USER LICENSE AGREEMENT
+
+This Software End User License Agreement is a legal agreement between Elias Software AB (Licensor), and the individual or entity accepting this Agreement (Licensee). The publisher software tools and all updates, modifications, and enhancements to these tools, as well as any associated printed and online or downloadable documentation (the “Software”) are the sole property of Elias Software AB, and your use of them is subject to the Agreement (as defined below). In the event of any conflict between this Software End User License Agreement and the Elias Software AB Conditions of Use, the terms of this Software End User License Agreement will govern.
+
+Please read this Agreement carefully before downloading or using the publisher software tools. If you download or use the Software, you will be bound by the terms of this Agreement. If you do not, or cannot, agree to the terms of this Agreement, do not attempt to download or use the Software.
+
+LICENSE
+
+1. The Licensee may not decompile, reverse engineer, disassemble, rent, lease, loan, sell, sublicense, or in any other way attempt to reduce the source code to a human readable form, or in any way attempt to rent, lease, loan, sell, or sublicense the software source code. Furthermore, you may not incorporate this software into any software tools intended for development purposes of other end user products, and you may not distribute this product to any outside entity for incorporation into software tools intended for development purposes of other end user products.
+ 2. This agreement grants Licensee one (1) license for commercial use, with the following conditions:
+ (A) The Licensee may use this software as intended within one (1) title for end use on the platform(s) for which this license was obtained, and may distribute this title freely and without restriction.
+ (B) The Licensee agrees to provide Elias Software with information on number of units sold on a quarterly basis.
+ (C) The title must feature the following text in the documentation or in other accompanying materials where copyright notices and/or credits are displayed:
+“Adaptive music technology by Elias Software (www.eliassoftware.com).”
+(D) The title must feature one of our image logos in a prominent place if possible, including but not limited to a splash screen, title screen, end credits screen or on physical product packaging.
+ (E) The Licensee may not distribute end products which do not meet the above conditions to any outside entity to rent, lease, loan, sell, sublicense, or in any other way redeem profit for you or the aforementioned entity.
+ (F) The Licensor reserves the right to conduct an audit of the Licensee’s accounts once every fiscal year, and have the correctness of the information provided on number of units sold certified by one or more duly qualified auditors.
+
+RESERVATION OF RIGHTS
+
+All rights not expressly granted to you are reserved by Elias Software AB.
+
+NO ILLEGAL USE
+
+The Software may be used only for lawful purposes and in a lawful manner, and the Licensee agrees to comply with all applicable laws and regulations. Elias Software AB may investigate any reported violation of its policies and take any action it deems appropriate, including terminating your license to use the Software without notice. In such event, you must immediately uninstall and destroy all copies of the SOFTWARE in your possession, as well as any materials or documentation related thereto.
+
+EXPORT REGULATIONS
+
+The Licensee will comply with all applicable export and re-export restrictions and regulations, and will not transfer, or encourage, assist, or authorize the transfer of the Software to a prohibited country or otherwise in violation of any such restrictions or regulations.
+
+WARRANTIES
+
+Elias Software AB expressly disclaims any warranty for this product. The SOFTWARE PRODUCT is provided “As Is,” without any express or implied warranty of any kind, including but not limited to any warranties of merchantability, noninfringement, or fitness of a particular purpose. Elias Software AB does not warrant or assume responsibility for the accuracy or completeness of any information, text, graphics, links or other items contained within this PRODUCT, except as deemed necessary and appropriate support services by the developer. Elias Software AB makes no warranties respecting any harm that may be caused by the transmission of a computer virus, worm, time bomb, logic bomb, or other such computer program, as well as any instability or other issues as a result of installation of this product. Elias Software AB further expressly disclaims any warranty or representation to Authorized Users or to any third party.
+
+LIMITATION OF LIABILITY
+
+A. In no event shall Elias Software AB be liable for any damages (including, without limitation, lost profits, business interruption, or lost information) rising out of ‘Authorized Users’ use of or inability to use the SOFTWARE PRODUCT, even if Elias Software AB has been advised of the possibility of such damages. In no event will Elias Software AB be liable for loss of data or for indirect, special, incidental, consequential (including lost profit), or other damages based in contract, tort or otherwise.
+ B. Elias Software AB expressly disclaims all responsibility for libel, infringements of rights of publicity, privacy, trademark rights, copyrights, business interruption, personal injury, loss of privacy, moral rights or the disclosure of confidential information arising from the actions or creations through use of this product by the end user.
+
+NO WAIVER
+
+Elias Software AB’s failure to enforce the strict performance of any provision of this Agreement will not constitute a waiver of Elias Software AB’s right to subsequently enforce such provisions or any other provisions of this Agreement. No waiver of any provision of this Agreement shall be effective unless in writing.
+
+ENTIRE AGREEMENT AND SEVERABILITY
+
+This is the entire agreement between Elias Software AB and the Licensee regarding the Software and supersedes all prior understandings regarding such subject matter. If any term or condition of this Agreement is deemed invalid, void, or for any reason unenforceable, that part will be deemed severable and will not affect the validity and enforceability of any remaining term or condition.

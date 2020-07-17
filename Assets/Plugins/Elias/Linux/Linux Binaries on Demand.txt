@@ -1,0 +1,3 @@
+Due to the very large variation in Linux versions, and compatability, we provide Linux binaries on demand.
+This is so that you get a binary that works as well as possible for your target version(s) of Linux.
+Please contact us at support@eliassoftware.com
