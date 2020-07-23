@@ -150,15 +150,13 @@ public class GameManager : MonoBehaviour
 
     #endregion Deaths and Respawns
 
-    #region Game States
+    #region Win/Loss
 
     public void LoseGame()
     {
         lossMenu.SetActive(true);
         gameOverText.text = "Defeat";
     }
-
-    #endregion Game States
 
     /// <summary>
     /// This one's pretty obvious I hope.
@@ -168,6 +166,8 @@ public class GameManager : MonoBehaviour
         lossMenu.SetActive(true);
         gameOverText.text = "Victory!";
     }
+
+    #endregion Win/Loss
 
     #region Hyperspace/Map Screen
 
@@ -330,6 +330,8 @@ public class GameManager : MonoBehaviour
         artillery.endCombat();
         tender.endCombat();
 
+        stageManager.RemoveUI();
+
         StartCoroutine(victoryWarp());
     }
 
@@ -354,88 +356,141 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void stageLogic()
     {
+        //Update other fields with general progress settings
         affect.setProgess(stage, encounter);
+
         if (stage == 1)
         {
-            if (encounter == 0) //If we just finished the first encounter, we move to the second
-            {
-                encounter++;
-                stageManager.setToggles(1, 1);
-                advanceToNextWave();
-            }
-            else if (encounter == 1) //If we just finished the second encounter, we victoryWarp
-            {
-                encounter = 0;
-                stage = 2;
-                stageManager.setToggles(1, 2);
-                endCombat();
-            }
+            encounter = 0;
+            stage = 2;
+            endCombat();
         }
         else if (stage == 2)
-        {
-            if (encounter == 0 || encounter == 1)
-            {
-                encounter++;
-                stageManager.setToggles(2, encounter);
-                advanceToNextWave();
-            }
-            else if (encounter == 2)
-            {
-                encounter = 0;
-                stage = 3;
-                stageManager.setToggles(2, 3);
-                endCombat();
-            }
-        }
-        else if (stage == 3)
-        {
-            if (encounter == 0 || encounter == 1 || encounter == 2)
-            {
-                encounter++;
-                stageManager.setToggles(3, encounter);
-                advanceToNextWave();
-            }
-            else if (encounter == 4)
-            {
-                stageManager.setToggles(3, 4);
-                endCombat();
-            }
-        }
-    }
-
-    /// <summary>
-    /// Spawns the correct enemy composition and sends the current stage-encounter to the stageManager for toggles
-    /// </summary>
-    private void enemyCompositionSetup()
-    {
-        stageManager.setToggles(stage, encounter);
-        if (stage == 1)
         {
             if (encounter == 0)
             {
-                spawnEnemies(waveType.main);
+                encounter++;
+                stageManager.setEncounterProgress(1);
+                advanceToNextWave();
             }
-            else { spawnEnemies(waveType.miniboss); }
-        }
-        else if (stage == 2)
-        {
-            if (encounter == 0 || encounter == 1)
+            else
             {
-                spawnEnemies(waveType.main);
+                encounter = 0;
+                stage = 3;
+                endCombat();
             }
-            else { spawnEnemies(waveType.miniboss); }
         }
         else if (stage == 3)
         {
-            if (encounter == 0 || encounter == 1)
+            if (encounter == 0)
             {
+                encounter++;
+                stageManager.setEncounterProgress(1);
+                advanceToNextWave();
+            }
+            else if (encounter == 1)
+            {
+                encounter++;
+                stageManager.setEncounterProgress(2);
+                advanceToNextWave();
+            }
+            else
+            {
+                endCombat();
+            }
+        }
+
+        //if (stage == 1)
+        //{
+        //    if (encounter == 0) //If we just finished the first encounter, we move to the second
+        //    {
+        //        encounter++;
+        //        stageManager.setToggles(1, 1);
+        //        advanceToNextWave();
+        //    }
+        //    else if (encounter == 1) //If we just finished the second encounter, we victoryWarp
+        //    {
+        //        encounter = 0;
+        //        stage = 2;
+        //        stageManager.setToggles(1, 2);
+        //        endCombat();
+        //    }
+        //}
+        //else if (stage == 2)
+        //{
+        //    if (encounter == 0 || encounter == 1)
+        //    {
+        //        encounter++;
+        //        stageManager.setToggles(2, encounter);
+        //        advanceToNextWave();
+        //    }
+        //    else if (encounter == 2)
+        //    {
+        //        encounter = 0;
+        //        stage = 3;
+        //        stageManager.setToggles(2, 3);
+        //        endCombat();
+        //    }
+        //}
+        //else if (stage == 3)
+        //{
+        //    if (encounter == 0 || encounter == 1 || encounter == 2)
+        //    {
+        //        encounter++;
+        //        stageManager.setToggles(3, encounter);
+        //        advanceToNextWave();
+        //    }
+        //    else if (encounter == 4)
+        //    {
+        //        stageManager.setToggles(3, 4);
+        //        endCombat();
+        //    }
+        //}
+    }
+
+    /// <summary>
+    /// Spawns the correct enemy composition, if necessary spawns the encounter ui, and sets the encounter text
+    /// </summary>
+    private void enemyCompositionSetup()
+    {
+        if (stage == 1)
+        {
+            stageManager.setWaveLength(1);
+            stageManager.setText("1-1");
+            spawnEnemies(waveType.miniboss);
+        }
+        else if (stage == 2)
+        {
+            if (encounter == 0)
+            {
+                stageManager.setWaveLength(2);
+                stageManager.setText("2-1");
                 spawnEnemies(waveType.main);
             }
-            else if (encounter == 2)
+            else
             {
+                stageManager.setText("2-2");
                 spawnEnemies(waveType.miniboss);
             }
-            else { spawnEnemies(waveType.boss); }
+        }
+        else if (stage == 3)
+        {
+            if (encounter == 0)
+            {
+                stageManager.setWaveLength(3);
+                stageManager.setText("3-1");
+                spawnEnemies(waveType.main);
+            }
+            else if (encounter == 1)
+            {
+                stageManager.setText("3-2");
+                spawnEnemies(waveType.miniboss);
+            }
+            else
+            {
+                stageManager.setText("3-3");
+                spawnEnemies(waveType.boss);
+            }
         }
         else
         {
@@ -463,9 +518,9 @@ public class GameManager : MonoBehaviour
         core.setupWave(stage, this.gameObject);
 
         //Get divisions of ships from core
-        var enemyShips = core.enemyList();
-        var mainEnemy = core.mainShip();
-        turrets = core.turrets();
+        var enemyShips = core.getWaveList();
+        var mainEnemy = core.getMainShip();
+        turrets = core.getTurrets();
 
         //Finally, use the  lists to inform the other objects references
         targets.setShips(enemyShips);
@@ -473,7 +528,7 @@ public class GameManager : MonoBehaviour
         artillery.updatePlayers(mainEnemy, turrets);
         tender.updatePlayers(mainEnemy, turrets);
 
-        if (tutorial) { tutorialManager.centreEnemy = core.mainShip(); }
+        if (tutorial) { tutorialManager.centreEnemy = core.getMainShip(); }
     }
 
     /// <summary>

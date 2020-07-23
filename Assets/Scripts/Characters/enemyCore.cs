@@ -2,40 +2,75 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Attack type is used only in selecting which move to fire by the AI
+/// </summary>
 public enum attackType { autoAttack, specialAttack, heal, respawnTurret }
 
-public class enemyCore : MonoBehaviour //The EnemyCore (not to be confused with enemyBase) is the point of control for each wave. This script manages the fly-in, setups, and controls the move selection (e.g. what fires)
+/// <summary>
+/// The EnemyCore (not to be confused with enemyBase) is the point of control for each wave. This script manages the fly-in, setups, and controls the move selection (e.g. what fires)
+/// </summary>
+public class enemyCore : MonoBehaviour
 {
+    #region Attributes
+
     public float attackSpeed = 1.5f;
     public enemyAttributes attr;
+
+    #endregion Attributes
+
+    #region References
+
+    private AffectManager affect;
     public Turret leftTurret, rightTurret;
     public EnemyShip mainEnemy;
-    private AffectManager affect;
-    private bool alive = true;
     private FrigateShip frigate;
     private IntelShip artillery;
     private SupportShip tender;
+
+    #endregion References
+
+    #region Mechanics
+
+    private bool alive = true;
     private bool usedSpecial = false;
     public bool healing { get; private set; } = false;
 
+    #endregion Mechanics
+
     #region Messages and bookkeeping
 
-    public List<EnemyBase> enemyList()
+    /// <summary>
+    /// Returns list of current wave
+    /// </summary>
+    /// <returns>References for entire wave</returns>
+    public List<EnemyBase> getWaveList()
     {
         return new List<EnemyBase>() { leftTurret, mainEnemy, rightTurret };
     }
 
-    public List<Turret> turrets()
+    /// <summary>
+    /// Returns list of two turrets
+    /// </summary>
+    /// <returns>List of two turret references</returns>
+    public List<Turret> getTurrets()
     {
         return new List<Turret>() { leftTurret, rightTurret };
     }
 
-    public EnemyShip mainShip()
+    /// <summary>
+    /// Returns central ship
+    /// </summary>
+    /// <returns>Main enemy reference</returns>
+    public EnemyShip getMainShip()
     {
         return (EnemyShip)mainEnemy;
     }
 
-    public void mainShipDie()
+    /// <summary>
+    /// Destroys the two turrets and sets self to not alive
+    /// </summary>
+    public void destroyTurretsOnDeath()
     {
         alive = false;
         if (leftTurret != null)
@@ -48,15 +83,9 @@ public class enemyCore : MonoBehaviour //The EnemyCore (not to be confused with 
         }
     }
 
-    public void setEnemyReferences(FrigateShip _frigate, IntelShip _intel, SupportShip _support)
-    {
-        frigate = _frigate;
-        artillery = _intel;
-        tender = _support;
-
-        mainEnemy.setReferences(_frigate, _intel, _support);
-    }
-
+    /// <summary>
+    /// If we get hit by a Q during the heal, we won't heal.
+    /// </summary>
     public void fusionInterrupt()
     {
         healing = false;
@@ -81,6 +110,21 @@ public class enemyCore : MonoBehaviour //The EnemyCore (not to be confused with 
         affect = managerObj.GetComponent<AffectManager>();
 
         StartCoroutine(flyIn());
+    }
+
+    /// <summary>
+    /// Sets references to player ships
+    /// </summary>
+    /// <param name="_frigate"></param>
+    /// <param name="_intel"></param>
+    /// <param name="_support"></param>
+    public void setEnemyReferences(FrigateShip _frigate, IntelShip _intel, SupportShip _support)
+    {
+        frigate = _frigate;
+        artillery = _intel;
+        tender = _support;
+
+        mainEnemy.setReferences(_frigate, _intel, _support);
     }
 
     #endregion Setup
@@ -153,6 +197,9 @@ public class enemyCore : MonoBehaviour //The EnemyCore (not to be confused with 
         }
     }
 
+    /// <summary>
+    /// Respawns a turret. Respawns only the dead turret, and if both are dead, respawns one at random.
+    /// </summary>
     private void RespawnTurret()
     {
         //If neither turret is alive, pick a random one to respawn
@@ -174,6 +221,9 @@ public class enemyCore : MonoBehaviour //The EnemyCore (not to be confused with 
         }
     }
 
+    /// <summary>
+    /// Heals everyone for 75% of their missing health
+    /// </summary>
     private void Heal()
     {
         if (healing)
@@ -190,6 +240,9 @@ public class enemyCore : MonoBehaviour //The EnemyCore (not to be confused with 
         }
     }
 
+    /// <summary>
+    /// Fires the special attack, unless the player is shielded, in which case we fire a fake laser and prep for the riposte mechanics
+    /// </summary>
     private void specialAttack()
     {
         if (!PlayerShip.shielded)
@@ -203,6 +256,12 @@ public class enemyCore : MonoBehaviour //The EnemyCore (not to be confused with 
         }
     }
 
+    /// <summary>
+    /// Fires a basic attack at the provided target.
+    /// This is vaguely confusing --- Prioritize using turrets to attack, with random selection.
+    /// If the selected turret is dead, fire the (far weaker) central enemy's weapon.
+    /// </summary>
+    /// <param name="target"></param>
     private void autoAttack(PlayerShip target)
     {
         var left = Random.value < 0.5f;

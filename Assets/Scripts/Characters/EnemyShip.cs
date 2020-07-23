@@ -60,7 +60,7 @@ public class EnemyShip : EnemyBase
     protected override void doneDeath()
     {
         gameManager.mainShipDie();
-        core.mainShipDie();
+        core.destroyTurretsOnDeath();
         base.doneDeath();
         Destroy(gameObject);
     }

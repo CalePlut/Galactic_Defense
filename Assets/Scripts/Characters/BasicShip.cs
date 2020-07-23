@@ -4,37 +4,46 @@ using UnityEngine;
 
 public class BasicShip : MonoBehaviour
 {
-    //Attributes
+    #region Attributes
+
     protected int health = 100;
-
     protected int maxHealth = 100;
-    protected bool upgrade = false;
     protected int baseDamage = 10;
-    //  protected float damageMultipler = 1.0f; //OUTGOING damage multiplier
-    //protected float laserBase = 0;
-    //protected bool isInspired = false;
-    //protected float armorMultiplier = 1.0f; //INCOMING damage multiplier. Modified only in frigate
+    protected bool upgrade = false;
+    public bool alive { get; protected set; } = true;
+    protected bool ultimate;
 
-    //References
+    #endregion Attributes
+
+    #region References
+
+    //Managers and objects for passing
     public GameManager gameManager;
 
     protected AffectManager affect;
-    public damageText damageText;
-    public healthBarAnimator healthBar;
 
+    //Weapons and effects
     public GameObject explosion;
 
     public GameObject weaponPrefab;
     public Transform weaponSpawn1, weaponSpawn2;
-
     public GameObject healEffect;
 
-    public bool alive { get; protected set; } = true;
-    protected bool ultimate;
+    //UI
+    public damageText damageText;
+
+    public healthBarAnimator healthBar;
+
+    #endregion References
 
     #region Health and Damage
 
-    public virtual void fireWeapons(BasicShip target, string tag) //Basic attack - all ships have this, deals damage to enemy. Can optionally include a bool for special attack that is used in playership override
+    /// <summary>
+    /// Basic Auto-attack
+    /// </summary>
+    /// <param name="target">What we're shooting at</param>
+    /// <param name="tag">What we are</param>
+    public virtual void fireWeapons(BasicShip target, string tag)
     {
         if (target != null)
         {
@@ -50,7 +59,11 @@ public class BasicShip : MonoBehaviour
         }
     }
 
-    public void receiveDamage(int _amount) //Receives damage, lowering health, telling damage text and health bar
+    /// <summary>
+    /// This is how things get hit
+    /// </summary>
+    /// <param name="_amount">Amount of damage to receive</param>
+    public void receiveDamage(int _amount)
     {
         if (alive)
         {
@@ -66,22 +79,10 @@ public class BasicShip : MonoBehaviour
         }
     }
 
-    public virtual void receiveDamage(int _amount, bool special)
-    {
-        if (alive)
-        {
-            var amount = _amount;
-            var percent = (float)amount / health;
-
-            passDamageToAffect((float)amount);
-
-            damageText.takeDamage(amount, percent);
-            healthBar.takeDamage(amount);
-
-            health -= amount;
-        }
-    }
-
+    /// <summary>
+    /// This is used to heal the ship by a percentage of missing health.
+    /// </summary>
+    /// <param name="percentage">Float between 0.0f and 1.0f</param>
     public virtual void receiveHealing(float percentage) //Heals ship for incoming health percentage
     {
         var missingHealth = maxHealth - health;
@@ -100,18 +101,32 @@ public class BasicShip : MonoBehaviour
         damageText.receiveHealing((int)toDisplay, percentage);
     }
 
-    protected virtual void affectHeathUpdate()
-    { }
-
+    /// <summary>
+    /// Does some basic math to return the current percentage health level
+    /// </summary>
+    /// <returns>Returns health as percentage</returns>
     public float percentHealth()
     {
         return (float)health / (float)maxHealth;
     }
 
-    protected virtual void passDamageToAffect(float damage)
-    {
-    } //Overriden in both enemy and player ships, as the affect results from both are different
+    #region Empty virtuals
 
+    /// <summary>
+    /// Used to send damage to affect manager, but different between player and enemy ships.
+    /// </summary>
+    /// <param name="damage"></param>
+    protected virtual void passDamageToAffect(float damage)
+    { }
+
+    protected virtual void affectHeathUpdate()
+    { }
+
+    #endregion Empty virtuals
+
+    /// <summary>
+    /// Checks to see if we've died, called while alive to make sure we're actually still alive
+    /// </summary>
     protected virtual void healthEval()
     {
         if (health <= 0)
@@ -124,6 +139,10 @@ public class BasicShip : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Always checks health while alive, so that we don't miss death triggers.
+    /// </summary>
+    /// <returns></returns>
     protected IEnumerator healthUpdate()
     {
         while (alive)

@@ -4,53 +4,71 @@ using UnityEngine;
 
 public class PlayerShip : BasicShip
 {
-    public static bool parry = false;
+    #region Balance
 
-    public static bool shielded = false;
-
-    [Header("Button Management")]
-    public CombatButton abilityButton;
-
-    public float abilityCooldown, ultimateCooldown;
-
+    [Header("Balance")]
     public PlayerAttributes attr;
 
+    #endregion Balance
+
+    #region Mechanics
+
+    [Header("Button Management")]
     public buttonManager buttonManager;
 
-    [Header("Special effects")]
-    public GameObject hasteEffect;
+    public CombatButton abilityButton;
 
-    //public GameObject healEffect;
+    [Header("Ability attributes")]
+    public float abilityCooldown, ultimateCooldown;
 
-    public GameObject hpWarn;
+    public static bool parry = false;
+    public static bool shielded = false;
+
+    //Auto Attack
+    public float weaponCooldown;
+
+    private bool autoAttack;
+    private float hasteMod = 1.0f;
+
+    #endregion Mechanics
+
+    #region Object references
 
     [Header("Other objects")]
     public EnemyShip mainEnemy;
 
     public List<PlayerShip> otherShips;
+    public List<Turret> turrets;
+
+    #endregion Object references
+
+    #region UI and SFX
+
+    [Header("UI and SFX")]
+    public GameObject hasteEffect;
+
+    public GameObject hpWarn;
+    public GameObject warpIn;
+    public GameObject warpWindow;
+    private bool lowHP = false;
+
+    //Audio
+    protected AudioSource SFX;
 
     public AudioClip SFX_explode;
 
     public AudioClip SFX_lowHealth;
 
-    public List<Turret> turrets;
-
-    public GameObject warpIn;
-
-    public GameObject warpWindow;
-
-    public float weaponCooldown;
-
-    [Header("Audio")]
-    protected AudioSource SFX;
-
-    private bool autoAttack;
-    private float hasteMod = 1.0f;
-
-    [Header("UX for HP")]
-    private bool lowHP = false;
+    #endregion UI and SFX
 
     #region Setup
+
+    private void Start()
+    {
+        SFX = GetComponent<AudioSource>();
+        abilityButton.myCD = abilityCooldown;
+        //ultimateButton.myCD = ultimateCooldown;
+    }
 
     public virtual void shipSetup()
     {
@@ -62,6 +80,21 @@ public class PlayerShip : BasicShip
     }
 
     #endregion Setup
+
+    #region Ability and Ultimate
+
+    public virtual void standardAbility()
+    {
+        if (abilityButton.canActivate())
+        {
+            abilityButton.sendToButton(abilityCooldown);
+        }
+    }
+
+    protected void globalCooldowns()
+    {
+        buttonManager.globalCooldown();
+    }
 
     public void activateUltimate(float _time)
     {
@@ -76,6 +109,31 @@ public class PlayerShip : BasicShip
         StartCoroutine(hasteTimer(_time));
     }
 
+    private IEnumerator hasteTimer(float _time)
+    {
+        yield return new WaitForSeconds(_time);
+        hasteEffect.SetActive(false);
+        ultimate = false;
+        hasteMod = 1.0f;
+    }
+
+    #endregion Ability and Ultimate
+
+    #region Auto-Attack
+
+    public override void fireWeapons(BasicShip _target, string tag)
+    {
+        base.fireWeapons(_target, "Player");
+    }
+
+    protected void lookAtTarget()
+    {
+        if (TargetManager.target != null)
+        {
+            transform.LookAt(TargetManager.target.transform.position);
+        }
+    }
+
     public void beginAutoAttack()
     {
         if (!autoAttack)
@@ -86,73 +144,40 @@ public class PlayerShip : BasicShip
         }
     }
 
+    private IEnumerator autoFire()
+    {
+        var timer = weaponCooldown;
+        while (autoAttack)
+        {
+            lookAtTarget();
+            if (timer > 0.0f)
+            //If there is still time left on our timer, reduce it and inform the slider
+            {
+                timer -= Time.deltaTime * hasteMod;
+            }
+            else //Otherwise, fire wepaons and reset timer and slider
+            {
+                fireWeapons(TargetManager.target, "Player");
+                timer = weaponCooldown;
+            }
+            yield return null;
+        }
+    }
+
     public void delayFirstFire()
     {
         StartCoroutine(firstFire());
     }
 
-    public void endCombat()
+    private IEnumerator firstFire()
     {
-        autoAttack = false;
+        yield return new WaitForSeconds(Random.Range(2.5f, 5.0f));
+        beginAutoAttack();
     }
 
-    public override void fireWeapons(BasicShip _target, string tag)
-    {
-        base.fireWeapons(_target, "Player");
-    }
+    #endregion Auto-Attack
 
-    public void fullHeal()
-    {
-        health = maxHealth;
-        healthBar.Refresh(maxHealth, health);
-    }
-
-    public void playWarp()
-    {
-        warpIn.GetComponent<ParticleSystem>().Play();
-    }
-
-    //public override void receiveHealing(float percentage)
-    //{
-    //    base.receiveHealing(percentage);
-    //    var healingEffect = Instantiate(healEffect, transform.position, Quaternion.identity, this.transform);
-    //    var missingDisp = maxHealth - health;
-    //    var toDisplay = missingDisp * percentage;
-    //    damageText.receiveHealing((int)toDisplay, percentage);
-    //}
-
-    public void updatePlayers(EnemyShip _mainShip, List<Turret> _turrets)
-    {
-        mainEnemy = _mainShip;
-        turrets = new List<Turret>(_turrets);
-    }
-
-    public virtual void upgradeShip()
-    {
-        upgrade = true;
-    }
-
-    protected override void die()
-    {
-        SFX.PlayOneShot(SFX_explode);
-        base.die();
-        affect.loseShip(this);
-        tellGM();
-    }
-
-    protected override void doneDeath()
-    {
-        base.doneDeath();
-        hpWarn.SetActive(false);
-        GetComponent<MeshRenderer>().enabled = false;
-        autoAttack = false;
-        StartCoroutine(playerShipRespawn());
-    }
-
-    protected void globalCooldowns()
-    {
-        buttonManager.globalCooldown();
-    }
+    #region Health, Death, and Respawn
 
     protected override void healthEval()
     {
@@ -176,56 +201,27 @@ public class PlayerShip : BasicShip
         }
     }
 
-    protected void lookAtTarget()
+    public void fullHeal()
     {
-        if (TargetManager.target != null)
-        {
-            transform.LookAt(TargetManager.target.transform.position);
-        }
+        health = maxHealth;
+        healthBar.Refresh(maxHealth, health);
     }
 
-    protected override void passDamageToAffect(float damage)
+    protected override void die()
     {
-        base.passDamageToAffect(damage);
-        affect.playerHit(damage);
+        SFX.PlayOneShot(SFX_explode);
+        base.die();
+        affect.loseShip(this);
+        tellGM();
     }
 
-    protected virtual void tellGM()
+    protected override void doneDeath()
     {
-    }
-
-    private IEnumerator autoFire()
-    {
-        var timer = weaponCooldown;
-        while (autoAttack)
-        {
-            lookAtTarget();
-            if (timer > 0.0f)
-            //If there is still time left on our timer, reduce it and inform the slider
-            {
-                timer -= Time.deltaTime * hasteMod;
-            }
-            else //Otherwise, fire wepaons and reset timer and slider
-            {
-                fireWeapons(TargetManager.target, "Player");
-                timer = weaponCooldown;
-            }
-            yield return null;
-        }
-    }
-
-    private IEnumerator firstFire()
-    {
-        yield return new WaitForSeconds(Random.Range(2.5f, 5.0f));
-        beginAutoAttack();
-    }
-
-    private IEnumerator hasteTimer(float _time)
-    {
-        yield return new WaitForSeconds(_time);
-        hasteEffect.SetActive(false);
-        ultimate = false;
-        hasteMod = 1.0f;
+        base.doneDeath();
+        hpWarn.SetActive(false);
+        GetComponent<MeshRenderer>().enabled = false;
+        autoAttack = false;
+        StartCoroutine(playerShipRespawn());
     }
 
     private IEnumerator playerShipRespawn()
@@ -285,30 +281,40 @@ public class PlayerShip : BasicShip
         beginAutoAttack();
     }
 
-    private void Start()
+    #endregion Health, Death, and Respawn
+
+    #region Game states and mechanics
+
+    public void updatePlayers(EnemyShip _mainShip, List<Turret> _turrets)
     {
-        SFX = GetComponent<AudioSource>();
-        abilityButton.myCD = abilityCooldown;
-        //ultimateButton.myCD = ultimateCooldown;
+        mainEnemy = _mainShip;
+        turrets = new List<Turret>(_turrets);
     }
 
-    #region buttons
-
-    //public void autoAttackActivate()
-    //{
-    //    if (attackButton.canActivate())
-    //    {
-    //        attackButton.targetsUp();
-    //    }
-    //}
-
-    public virtual void standardAbility()
+    protected override void passDamageToAffect(float damage)
     {
-        if (abilityButton.canActivate())
-        {
-            abilityButton.sendToButton(abilityCooldown);
-        }
+        base.passDamageToAffect(damage);
+        affect.playerHit(damage);
     }
 
-    #endregion buttons
+    protected virtual void tellGM()
+    {
+    }
+
+    public void endCombat()
+    {
+        autoAttack = false;
+    }
+
+    public void playWarp()
+    {
+        warpIn.GetComponent<ParticleSystem>().Play();
+    }
+
+    public virtual void upgradeShip()
+    {
+        upgrade = true;
+    }
+
+    #endregion Game states and mechanics
 }
