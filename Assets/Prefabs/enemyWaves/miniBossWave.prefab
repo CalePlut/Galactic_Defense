@@ -15716,18 +15716,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameManager: {fileID: 0}
-  damageText: {fileID: 2926749106136518216}
-  healthBar: {fileID: 2292165450453939280}
   explosion: {fileID: 1000011128802252, guid: 96730f8640590934eacb6f860058e7f9, type: 3}
   weaponPrefab: {fileID: 135654, guid: eeb8171b60d8da849b1f6580e734d0aa, type: 3}
   weaponSpawn1: {fileID: 6508004578571324340}
   weaponSpawn2: {fileID: 1622133301814783805}
   healEffect: {fileID: 1077433979050930671, guid: 34aa31306c70ebb4998f88abfaa20681,
     type: 3}
+  damageText: {fileID: 2926749106136518216}
+  healthBar: {fileID: 2292165450453939280}
   core: {fileID: 6102819342662972902}
   attr: {fileID: 11400000, guid: c2c7a18ba7bed354d94c94c71efc54a0, type: 2}
   pos: 1
   warpIn: {fileID: 6145600928777875746}
+  disableFire: {fileID: 138270, guid: faa17aae9f101a54ab6f9b6b9f6a1830, type: 3}
   SFX_explosion: {fileID: 8300000, guid: 404e8b68a05205f4f844be45becdcc19, type: 3}
   frigate: {fileID: 0}
   intel: {fileID: 0}
@@ -15903,6 +15904,7 @@ MonoBehaviour:
   leftTurret: {fileID: 7564130842479965212}
   rightTurret: {fileID: 4950337101233938712}
   mainEnemy: {fileID: 782669026817542658}
+  fusionChainReaction: {fileID: 100930, guid: a51e068d1d3c8d24182ae6699cee53b3, type: 3}
 --- !u!1 &3687177669506406949
 GameObject:
   m_ObjectHideFlags: 0
@@ -17654,6 +17656,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1077433979050930671, guid: 34aa31306c70ebb4998f88abfaa20681,
         type: 3}
+    - target: {fileID: 937705981241129454, guid: 5c035634476d8674097d1fd933d519a4,
+        type: 3}
+      propertyPath: disableFire
+      value: 
+      objectReference: {fileID: 138270, guid: faa17aae9f101a54ab6f9b6b9f6a1830, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5c035634476d8674097d1fd933d519a4, type: 3}
 --- !u!4 &4794009563332493983 stripped
@@ -17982,6 +17989,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1077433979050930671, guid: 34aa31306c70ebb4998f88abfaa20681,
         type: 3}
+    - target: {fileID: 937705981241129454, guid: 5c035634476d8674097d1fd933d519a4,
+        type: 3}
+      propertyPath: disableFire
+      value: 
+      objectReference: {fileID: 138270, guid: faa17aae9f101a54ab6f9b6b9f6a1830, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5c035634476d8674097d1fd933d519a4, type: 3}
 --- !u!4 &7984231217600272283 stripped

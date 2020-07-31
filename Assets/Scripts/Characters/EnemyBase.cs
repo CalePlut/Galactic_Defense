@@ -1,9 +1,12 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public enum position { left, centre, right };
 
 public class EnemyBase : BasicShip //Provides the common elements in all enemy ships. Base class for EnemyShips AND turrets
 {
+    #region mechanic variables
+
     [Header("Mechanics")]
     public enemyCore core;
 
@@ -11,13 +14,26 @@ public class EnemyBase : BasicShip //Provides the common elements in all enemy s
 
     public position pos;
 
+    #endregion mechanic variables
+
+    #region Special Effects vars
+
     [Header("Visual effects")]
     public GameObject warpIn;
+
+    public GameObject disableFire;
+    private GameObject fireObject;
+
+    #endregion Special Effects vars
+
+    #region audio vars
 
     [Header("Audio")]
     protected AudioSource audioSource;
 
     public AudioClip SFX_explosion;
+
+    #endregion audio vars
 
     #region mechanics
 
@@ -56,6 +72,19 @@ public class EnemyBase : BasicShip //Provides the common elements in all enemy s
     public void playWarp()
     {
         warpIn.GetComponent<ParticleSystem>().Play();
+    }
+
+    public void reactiveShieldJam()
+    {
+        StartCoroutine(disableFireSpawn(2f));
+    }
+
+    private IEnumerator disableFireSpawn(float _duration)
+    {
+        var disable = Instantiate(disableFire, transform.position, Quaternion.identity, this.transform);
+        disable.transform.localScale = new Vector3(2, 2, 2);
+        yield return new WaitForSeconds(_duration);
+        Destroy(disable);
     }
 
     /// <summary>

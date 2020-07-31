@@ -27,6 +27,7 @@ public class enemyCore : MonoBehaviour
     private FrigateShip frigate;
     private IntelShip artillery;
     private SupportShip tender;
+    public GameObject fusionChainReaction;
 
     #endregion References
 
@@ -35,6 +36,7 @@ public class enemyCore : MonoBehaviour
     private bool alive = true;
     private bool usedSpecial = false;
     public bool healing { get; private set; } = false;
+    private bool jammed;
 
     #endregion Mechanics
 
@@ -84,12 +86,32 @@ public class enemyCore : MonoBehaviour
     }
 
     /// <summary>
-    /// If we get hit by a Q during the heal, we won't heal.
+    /// If we get hit by a Q during the heal, we overload, dealing large damage to turrets and causing big explosion
     /// </summary>
     public void fusionInterrupt()
     {
         healing = false;
+        StartCoroutine(waitForFusion());
         affect.interruptFusionCannon();
+    }
+
+    /// <summary>
+    /// Waits for the fusion cannon to connect before destroying turrets, etc.
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator waitForFusion()
+    {
+        yield return new WaitForSeconds(0.75f);
+
+        var personalExplode = Instantiate(fusionChainReaction, transform.position, Quaternion.identity, this.transform); //Kaboom!
+        if (leftTurret.alive)
+        {
+            leftTurret.receiveDamage(20);
+        }
+        if (rightTurret.alive)
+        {
+            rightTurret.receiveDamage(20);
+        }
     }
 
     #endregion Messages and bookkeeping
@@ -251,6 +273,10 @@ public class enemyCore : MonoBehaviour
         }
         else
         {
+            jammed = true;
+            mainEnemy.reactiveShieldJam();
+            if (leftTurret.alive) { leftTurret.reactiveShieldJam(); }
+            if (rightTurret.alive) { rightTurret.reactiveShieldJam(); }
             mainEnemy.dummyLaser();
             frigate.absorbedAttack();
         }
@@ -338,6 +364,12 @@ public class enemyCore : MonoBehaviour
 
         while (alive)
         {
+            if (jammed) //If we were jammed, add 2 seconds to counter.
+            {
+                counter += 2f;
+                jammed = false;
+            }
+
             if (counter > 0.0f)
             {
                 counter -= Time.deltaTime;
@@ -361,13 +393,13 @@ public class enemyCore : MonoBehaviour
                             healing = true;
                         }
                     }
-                    if (toAttack == attackType.respawnTurret) //Respawn is interruptible by fusion cannon, and glows yellow
+                    if (toAttack == attackType.respawnTurret) //Respawn glows yellow - nothing you can do
                     {
                         if (!flare)
                         {
                             mainEnemy.specialIndicator(Color.yellow);
                             flare = true;
-                            healing = true;
+                            //healing = true;
                         }
                     }
                 }

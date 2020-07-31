@@ -3,22 +3,23 @@ using UnityEngine;
 
 public class EnemyShip : EnemyBase
 {
-    //public Slider cooldownSlider, beamSlider;
+    #region Mechanics
+
     protected float attackSpeed;
+    protected int specialDamage;
+
+    #endregion Mechanics
+
+    #region References and prefabs
 
     public FrigateShip frigate;
     public IntelShip intel;
     public SupportShip support;
-
-    // public GameObject weaponPrefab;
-    //public Transform weaponSpawn;
-    //  public Turret leftTurret, rightTurret;
-
-    //LineRenderer laser;
     public GameObject beamPrefab, beamStartPrefab, beamEndPrefab;
 
-    //private GameObject beam, beamStart, beamEnd;
-    //private LineRenderer line;
+    #endregion References and prefabs
+
+    #region Special Effects
 
     [Header("Adjustable Variables")]
     public float beamEndOffset = 1f; //How far from the raycast hit point the end effect is positioned
@@ -27,9 +28,10 @@ public class EnemyShip : EnemyBase
     public float textureLengthScale = 3; //Length of the beam texture
 
     public ParticleSystem beamWarning;
-    //public AudioClip SFX_special;
 
-    protected int specialDamage;
+    #endregion Special Effects
+
+    // protected int specialDamage;
 
     public void setReferences(FrigateShip _frigate, IntelShip _intel, SupportShip _support)
     {
