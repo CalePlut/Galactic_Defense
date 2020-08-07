@@ -16,7 +16,7 @@ public class PlayerShip : BasicShip
     [Header("Button Management")]
     public buttonManager buttonManager;
 
-    public CombatButton abilityButton;
+    public basicButton abilityButton;
 
     [Header("Ability attributes")]
     public float abilityCooldown, ultimateCooldown;

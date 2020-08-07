@@ -202,7 +202,7 @@ public class TutorialManager : MonoBehaviour
         gm.resumeGame();
         yield return new WaitForSeconds(1.0f);
         centreEnemy.dummyLaser();
-        frigate.absorbedAttack();
+        frigate.absorbedSpeccialAttack();
         yield return new WaitForSeconds(4.0f);
         gm.pauseGame();
         sRetaliate62.SetActive(true);

@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
     public TargetManager targets;
 
     [Header("Managers")]
-    public buttonManager combatButtons;
+    public buttonManager playerButtons;
 
     public mapManager map;
 
@@ -238,7 +238,7 @@ public class GameManager : MonoBehaviour
         if (stage == 2)
         {
             //Unlocks ultimate ability at stage 2
-            combatButtons.unlockUltimate();
+            playerButtons.unlockUltimate();
 
             //Sets UI elements
             stage1Clear.SetActive(true);
@@ -579,7 +579,7 @@ public class GameManager : MonoBehaviour
         focusToggle.Enable();
 
         //Unlocks ultimate early for tutorial
-        if (tutorial) { combatButtons.unlockUltimate(); }
+        if (tutorial) { playerButtons.unlockUltimate(); }
     }
 
     // Update is called once per frame

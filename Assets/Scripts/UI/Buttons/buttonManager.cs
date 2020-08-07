@@ -6,13 +6,13 @@ public class buttonManager : MonoBehaviour
 {
     public float gcdValue = 2.5f;
 
-    public List<CombatButton> buttons;
-    public CombatButton ultimate;
+    public List<basicButton> buttons;
+    public basicButton ultimate;
 
     public AffectManager affect;
 
-    //public List<CombatButton> standardAbilities;
-    //public List<CombatButton> ultimateAbilities;
+    //public List<basicButton> standardAbilities;
+    //public List<basicButton> ultimateAbilities;
 
     //public GameManager gm;
 
@@ -23,7 +23,7 @@ public class buttonManager : MonoBehaviour
     private void Start()
     {
         ultimate.gameObject.SetActive(false);
-        //foreach(CombatButton button in ultimateAbilities)
+        //foreach(basicButton button in ultimateAbilities)
         //{
         //    button.gameObject.SetActive(false);
         //}
@@ -31,7 +31,7 @@ public class buttonManager : MonoBehaviour
 
     public void globalCooldown() //Starts global cooldowns and begins clock for internal cooldown.
     {
-        foreach (CombatButton button in buttons)
+        foreach (basicButton button in buttons)
         {
             if (button.gameObject.activeSelf)
             {
@@ -45,7 +45,7 @@ public class buttonManager : MonoBehaviour
 
     public void globalCooldown(float _customCD) //Starts global cooldowns and begins clock for internal cooldown.
     {
-        foreach (CombatButton button in buttons)
+        foreach (basicButton button in buttons)
         {
             if (button.gameObject.activeSelf)
             {
@@ -59,7 +59,7 @@ public class buttonManager : MonoBehaviour
 
     //public void setHaste(float multiplier, float time)
     //{
-    //    foreach(CombatButton button in standardAbilities)
+    //    foreach(basicButton button in standardAbilities)
     //    {
     //        button.setHaste(multiplier);
     //    }
@@ -74,7 +74,7 @@ public class buttonManager : MonoBehaviour
     //IEnumerator hasteTimer(float _time)
     //{
     //    yield return new WaitForSeconds(_time);
-    //    foreach(CombatButton button in standardAbilities)
+    //    foreach(basicButton button in standardAbilities)
     //    {
     //        button.setHaste(1.0f);
     //    }
@@ -82,7 +82,7 @@ public class buttonManager : MonoBehaviour
 
     public void refreshAllCooldowns()
     {
-        foreach (CombatButton button in buttons)
+        foreach (basicButton button in buttons)
         {
             button.clearCooldown();
         }
@@ -91,7 +91,7 @@ public class buttonManager : MonoBehaviour
     private void Update()
     {
         var totalCooldown = 0.0f;
-        foreach (CombatButton button in buttons)
+        foreach (basicButton button in buttons)
         {
             totalCooldown += button.cooldown / button.myCD;
         }
@@ -101,9 +101,9 @@ public class buttonManager : MonoBehaviour
         postCooldown += Time.deltaTime;
     }
 
-    //public void cooldownPause(CombatButton button)
+    //public void cooldownPause(basicButton button)
     //{
-    //    if (button.GetType() != typeof(targettedCombatButton))
+    //    if (button.GetType() != typeof(targettedbasicButton))
     //    {
     //        gm.pauseGame();
     //    }

@@ -278,7 +278,7 @@ public class enemyCore : MonoBehaviour
             if (leftTurret.alive) { leftTurret.reactiveShieldJam(); }
             if (rightTurret.alive) { rightTurret.reactiveShieldJam(); }
             mainEnemy.dummyLaser();
-            frigate.absorbedAttack();
+            frigate.absorbedSpeccialAttack();
         }
     }
 
@@ -384,22 +384,13 @@ public class enemyCore : MonoBehaviour
                             flare = true;
                         }
                     }
-                    if (toAttack == attackType.heal) //Heal is interruptible by fusion cannon, and glows green
-                    {
-                        if (!flare)
-                        {
-                            mainEnemy.specialIndicator(Color.green);
-                            flare = true;
-                            healing = true;
-                        }
-                    }
-                    if (toAttack == attackType.respawnTurret) //Respawn glows yellow - nothing you can do
+                    if (toAttack == attackType.heal) //Heal is interruptible by fusion cannon, and glows yelow
                     {
                         if (!flare)
                         {
                             mainEnemy.specialIndicator(Color.yellow);
                             flare = true;
-                            //healing = true;
+                            healing = true;
                         }
                     }
                 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FrigateShip : PlayerShip
 {
@@ -10,6 +11,7 @@ public class FrigateShip : PlayerShip
     private GameObject shield;
 
     public float shieldDuration = 1.5f;
+    public shieldStamina shieldStamina;
 
     //Retaliation
     [Header("Retaliation")]
@@ -21,7 +23,7 @@ public class FrigateShip : PlayerShip
 
     [Header("Ultimate")]
     //Ultimate
-    public CombatButton ultimateButton;
+    public pressButton ultimateButton;
 
     [Header("Ship-specific Audio")]
     public AudioClip SFX_shieldActivate;
@@ -95,6 +97,9 @@ public class FrigateShip : PlayerShip
 
     #region Reactive Shield and Retaliate
 
+    /// <summary>
+    /// Activates Reactive Shield
+    /// </summary>
     public void ShieldsUp() //Activates shield
     {
         //    Debug.Log("Shields up");
@@ -110,14 +115,16 @@ public class FrigateShip : PlayerShip
         StartCoroutine(ShieldSustain());
     }
 
-    private IEnumerator ShieldSustain()  //Keeps shield up for duration, and removest hem afterwards
+    /// <summary>
+    /// Keeps shield up as long as key is held down
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator ShieldSustain()  //Keeps shield up for duration, and removes afterwards
     {
-        var timer = shieldDuration;
+        shieldStamina.shieldsUp(); //Passes shields up message to shieldsustain bar
 
-        while ((timer > 0.0f) && shielded)
+        while (shieldStamina.shielded)
         {
-            timer -= Time.deltaTime;
-            if (retaliate && timer > 0.5f) { timer = 0.5f; }
             yield return null;
         }
 
@@ -131,16 +138,25 @@ public class FrigateShip : PlayerShip
         retaliate = false;
     }
 
+    public void absorbSimpleAttack()
+    {
+    }
+
+    public void releaseShield()
+    {
+    }
+
     public void shieldDown()
     {
+        shieldStamina.shieldsDown();
         shielded = false;
         Destroy(shield);
     }
 
-    public void absorbedAttack()//Absorbs attack and primes for retaliation
+    public void absorbedSpeccialAttack()//Absorbs attack and primes for retaliation
     {
         SFX.PlayOneShot(SFX_absorbAttack);
-        abilityButton.alterCooldown(1.5f);
+        //abilityButton.alterCooldown(1.5f);
         retaliate = true;
         affect.parry();
         // Debug.Log("Absorbed attack");
@@ -154,7 +170,7 @@ public class FrigateShip : PlayerShip
 
     private void laserBarrage()  //Fires retaliation lasers
     {
-        Debug.Log("Firing lasers");
+        //Debug.Log("Firing lasers");
         var emitter = retaliateSpawn.position;
         var damage = attr.retaliateDamage;
         if (upgrade) { damage = attr.retaliateDamageUpgrade; }

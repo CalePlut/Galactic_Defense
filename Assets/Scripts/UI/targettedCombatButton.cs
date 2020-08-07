@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class targettedCombatButton : CombatButton
+public class targettedbasicButton : basicButton
 {
     public GameObject targeting;
     private GameObject target;
