@@ -123,15 +123,15 @@ public class GameManager : MonoBehaviour
 
     #region Deaths and Respawns
 
-    public void removeTurretfromTargetting(Turret _toDie) //Removes turrets from Target manager
-    {
-        targets.removeShip(_toDie);
+    //public void removeTurretfromTargetting(Turret _toDie) //Removes turrets from Target manager
+    //{
+    //    targets.removeShip(_toDie);
 
-        if (TargetManager.target == _toDie)
-        {
-            targets.advanceTarget();
-        }
-    }
+    //    if (TargetManager.target == _toDie)
+    //    {
+    //        targets.advanceTarget();
+    //    }
+    //}
 
     public void addTurrettoTargetting(Turret _toRespawn)
     {
@@ -509,7 +509,7 @@ public class GameManager : MonoBehaviour
         //Instantiates wave, sets position, and gets reference
         var wave = GameObject.Instantiate(enemyToInstantiate);
         wave.transform.position = spawnPoint.transform.position;
-        var core = wave.GetComponent<enemyCore>();
+        var core = wave.GetComponent<EnemyCore>();
         //enemyCore = core;
 
         //Tells core to run setup for the wave
@@ -523,7 +523,7 @@ public class GameManager : MonoBehaviour
         turrets = core.getTurrets();
 
         //Finally, use the  lists to inform the other objects references
-        targets.setShips(enemyShips);
+        targets.setShips(mainEnemy, turrets[0], turrets[1]);
         frigate.updatePlayers(mainEnemy, turrets);
         artillery.updatePlayers(mainEnemy, turrets);
         tender.updatePlayers(mainEnemy, turrets);
@@ -575,7 +575,7 @@ public class GameManager : MonoBehaviour
         restart.Enable();
         screenshot.Enable();
         menu.Enable();
-        pause.Enable();
+        //pause.Enable();
         focusToggle.Enable();
 
         //Unlocks ultimate early for tutorial
@@ -602,10 +602,10 @@ public class GameManager : MonoBehaviour
             pauseLogic();
         }
 
-        if (focusToggle.triggered)
-        {
-            targets.advanceTarget();
-        }
+        //if (focusToggle.triggered)
+        //{
+        //    targets.advanceTarget();
+        //}
     }
 
     #region menuNavigation

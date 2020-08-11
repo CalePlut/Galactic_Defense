@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum AttackStance { aggressive, defensive, regenerative, holdFire }
+
 public class PlayerShip : BasicShip
 {
     #region Balance
@@ -29,6 +31,7 @@ public class PlayerShip : BasicShip
 
     private bool autoAttack;
     private float hasteMod = 1.0f;
+    protected static AttackStance stance;
 
     #endregion Mechanics
 
@@ -39,6 +42,7 @@ public class PlayerShip : BasicShip
 
     public List<PlayerShip> otherShips;
     public List<Turret> turrets;
+    public TargetManager targetManager;
 
     #endregion Object references
 
@@ -77,6 +81,8 @@ public class PlayerShip : BasicShip
         healthBar.Refresh(maxHealth, health);
         affect = gameManager.gameObject.GetComponent<AffectManager>();
         StartCoroutine(healthUpdate()); //Begins constant health evaluation
+        stance = AttackStance.holdFire;
+        targetManager = gameManager.targets;
     }
 
     #endregion Setup
@@ -121,58 +127,122 @@ public class PlayerShip : BasicShip
 
     #region Auto-Attack
 
-    public override void fireWeapons(BasicShip _target, string tag)
+    /// <summary>
+    /// Looks at and returns a target ship
+    /// </summary>
+    /// <returns>New target based on attack stance</returns>
+    protected EnemyBase GetTarget()
     {
-        base.fireWeapons(_target, "Player");
+        var target = targetManager.GetTarget(stance);
+        lookAtShip(target);
+        return target;
     }
 
-    protected void lookAtTarget()
-    {
-        if (TargetManager.target != null)
-        {
-            transform.LookAt(TargetManager.target.transform.position);
-        }
-    }
-
-    public void beginAutoAttack()
+    public void BeginAutoAttack()
     {
         if (!autoAttack)
         {
             autoAttack = true;
-            fireWeapons(TargetManager.target, "Player");
-            StartCoroutine(autoFire());
+            StartCoroutine(AutoFire());
         }
     }
 
-    private IEnumerator autoFire()
+    /// <summary>
+    /// Automatically fires weapons, based on attack stance
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator AutoFire()
     {
         var timer = weaponCooldown;
         while (autoAttack)
         {
-            lookAtTarget();
-            if (timer > 0.0f)
             //If there is still time left on our timer, reduce it and inform the slider
+            if (timer > 0.0f)
             {
                 timer -= Time.deltaTime * hasteMod;
             }
-            else //Otherwise, fire wepaons and reset timer and slider
+            else //Otherwise, execute attack based on attack pattern
             {
-                fireWeapons(TargetManager.target, "Player");
-                timer = weaponCooldown;
+                PlayerFireControl();
+                timer = FireRateCalculator();
             }
+
             yield return null;
         }
     }
 
-    public void delayFirstFire()
+    /// <summary>
+    /// Executes the firing of a weapon, dealing damage based on multiplier and healing if regenerative.
+    /// </summary>
+    private void PlayerFireControl()
     {
-        StartCoroutine(firstFire());
+        var target = GetTarget();
+
+        if (stance != AttackStance.holdFire)
+        {
+            var damage = DamageCalculator();
+            var toHeal = stance == AttackStance.regenerative;
+            FireWeapons(target, "Player", damage, toHeal);
+        }
     }
 
-    private IEnumerator firstFire()
+    /// <summary>
+    /// Determines the damage an attack should do, based on stance
+    /// </summary>
+    /// <returns></returns>
+    private float DamageCalculator()
+    {
+        var totalModifier = 1.0f;
+
+        if (stance == AttackStance.regenerative)
+        {
+            totalModifier *= 0.5f;
+        }
+        if (ultimate)
+        {
+            totalModifier *= 2;
+        }
+
+        return totalModifier;
+    }
+
+    /// <summary>
+    /// Calculates the fire rate based on stance
+    /// </summary>
+    /// <returns>Seconds until next firing</returns>
+    private float FireRateCalculator()
+    {
+        var toReturn = weaponCooldown;
+        if (stance == AttackStance.aggressive)
+        {
+            toReturn *= 0.75f;
+        }
+        if (stance == AttackStance.holdFire)
+        {
+            toReturn = 0.5f; //Yes, overwrite toReturn if we're holding fire
+        }
+
+        return toReturn;
+    }
+
+    /// <summary>
+    /// Sets stance, based on incoming. Used with abilities
+    /// </summary>
+    /// <param name="_stance">new stance to take</param>
+    public void SetStance(AttackStance _stance)
+    {
+        stance = _stance;
+    }
+
+    public void delayFirstFire()
+    {
+        StartCoroutine(FirstFire());
+    }
+
+    private IEnumerator FirstFire()
     {
         yield return new WaitForSeconds(Random.Range(2.5f, 5.0f));
-        beginAutoAttack();
+        BeginAutoAttack();
     }
 
     #endregion Auto-Attack
@@ -278,7 +348,7 @@ public class PlayerShip : BasicShip
         affect.respawn(this);
         StartCoroutine(healthUpdate());
 
-        beginAutoAttack();
+        BeginAutoAttack();
     }
 
     #endregion Health, Death, and Respawn

@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
 
 public class Turret : EnemyBase
 {
@@ -21,7 +21,7 @@ public class Turret : EnemyBase
     protected override void doneDeath()
     {
         //Remove from targetting
-        gameManager.removeTurretfromTargetting(this);
+        //gameManager.removeTurretfromTargetting(this);
 
         alive = false;
         mesh.GetComponent<MeshRenderer>().enabled = false;

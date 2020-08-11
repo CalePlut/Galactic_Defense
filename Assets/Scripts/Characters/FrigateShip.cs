@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class FrigateShip : PlayerShip
 {
@@ -113,6 +112,7 @@ public class FrigateShip : PlayerShip
         shield.transform.SetParent(this.transform);
         shield.transform.localScale = new Vector3(10, 10, 10);
         StartCoroutine(ShieldSustain());
+        SetStance(AttackStance.defensive);
     }
 
     /// <summary>
@@ -165,7 +165,7 @@ public class FrigateShip : PlayerShip
     public void retaliateAttack()
     {
         laserBarrage();
-        globalCooldowns();
+        //globalCooldowns();
     }
 
     private void laserBarrage()  //Fires retaliation lasers

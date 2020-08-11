@@ -1,16 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Runtime.Remoting.Messaging;
+using System.Runtime.Serialization.Configuration;
+using System.Threading;
 using UnityEngine;
 
 /// <summary>
 /// Attack type is used only in selecting which move to fire by the AI
 /// </summary>
-public enum attackType { autoAttack, specialAttack, heal, respawnTurret }
+public enum AttackType { leftTurret, rightTurret, specialAttack, heal }
 
 /// <summary>
-/// The EnemyCore (not to be confused with enemyBase) is the point of control for each wave. This script manages the fly-in, setups, and controls the move selection (e.g. what fires)
+/// The EnemyCore Controls the enemy behaviour. Uses CombatAI to execute attack patterns and track tension.
 /// </summary>
-public class enemyCore : MonoBehaviour
+public class EnemyCore : MonoBehaviour
 {
     #region Attributes
 
@@ -28,6 +32,7 @@ public class enemyCore : MonoBehaviour
     private IntelShip artillery;
     private SupportShip tender;
     public GameObject fusionChainReaction;
+    private CombatAI combatAI;
 
     #endregion References
 
@@ -36,7 +41,8 @@ public class enemyCore : MonoBehaviour
     private bool alive = true;
     private bool usedSpecial = false;
     public bool healing { get; private set; } = false;
-    private bool jammed;
+    private float jam;
+    private int leftRespawn = 0, rightRespawn = 0;
 
     #endregion Mechanics
 
@@ -130,6 +136,7 @@ public class enemyCore : MonoBehaviour
         rightTurret.setupEnemy(_stage, managerObj);
         attackSpeed = mainEnemy.getAttackSpeed();
         affect = managerObj.GetComponent<AffectManager>();
+        combatAI = new CombatAI(this, affect, attr);
 
         StartCoroutine(flyIn());
     }
@@ -186,36 +193,36 @@ public class enemyCore : MonoBehaviour
         leftTurret.playWarp();
         rightTurret.playWarp();
         //readyForCombat(); //triggers beginning of combat stuff
-        StartCoroutine(AutoAttack());
+        StartCoroutine(RunCombatAI());
     }
 
     #endregion Special Effects and Animations
 
-    #region Combat AI
+    #region Attacks and Targetting
 
     /// <summary>
-    /// Implements the selected attack by triggering associated functions
+    /// Callback from CombatAI that implements the current attack
     /// </summary>
-    /// <param name="attack"></param>
-    private void attackImplement(attackType attack)
+    /// <param name="attack">sets the attack to implement</param>
+    public void AttackImplement(AttackType attack)
     {
-        var target = randomTargetSelect();
-        if (attack == attackType.autoAttack)  //Selects turret. If turret is alive, fire from it, otherwise fire the less-powerful main enemies cannon. We keep it this way so that destroying a single turret still helps.
+        var target = RandomTargetSelect();
+        if (attack == AttackType.leftTurret)  //Attacks with left turret, falls back to centre if left turret is destroyed
         {
-            autoAttack(target);
+            AutoAttack(target, true);
         }
-        else if (attack == attackType.specialAttack) //If the player isn't shielded, fire normal lasers. Otherwise, fire fake laser and trigger riposte.
+        else if (attack == AttackType.rightTurret) //Attacks with right turret, falls back to centre if rt is destroyed.
         {
-            specialAttack();
+            AutoAttack(target, false);
+        }
+        else if (attack == AttackType.specialAttack) //If the player isn't shielded, fire normal lasers. Otherwise, fire fake laser and trigger riposte.
+        {
+            SpecialAttack();
             affect.enemyAbility();
         }
-        else if (attack == attackType.heal)
+        else if (attack == AttackType.heal)
         {
             Heal();
-        }
-        else if (attack == attackType.respawnTurret) //Note: should only be called if at least one turret is dead anyways.
-        {
-            RespawnTurret();
         }
     }
 
@@ -244,6 +251,30 @@ public class enemyCore : MonoBehaviour
     }
 
     /// <summary>
+    /// Respawns a specific turret
+    /// </summary>
+    /// <param name="left">true if respawning left turret, false if respawning right turret.</param>
+    private void RespawnTurret(bool left)
+    {
+        if (left)
+        {
+            if (!leftTurret.alive)
+            {
+                leftTurret.beginTurretRespawn();
+            }
+            else { Debug.Log("Tried to respawn living left turret"); }
+        }
+        else
+        {
+            if (!rightTurret.alive)
+            {
+                rightTurret.beginTurretRespawn();
+            }
+            else { Debug.Log("Tried to respawn living right turret"); }
+        }
+    }
+
+    /// <summary>
     /// Heals everyone for 75% of their missing health
     /// </summary>
     private void Heal()
@@ -252,20 +283,20 @@ public class enemyCore : MonoBehaviour
         {
             if (leftTurret.alive)
             {
-                leftTurret.receiveHealing(0.75f);
+                leftTurret.ReceiveHealing(0.75f);
             }
             if (rightTurret.alive)
             {
-                rightTurret.receiveHealing(0.75f);
+                rightTurret.ReceiveHealing(0.75f);
             }
-            mainEnemy.receiveHealing(0.75f);
+            mainEnemy.ReceiveHealing(0.75f);
         }
     }
 
     /// <summary>
     /// Fires the special attack, unless the player is shielded, in which case we fire a fake laser and prep for the riposte mechanics
     /// </summary>
-    private void specialAttack()
+    private void SpecialAttack()
     {
         if (!PlayerShip.shielded)
         {
@@ -273,7 +304,7 @@ public class enemyCore : MonoBehaviour
         }
         else
         {
-            jammed = true;
+            jam = 2.5f;
             mainEnemy.reactiveShieldJam();
             if (leftTurret.alive) { leftTurret.reactiveShieldJam(); }
             if (rightTurret.alive) { rightTurret.reactiveShieldJam(); }
@@ -283,146 +314,158 @@ public class enemyCore : MonoBehaviour
     }
 
     /// <summary>
-    /// Fires a basic attack at the provided target.
-    /// This is vaguely confusing --- Prioritize using turrets to attack, with random selection.
-    /// If the selected turret is dead, fire the (far weaker) central enemy's weapon.
+    /// Fires a basic attack at the provided target, from the selected turret
+    /// If the turret is unavailable, fire weaker central blast and add to respawn count
+    /// After 2 failed attacks, respawn the turret
     /// </summary>
     /// <param name="target"></param>
-    private void autoAttack(PlayerShip target)
+    private void AutoAttack(PlayerShip target, bool left)
     {
-        var left = Random.value < 0.5f;
         if (left)
         {
             if (leftTurret.alive)
             {
-                leftTurret.fireWeapons(target, "Enemy");
+                leftTurret.FireWeapons(target, "Enemy");
             }
-            else { mainEnemy.fireWeapons(target, "Enemy"); }
+            else
+            {
+                leftRespawn++;
+                if (leftRespawn > 2)
+                {
+                    RespawnTurret(true);
+                    leftRespawn = 0;
+                }
+                else
+                {
+                    mainEnemy.FireWeapons(target, "Enemy");
+                }
+            }
         }
         else
         {
             if (rightTurret.alive)
             {
-                rightTurret.fireWeapons(target, "Enemy");
-            }
-            else { mainEnemy.fireWeapons(target, "Enemy"); }
-        }
-    }
-
-    /// <summary>
-    /// Selects which type of attack to use, based on random chance and some logic.
-    /// </summary>
-    /// <returns></returns>
-    private attackType attackSelect()
-    {
-        var toReturn = attackType.autoAttack;
-        var randAttack = Random.Range(0, 100);
-        //Debug.Log("RandAttack = " + randAttack);
-        if (randAttack < 75) //75% chance of using standard attack (turret-empowered if available)
-        {
-            toReturn = attackType.autoAttack;
-            usedSpecial = false;
-        }
-        else if (randAttack < 90) //15% chance of using Special Attack
-        {
-            if (!usedSpecial)
-            {
-                toReturn = attackType.specialAttack;
-                usedSpecial = true;
+                rightTurret.FireWeapons(target, "Enemy");
             }
             else
             {
-                toReturn = attackType.autoAttack; //If we used special attack last cycle, auto-attack instead
-                usedSpecial = false;
+                rightRespawn++;
+                if (rightRespawn > 2)
+                {
+                    RespawnTurret(false);
+                    rightRespawn = 0;
+                }
+                else
+                {
+                    mainEnemy.FireWeapons(target, "Enemy");
+                }
             }
         }
-        else if (randAttack < 100) //10% chance of resurrecting. If all turrets are alive, heal
-        {
-            if (!leftTurret.alive || !rightTurret.alive) //if either turret is dead, set action to respawn
-            {
-                toReturn = attackType.respawnTurret;
-            }
-            else //If both are alive, heal.
-            {
-                toReturn = attackType.heal;
-            }
-            usedSpecial = false;
-        }
-        if (GameManager.tutorial) { toReturn = attackType.autoAttack; }
-        return toReturn;
     }
 
-    /// <summary>
-    /// Tracks time to automatically select and implement attacks and actions
-    /// </summary>
-    /// <returns></returns>
-    private IEnumerator AutoAttack()
+    private IEnumerator RunCombatAI()
     {
-        var counter = 0.0f;
-        var toAttack = attackType.autoAttack;
-        var flare = false;
-
         while (alive)
         {
-            if (jammed) //If we were jammed, add 2 seconds to counter.
+            if (jam > 0.0f) //if we're jammed, reduce jam.
             {
-                counter += 2f;
-                jammed = false;
+                jam -= Time.deltaTime;
             }
-
-            if (counter > 0.0f)
+            else //Otherwise, advance the combat ai
             {
-                counter -= Time.deltaTime;
-                if (counter <= 2.5f)
-                {
-                    if (toAttack == attackType.specialAttack) //Special Attack is countered by reactive shield, and glows red
-                    {
-                        if (!flare)
-                        {
-                            affect.setParryFrame(true);
-                            mainEnemy.specialIndicator(Color.red);
-                            flare = true;
-                        }
-                    }
-                    if (toAttack == attackType.heal) //Heal is interruptible by fusion cannon, and glows yelow
-                    {
-                        if (!flare)
-                        {
-                            mainEnemy.specialIndicator(Color.yellow);
-                            flare = true;
-                            healing = true;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                //Trigger ability and re-set the tracking variables
-                attackImplement(toAttack);
-                flare = false;
-                healing = false;
-
-                //Next, selects next attack and begins countdown to it.
-                toAttack = attackSelect();
-                if (toAttack == attackType.autoAttack) //If we have selected AutoAttack, set time remaining to the attack speed
-                {
-                    counter = attackSpeed;
-                }
-                else //Otherwise, set timer to 3 seconds (2 measures) to give parry possibility.
-                {
-                    counter = 3.0f;
-                    affect.setParryFrame(false);
-                }
+                combatAI.Advance(Time.deltaTime);
             }
             yield return null;
         }
     }
 
     /// <summary>
+    /// Creates flare and sets logic for Spec Attack, countered by Reactive Shield
+    /// </summary>
+    public void SetSpecialAttackFrame()
+    {
+        mainEnemy.specialIndicator(Color.red, attr.specialDelay);
+    }
+
+    /// <summary>
+    /// Creates flare and sets logic for Heal, countered by Fusion Cannon
+    /// </summary>
+    public void SetHealFrame()
+    {
+        mainEnemy.specialIndicator(Color.green, attr.healDelay);
+        healing = true;
+    }
+
+    ///// <summary>
+    ///// Tracks time to automatically select and implement attacks and actions -- Replaced with new CombatAI system
+    ///// </summary>
+    ///// <returns></returns>
+    //private IEnumerator AutoAttack()
+    //{
+    //    var counter = 0.0f;
+    //    var flare = false;
+
+    //    while (alive)
+    //    {
+    //        if (jammed) //If we were jammed, add 2 seconds to counter.
+    //        {
+    //            counter += 2f;
+    //            jammed = false;
+    //        }
+
+    //        if (counter > 0.0f)
+    //        {
+    //            counter -= Time.deltaTime;
+    //            if (counter <= 2.5f)
+    //            {
+    //                if (toAttack == AttackType.specialAttack) //Special Attack is countered by reactive shield, and glows red
+    //                {
+    //                    if (!flare)
+    //                    {
+    //                        affect.setParryFrame(true);
+    //                        mainEnemy.specialIndicator(Color.red);
+    //                        flare = true;
+    //                    }
+    //                }
+    //                if (toAttack == AttackType.heal) //Heal is interruptible by fusion cannon, and glows yelow
+    //                {
+    //                    if (!flare)
+    //                    {
+    //                        mainEnemy.specialIndicator(Color.yellow);
+    //                        flare = true;
+    //                        healing = true;
+    //                    }
+    //                }
+    //            }
+    //        }
+    //        else
+    //        {
+    //            //Trigger ability and re-set the tracking variables
+    //            attackImplement(toAttack);
+    //            flare = false;
+    //            healing = false;
+
+    //            //Next, selects next attack and begins countdown to it.
+    //            toAttack = AttackSelect();
+    //            if (toAttack == AttackType.autoAttack) //If we have selected AutoAttack, set time remaining to the attack speed
+    //            {
+    //                counter = attackSpeed;
+    //            }
+    //            else //Otherwise, set timer to 3 seconds (2 measures) to give parry possibility.
+    //            {
+    //                counter = 3.0f;
+    //                affect.setParryFrame(false);
+    //            }
+    //        }
+    //        yield return null;
+    //    }
+    //}
+
+    /// <summary>
     /// Selects one of the player ships as a target at random. If non-alive ship selected, select random alive ship.
     /// </summary>
     /// <returns></returns>
-    private PlayerShip randomTargetSelect()
+    private PlayerShip RandomTargetSelect()
     {
         var randomSelect = Random.Range(0, 3);
         if (randomSelect == 1) //Attempts to target artillery
@@ -465,5 +508,317 @@ public class enemyCore : MonoBehaviour
         }
     }
 
-    #endregion Combat AI
+    #endregion Attacks and Targetting
+}
+
+/// <summary>
+/// Manages enemy actions via "CombatAI.Advance, and sends unified enemy Tension value to affect manager"
+///
+/// </summary>
+public class CombatAI
+{
+    private EnemyCore core;
+    private AffectManager affect;
+    private enemyAttributes attr;
+    private List<EnemyAttack> enemyAttacks;
+
+    public CombatAI(EnemyCore _core, AffectManager _affect, enemyAttributes _attr)
+    {
+        core = _core;
+        affect = _affect;
+        attr = _attr;
+
+        CreatePattern();
+    }
+
+    /// <summary>
+    /// Advances clock on all enemyActions, calculates tension value and sends to Affect Manager.
+    /// </summary>
+    /// <param name="deltaTime">Unity's Time.deltaTime</param>
+    /// <param name="jammed">Are we jammed or not</param>
+    public void Advance(float deltaTime)
+    {
+        var enemyTension = 0.0f; //This is the value that we'll send to the Affect Manager at the end. Simple addition of all tension values
+
+        if (enemyAttacks.Count == 0) //If we don't have a pattern, create one.
+
+        {
+            CreatePattern();
+        }
+        else
+        {
+            //Faux garbage collection - list to be removed from list after enumeration
+            var toCull = new List<EnemyAttack>();
+
+            foreach (EnemyAttack attack in enemyAttacks)
+            {
+                //Advance attack clocks - stand in for Update()
+                attack.Advance(deltaTime);
+
+                //Add attack's scaled tension value to enemyTension
+                enemyTension += attack.tension;
+
+                //Faux garbage collection - add to list
+                if (attack.toCull)
+                {
+                    toCull.Add(attack);
+                }
+            }
+
+            //Send tension to Affect Manager
+            affect.UpdateEnemyTension(enemyTension);
+
+            //Faux garbage collection - remove expired attacks
+            foreach (EnemyAttack toRemove in toCull)
+            {
+                enemyAttacks.Remove(toRemove);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Sends laser barrage (Reactive shield counter) callback to EnemyCore
+    /// </summary>
+    public void SetSpecialAttackFrame()
+    {
+        core.SetSpecialAttackFrame();
+    }
+
+    /// <summary>
+    /// Sends heal (Fusion cannon counter) callback to EnemyCore
+    /// </summary>
+    public void SetHealFrame()
+    {
+        core.SetHealFrame();
+    }
+
+    /// <summary>
+    /// Callback for Enemy Attacks - Fires attack based on type via callback to EnemyCore and removes attack from list. If this clear list, creates next pattern.
+    /// </summary>
+    /// <param name="attack">This is the attack object that is firing</param>
+    public void completeAction(EnemyAttack attack)
+    {
+        core.AttackImplement(attack.type);
+    }
+
+    /// <summary>
+    /// Creates random pattern of EnemyAttacks and stores them to list, with timing lined up for combo.
+    /// </summary>
+    /// <param name="pattern">List of all attacks to create</param>
+    private void CreatePattern()
+    {
+        enemyAttacks = new List<EnemyAttack>();
+        var timer = attr.InitialDelay(); //This will be some random initial delay
+        var pattern = PatternSelect(Random.Range(0, 5));
+        foreach (AttackType attackType in pattern)
+        {
+            timer += timeByAttack(attackType); //Add delay before attack to timer, to use to line up the attacks in time
+            if (attackType == AttackType.heal || attackType == AttackType.specialAttack) //If we have a special attack, we need to add the parry frame
+            {
+                var newAttack = new EnemyAttack(this, attackType, timer, tensionByAttack(attackType), timeByAttack(attackType));
+                enemyAttacks.Add(newAttack);
+            }
+            else //Otherwise, use 0.0 as a parry frame and the logic won't really fire anyways
+            {
+                var newAttack = new EnemyAttack(this, attackType, timer, tensionByAttack(attackType));
+                enemyAttacks.Add(newAttack);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Creates specific EnemyAttacks and stores them to list, with timing lined up for combo.
+    /// </summary>
+    /// <param name="pattern">List of all attacks to create</param>
+    private void CreatePattern(List<AttackType> pattern)
+    {
+        enemyAttacks = new List<EnemyAttack>();
+        var timer = attr.InitialDelay(); //This will be some random initial delay
+        foreach (AttackType attackType in pattern)
+        {
+            timer += timeByAttack(attackType); //Add delay before attack to timer, to use to line up the attacks in time
+            if (attackType == AttackType.heal || attackType == AttackType.specialAttack)
+            {
+                var newAttack = new EnemyAttack(this, attackType, timer, tensionByAttack(attackType), timeByAttack(attackType));
+                enemyAttacks.Add(newAttack);
+            }
+            else
+            {
+                var newAttack = new EnemyAttack(this, attackType, timer, tensionByAttack(attackType));
+                enemyAttacks.Add(newAttack);
+            }
+        }
+    }
+
+    private float timeByAttack(AttackType type)
+    {
+        switch (type)
+        {
+            case AttackType.leftTurret:
+            case AttackType.rightTurret:
+                return attr.turretDelay;
+
+            case AttackType.specialAttack:
+                return attr.specialDelay;
+
+            case AttackType.heal:
+                return attr.healDelay;
+
+            default:
+                return 0.0f; //Shouldn't happen!
+        }
+    }
+
+    private float tensionByAttack(AttackType type)
+    {
+        switch (type)
+        {
+            case AttackType.leftTurret:
+            case AttackType.rightTurret:
+                return attr.turretTension;
+
+            case AttackType.specialAttack:
+                return attr.specialAttackTension;
+
+            case AttackType.heal:
+                return attr.healTension;
+
+            default:
+                return 0.0f; //This is the bad place!
+        }
+    }
+
+    /// <summary>
+    /// Converts int into attack pattern
+    /// </summary>
+    /// <param name="pattern">Max 4. Integer coreresponding to pattern</param>
+    /// <returns>List of attacks to be run through as attack pattern</returns>
+    public List<AttackType> PatternSelect(int pattern)
+    {
+        switch (pattern)
+        {
+            case 0:
+                return new List<AttackType>() { AttackType.rightTurret, AttackType.leftTurret, AttackType.specialAttack }; //R-L-Special
+
+            case 1:
+                return new List<AttackType>() { AttackType.leftTurret, AttackType.rightTurret, AttackType.heal }; //L-R-Heal
+
+            case 2:
+                return new List<AttackType>() { AttackType.leftTurret, AttackType.rightTurret, AttackType.rightTurret, AttackType.specialAttack, AttackType.heal }; //L-R-R-Special-Heal
+
+            case 3:
+                return new List<AttackType>() { AttackType.rightTurret, AttackType.leftTurret, AttackType.leftTurret, AttackType.heal, AttackType.specialAttack }; //R-L-L-Heal-Special
+
+            case 4:
+                if (Random.value < 0.5f)
+                {
+                    return new List<AttackType>() { AttackType.leftTurret, AttackType.rightTurret, AttackType.leftTurret, AttackType.rightTurret, AttackType.specialAttack, AttackType.heal }; //L-R-L-R-Special-Heal
+                }
+                else
+                {
+                    return new List<AttackType>() { AttackType.rightTurret, AttackType.leftTurret, AttackType.rightTurret, AttackType.leftTurret, AttackType.specialAttack, AttackType.heal }; //R-L-R-L-Special_Heal
+                }
+            default:
+                return new List<AttackType>() { AttackType.rightTurret, AttackType.leftTurret, AttackType.specialAttack };
+        }
+    }
+}
+
+/// <summary>
+/// Automatically counts down, executes
+/// Created during attack pattern creation
+/// </summary>
+public class EnemyAttack
+{
+    #region Mechanics
+
+    public AttackType type { get; private set; }
+    private float timing;
+    private float fullTension;
+    public float tension { get; private set; }
+    private bool specialTrigger = false; //Tracks whether we've sent the parry frame
+    public float triggerTime { get; private set; }
+
+    #endregion Mechanics
+
+    #region Bookkeeping and References
+
+    public bool toCull { get; private set; } = false;
+    private CombatAI combatAI;
+
+    #endregion Bookkeeping and References
+
+    public EnemyAttack(CombatAI _AI, AttackType _type, float _time, float _fullTension)
+    {
+        combatAI = _AI;
+        type = _type;
+        timing = _time;
+        fullTension = _fullTension;
+        triggerTime = 0.0f;
+    }
+
+    public EnemyAttack(CombatAI _AI, AttackType _type, float _time, float _fullTension, float _triggerTime)
+    {
+        combatAI = _AI;
+        type = _type;
+        timing = _time;
+        fullTension = _fullTension;
+        triggerTime = _triggerTime;
+    }
+
+    /// <summary>
+    /// Advances timing towards attack and adjusts tension variable. Fires attack if timing<=0
+    /// </summary>
+    /// <param name="deltaTime">Time.deltaTime passed from CombatAI.Advance</param>
+    public void Advance(float deltaTime)
+    {
+        //Timing counts down until the attack is implemented. Tracks flares, tension, and implementation
+        timing -= deltaTime;
+
+        specialTriggerCalculate(timing);
+        tensionCalculate(timing);
+    }
+
+    private void specialTriggerCalculate(float timing)
+    {
+        if (timing < triggerTime)
+        {
+            if (!specialTrigger)
+            {
+                if (type == AttackType.specialAttack)
+                {
+                    combatAI.SetSpecialAttackFrame();
+                }
+                if (type == AttackType.heal)
+                {
+                    combatAI.SetHealFrame();
+                }
+                specialTrigger = true;
+            }
+        }
+    }
+
+    private void tensionCalculate(float timing)
+    {
+        //Tension is related to how close the attack is to firing
+        if (timing <= 0.0f) //If timing is exhausted, execute action via callback (probably? gotta figure this out)
+        {
+            combatAI.completeAction(this);
+            toCull = true;
+        }
+        else if (timing < 5.0f)
+        {
+            //Tension scales linearly when 5 seconds remain, and scales to full Tension as the attack triggers
+            tension = fullTension * ((5.0f - timing) / 5.0f);
+        }
+        else if (timing < 10.0f)
+        {
+            //Otherwise it scales at half to sort of maybe set up expectancy?
+            tension = fullTension * (((10f - timing) / 10.0f) / 2.0f);
+        }
+        else //No point in worrying about it past here anyways
+        {
+            tension = 0;
+        }
+    }
 }

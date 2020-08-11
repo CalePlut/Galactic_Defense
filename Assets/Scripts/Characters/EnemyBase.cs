@@ -8,7 +8,7 @@ public class EnemyBase : BasicShip //Provides the common elements in all enemy s
     #region mechanic variables
 
     [Header("Mechanics")]
-    public enemyCore core;
+    public EnemyCore core;
 
     public enemyAttributes attr;
 

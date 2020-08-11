@@ -27,7 +27,7 @@ public class EnemyShip : EnemyBase
     public float textureScrollSpeed = 8f; //How fast the texture scrolls along the beam
     public float textureLengthScale = 3; //Length of the beam texture
 
-    public ParticleSystem beamWarning;
+    public GameObject warningFlare;
 
     #endregion Special Effects
 
@@ -174,10 +174,17 @@ public class EnemyShip : EnemyBase
         // weaponPrefabSpawn(weaponPrefab, weaponSpawn, target, "Enemy");
     }
 
-    public void specialIndicator(Color col)
+    public void specialIndicator(Color col, float windowDuration)
     {
-        beamWarning.startColor = col;
-        beamWarning.Play();
+        var beamWarning = Instantiate(warningFlare, transform.position, Quaternion.identity, this.transform);
+        beamWarning.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 5);
+        var flare = beamWarning.GetComponent<ParticleSystem>();
+        var main = flare.main;
+        main.duration = windowDuration;
+        main.startLifetime = windowDuration;
+        main.startColor = col;
+
+        flare.Play();
     }
 
     public void fusionInterrupt()

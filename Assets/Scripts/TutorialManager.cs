@@ -172,7 +172,7 @@ public class TutorialManager : MonoBehaviour
     public void enemyAbilities() //Triggered by player firing fusion cannon and a 2 second wait. Flashes specail indicator and starts enemyindicatewait coroutine.
     {
         sEnemyAbilities602.SetActive(false);
-        centreEnemy.specialIndicator(Color.red);
+        centreEnemy.specialIndicator(Color.red, 2.5f);
         StartCoroutine(enemyIndicateWait());
     }
 

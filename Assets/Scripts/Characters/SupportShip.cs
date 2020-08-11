@@ -39,13 +39,15 @@ public class SupportShip : PlayerShip
         var toHeal = attr.percentHeal;
         if (upgrade) { toHeal = attr.percentHealUpgrade; }
         //supportTarget.receiveHealing(toHeal);
-        receiveHealing(toHeal);
+        ReceiveHealing(toHeal);
         foreach (PlayerShip ship in otherShips)
         {
-            ship.receiveHealing(toHeal);
+            ship.ReceiveHealing(toHeal);
         }
         affect.healShip(upgrade);
         globalCooldowns();
+
+        SetStance(AttackStance.regenerative);
     }
 
     public void haste()

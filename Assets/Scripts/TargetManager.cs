@@ -4,49 +4,75 @@ using UnityEngine;
 public class TargetManager : MonoBehaviour
 {
     public List<EnemyBase> ships;
-    public GameObject leftReticle, centreReticle, rightReticle;
-    public static EnemyBase target;
-    private int index;
+    private EnemyShip main;
+    private Turret leftTurret, rightTurret;
 
-    public void setShips(List<EnemyBase> _ships)
+    public void setShips(EnemyShip _main, Turret _leftTurret, Turret _rightTurret)
     {
-        ships = new List<EnemyBase>(_ships);
-        index = 1;
-        target = _ships[index];
-        centreReticle.SetActive(true);
+        main = _main;
+        leftTurret = _leftTurret;
+        rightTurret = _rightTurret;
     }
 
-    public void advanceTarget()
+    /// <summary>
+    /// Returns a target based on current attack stance
+    /// </summary>
+    /// <param name="stance">Player Ship's attack stance</param>
+    /// <returns>Target - Random if Aggressive, Core if other</returns>
+    public EnemyBase GetTarget(AttackStance stance)
     {
-        index++;
-        if (index >= ships.Count)
+        if (stance == AttackStance.aggressive)
         {
-            index = 0;
+            return RandomTarget();
         }
-        target = ships[index];
-        setReticle();
+        else
+        {
+            return main;
+        }
     }
 
-    private void setReticle()
+    /// <summary>
+    /// Returns random target, falls through to return main.
+    /// </summary>
+    /// <returns></returns>
+    private EnemyBase RandomTarget()
     {
-        if (target.pos == position.left)
+        var targetMain = Random.value < 0.5f;
+        if (!targetMain)
         {
-            leftReticle.SetActive(true);
-            centreReticle.SetActive(false);
-            rightReticle.SetActive(false);
+            var leftTurretTarget = Random.value < 0.5f;
+            if (leftTurretTarget)
+            {
+                if (leftTurret.alive)
+                {
+                    return leftTurret;
+                }
+                else
+                {
+                    if (rightTurret.alive)
+                    {
+                        return rightTurret;
+                    }
+                    else return main;
+                }
+            }
+            else
+            {
+                if (rightTurret.alive)
+                {
+                    return rightTurret;
+                }
+                else
+                {
+                    if (leftTurret.alive)
+                    {
+                        return leftTurret;
+                    }
+                    else return main;
+                }
+            }
         }
-        else if (target.pos == position.centre)
-        {
-            leftReticle.SetActive(false);
-            centreReticle.SetActive(true);
-            rightReticle.SetActive(false);
-        }
-        else if (target.pos == position.right)
-        {
-            leftReticle.SetActive(false);
-            centreReticle.SetActive(false);
-            rightReticle.SetActive(true);
-        }
+        else return main;
     }
 
     public void removeShip(EnemyBase ship)

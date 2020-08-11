@@ -12214,6 +12214,7 @@ MonoBehaviour:
   - {fileID: 1043168106}
   - {fileID: 1099133338}
   turrets: []
+  targetManager: {fileID: 0}
   hasteEffect: {fileID: 1556353675}
   hpWarn: {fileID: 634444391}
   warpIn: {fileID: 1332149853}
@@ -13397,6 +13398,21 @@ PrefabInstance:
         type: 3}
       propertyPath: InitialModule.startColor.maxColor.b
       value: 0.10208559
+      objectReference: {fileID: 0}
+    - target: {fileID: 2949033538575834960, guid: 4fea6654b7d4c4240b716552a11afe5a,
+        type: 3}
+      propertyPath: lengthInSec
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2949033538575834960, guid: 4fea6654b7d4c4240b716552a11afe5a,
+        type: 3}
+      propertyPath: looping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2949033538575834960, guid: 4fea6654b7d4c4240b716552a11afe5a,
+        type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 2972773744196847080, guid: 4fea6654b7d4c4240b716552a11afe5a,
         type: 3}
@@ -28277,6 +28293,7 @@ MonoBehaviour:
   - {fileID: 131939781}
   - {fileID: 1099133338}
   turrets: []
+  targetManager: {fileID: 0}
   hasteEffect: {fileID: 1593098887}
   hpWarn: {fileID: 528966549}
   warpIn: {fileID: 1483177059}
@@ -29296,6 +29313,7 @@ MonoBehaviour:
   - {fileID: 1043168106}
   - {fileID: 131939781}
   turrets: []
+  targetManager: {fileID: 0}
   hasteEffect: {fileID: 972737671}
   hpWarn: {fileID: 1814678919}
   warpIn: {fileID: 1149493179}
@@ -42123,9 +42141,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  leftReticle: {fileID: 1668116588}
-  centreReticle: {fileID: 884316910}
-  rightReticle: {fileID: 2116387220}
 --- !u!1 &1727444899
 GameObject:
   m_ObjectHideFlags: 0

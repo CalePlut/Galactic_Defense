@@ -168,6 +168,15 @@ public class AffectManager : MonoBehaviour
 
     #region tensionStates
 
+    /// <summary>
+    /// Used to pass total tension value from incoming enemy attacks
+    /// </summary>
+    /// <param name="_enemyTension">Total enemy tension value</param>
+    public void UpdateEnemyTension(float _enemyTension)
+    {
+        //Placeholder for now, will update when fixing affet manager
+    }
+
     public void updatePlayerTension()
     {
         //Evaluate tension levels of various player ships

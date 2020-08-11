@@ -26,3 +26,11 @@ MonoBehaviour:
   bossDamage: 10
   bossBeam: 35
   bossAttackSpeed: 0.75
+  turretTension: 15
+  specialAttackTension: 35
+  healTension: 25
+  turretDelay: 0.5
+  initialDelayMin: 3
+  initialDelayMax: 5
+  specialDelay: 1.5
+  healDelay: 2

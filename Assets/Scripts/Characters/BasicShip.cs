@@ -43,7 +43,7 @@ public class BasicShip : MonoBehaviour
     /// </summary>
     /// <param name="target">What we're shooting at</param>
     /// <param name="tag">What we are</param>
-    public virtual void fireWeapons(BasicShip target, string tag)
+    public virtual void FireWeapons(BasicShip target, string tag)
     {
         if (target != null)
         {
@@ -54,7 +54,27 @@ public class BasicShip : MonoBehaviour
             if (ultimate)
             {
                 outgoing *= 2;
-                receiveHealing((float)outgoing * 0.1f);
+                ReceiveHealing((float)outgoing * 0.1f);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Advanced form of Auto attack - capable of different dmage types and of healing
+    /// </summary>
+    /// <param name="target">What we're shooting at</param>
+    /// <param name="tag">What we are</param>
+    /// <param name="multiplier">Damage multiplier</param>
+    public virtual void FireWeapons(BasicShip target, string tag, float multiplier, bool heal)
+    {
+        if (target != null)
+        {
+            lookAtShip(target);
+            StartCoroutine(doubleShot(target, tag));
+
+            if (heal)
+            {
+                ReceiveHealing(baseDamage * multiplier);
             }
         }
     }
@@ -83,7 +103,7 @@ public class BasicShip : MonoBehaviour
     /// This is used to heal the ship by a percentage of missing health.
     /// </summary>
     /// <param name="percentage">Float between 0.0f and 1.0f</param>
-    public virtual void receiveHealing(float percentage) //Heals ship for incoming health percentage
+    public virtual void ReceiveHealing(float percentage) //Heals ship for incoming health percentage
     {
         var missingHealth = maxHealth - health;
         var amount = percentage * missingHealth;

@@ -45,13 +45,11 @@ public class IntelShip : PlayerShip
 
     public void fireFusionCannon() //New artillery move is just a big cannon
     {
-        var target = TargetManager.target;
+        var target = mainEnemy;
         var damage = attr.bigCannon;
         if (upgrade) { damage = attr.bigCannonUpgrade; }
         if (target != null)
         {
-            lookAtTarget();
-
             weaponSpawn1.transform.LookAt(target.transform);
             var cannon = Instantiate(FusionCannon, weaponSpawn1.position, Quaternion.identity);
             cannon.transform.SetParent(this.transform);
@@ -65,6 +63,8 @@ public class IntelShip : PlayerShip
             globalCooldowns();
 
             mainEnemy.fusionInterrupt();
+
+            SetStance(AttackStance.aggressive);
         }
     }
 
