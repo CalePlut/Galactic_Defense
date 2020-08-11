@@ -52,8 +52,10 @@ public class GameManager : MonoBehaviour
     public GameObject lossMenu;
     public TextMeshProUGUI gameOverText;
     public GameObject mapMenu;
-    public pauseButton pauseButton;
+
+    //public pauseButton pauseButton;
     public GameObject pauseText;
+
     public List<GameObject> toHide;
     public GameObject upgradeMenu;
 
@@ -277,7 +279,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0.0025f;
         pauseText.SetActive(true);
         paused = true;
-        pauseButton.pauseG();
+        //pauseButton.pauseG();
     }
 
     /// <summary>
@@ -288,7 +290,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1.0f;
         pauseText.SetActive(false);
         paused = false;
-        pauseButton.resume();
+        // pauseButton.resume();
     }
 
     /// <summary>
