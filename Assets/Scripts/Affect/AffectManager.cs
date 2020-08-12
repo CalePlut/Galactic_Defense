@@ -78,6 +78,15 @@ public class AffectManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Used when wave is cleared. Clear all affective events and replace with single 5-second valence boost (essentially reset emotion)
+    /// </summary>
+    public void ClearWave()
+    {
+        events = new List<Event>();
+        CreatePastEvent(new Emotion(EmotionDirection.increase, EmotionStrength.strong), null, null, 5.0f);
+    }
+
+    /// <summary>
     /// Processes events while emotion model is running
     /// Creates summed emotion amount and sends to Emotion processor
     /// </summary>
@@ -122,7 +131,7 @@ public class AffectManager : MonoBehaviour
         arousal = ProcessEmotion(arousalMood, arousalChange);
         tension = ProcessEmotion(tensionMood, tensionChange);
 
-        Debug.Log("V: " + valence + "A: " + arousal + "T:" + tension);
+        //Debug.Log("V: " + valence + "A: " + arousal + "T:" + tension);
 
         valenceDisplay.UpdateAffect(valence);
         arousalDisplay.UpdateAffect(arousal);

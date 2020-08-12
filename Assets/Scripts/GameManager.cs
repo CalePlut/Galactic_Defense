@@ -506,6 +506,7 @@ public class GameManager : MonoBehaviour
 
     public void mainShipDie() //If we aren't at the boss, we continue playing. Otherwise, we've won!
     {
+        affect.ClearWave(); //Calls the clearWave void, resetting emotions
         if (!atBoss)
         {
             stageLogic();
@@ -566,11 +567,6 @@ public class GameManager : MonoBehaviour
         {
             pauseLogic();
         }
-
-        //if (focusToggle.triggered)
-        //{
-        //    targets.advanceTarget();
-        //}
     }
 
     #region menuNavigation
@@ -599,57 +595,4 @@ public class GameManager : MonoBehaviour
     }
 
     #endregion menuNavigation
-
-    //public void spawnBoss()
-    //{
-    //    Destroy(currentEnemy.gameObject);
-    //    destinationPanel.SetActive(false);
-    //    repairPanel.SetActive(false);
-    //    combatPanel.SetActive(true);
-    //    combatPanel.GetComponent<CombatStatCheck>().disableCheck(player.reactor, player.sensors, player.engine);
-    //    var bigBoss = GameObject.Instantiate(boss);
-    //    var bossBrain = bigBoss.GetComponent<Enemy>();
-    //    bossBrain.setGM(this);
-    //    bossBrain.setPlayer(player);
-    //    bossBrain.setStrength(10);
-    //    currentEnemy = bossBrain;
-    //    player.warpDump();
-    //}
-
-    //public void winCombat()
-    //{
-    //    inCombat = false;
-    //    combatPanel.SetActive(false);
-    // //   player.resetStatus();
-    //    //repairPanel.SetActive(true);
-
-    //    toNextLevel--;
-
-    //    if (toNextLevel <= 0)
-    //    {
-    //        //If we're at the next level, level up, reset change, update music
-    //        pursuitChange = true;
-    //        repairPanel.SetActive(true);
-    //        //player.chargeShields();
-    //     //   toNextLevel = enemiesPerWave[pursuitLevel];
-    //        pursuitLevel++;
-    //        //pursuitText.GetComponent<TextMeshProUGUI>().text = ("Level: " + pursuitLevel);
-
-    //        //update music
-    //        music.changePursuit(pursuitLevel);
-
-    //     //   trackerUI.nextLevel(toNextLevel);
-    //    }
-    //    else {
-    //      //  trackerUI.addPursuit();
-    //        destinationMenu();
-    //        pursuitChange = false;
-    //    }
-    //}
-
-    //public void repeatLoop()
-    //{
-    //    repairPanel.SetActive(false);
-    //    destinationMenu();
-    //}
 }
