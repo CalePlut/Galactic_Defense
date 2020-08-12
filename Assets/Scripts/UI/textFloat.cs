@@ -31,11 +31,19 @@ public class textFloat : MonoBehaviour
         initialPos = transform.position;
         if (gameObject.activeSelf)
         {
-            StartCoroutine(numberFloat());
-            if (percent >= 0.5f)
+            try
             {
-                StartCoroutine(numberShake());
+                StartCoroutine(numberFloat());
+                if (percent >= 0.5f)
+                {
+                    try
+                    {
+                        StartCoroutine(numberShake());
+                    }
+                    catch { Debug.Log("The problem is in numberShake"); }
+                }
             }
+            catch { Debug.Log("Don't look at me!"); }
         }
     }
 

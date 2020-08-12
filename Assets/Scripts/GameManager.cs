@@ -385,6 +385,12 @@ public class GameManager : MonoBehaviour
                 stageManager.setEncounterProgress(1);
                 advanceToNextWave();
             }
+            else if (encounter == 1)
+            {
+                encounter++;
+                stageManager.setEncounterProgress(2);
+                advanceToNextWave();
+            }
             else
             {
                 encounter = 0;
@@ -400,12 +406,12 @@ public class GameManager : MonoBehaviour
                 stageManager.setEncounterProgress(1);
                 advanceToNextWave();
             }
-            else if (encounter == 1)
-            {
-                encounter++;
-                stageManager.setEncounterProgress(2);
-                advanceToNextWave();
-            }
+            //else if (encounter == 1) //Changing to only one pre-boss encounter
+            //{
+            //    encounter++;
+            //    stageManager.setEncounterProgress(2);
+            //    advanceToNextWave();
+            //}
             else
             {
                 endCombat();
@@ -428,13 +434,18 @@ public class GameManager : MonoBehaviour
         {
             if (encounter == 0)
             {
-                stageManager.setWaveLength(2);
+                stageManager.setWaveLength(3);
                 stageManager.setText("2-1");
+                spawnEnemies(waveType.main);
+            }
+            else if (encounter == 1)
+            {
+                stageManager.setText("2-2");
                 spawnEnemies(waveType.main);
             }
             else
             {
-                stageManager.setText("2-2");
+                stageManager.setText("2-3");
                 spawnEnemies(waveType.miniboss);
             }
         }
@@ -442,15 +453,15 @@ public class GameManager : MonoBehaviour
         {
             if (encounter == 0)
             {
-                stageManager.setWaveLength(3);
+                stageManager.setWaveLength(2);
                 stageManager.setText("3-1");
                 spawnEnemies(waveType.main);
             }
-            else if (encounter == 1)
-            {
-                stageManager.setText("3-2");
-                spawnEnemies(waveType.miniboss);
-            }
+            //else if (encounter == 1)
+            //{
+            //    stageManager.setText("3-2");
+            //    spawnEnemies(waveType.miniboss);
+            //}
             else
             {
                 stageManager.setText("3-3");

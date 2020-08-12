@@ -217,8 +217,11 @@ public class BasicShip : MonoBehaviour
 
     protected void lookAtShip(BasicShip ship)
     {
-        var toLook = ship.gameObject.transform;
-        transform.LookAt(toLook);
+        if (ship != null)
+        {
+            var toLook = ship.gameObject.transform;
+            transform.LookAt(toLook);
+        }
     }
 
     protected void weaponPrefabSpawn(BasicShip target, string tag)
