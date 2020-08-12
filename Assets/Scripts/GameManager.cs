@@ -229,7 +229,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator victoryWarp()
     {
         //First we do the special effects
-        affect.musicControl = false;
+        //affect.musicControl = false;
         music.RunActionPreset("HyperSpace");
         yield return new WaitForSeconds(2.5f);
         EnterHyperspace();
@@ -315,12 +315,25 @@ public class GameManager : MonoBehaviour
     public void startCombat()
     {
         music.RunActionPreset("StartCombat");
-        affect.musicControl = true;
+        //affect.musicControl = true;
         enemyCompositionSetup();
 
         frigate.delayFirstFire();
         artillery.delayFirstFire();
         tender.delayFirstFire();
+
+        if (stage == 1)
+        {
+            affect.setMood(OrdinalAffect.low, OrdinalAffect.low, OrdinalAffect.low);
+        }
+        else if (stage == 2)
+        {
+            affect.setMood(OrdinalAffect.medium, OrdinalAffect.medium, OrdinalAffect.medium);
+        }
+        else if (stage == 3)
+        {
+            affect.setMood(OrdinalAffect.medium, OrdinalAffect.high, OrdinalAffect.medium);
+        }
     }
 
     /// <summary>
@@ -358,9 +371,6 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void stageLogic()
     {
-        //Update other fields with general progress settings
-        affect.setProgess(stage, encounter);
-
         if (stage == 1)
         {
             encounter = 0;
@@ -401,53 +411,6 @@ public class GameManager : MonoBehaviour
                 endCombat();
             }
         }
-
-        //if (stage == 1)
-        //{
-        //    if (encounter == 0) //If we just finished the first encounter, we move to the second
-        //    {
-        //        encounter++;
-        //        stageManager.setToggles(1, 1);
-        //        advanceToNextWave();
-        //    }
-        //    else if (encounter == 1) //If we just finished the second encounter, we victoryWarp
-        //    {
-        //        encounter = 0;
-        //        stage = 2;
-        //        stageManager.setToggles(1, 2);
-        //        endCombat();
-        //    }
-        //}
-        //else if (stage == 2)
-        //{
-        //    if (encounter == 0 || encounter == 1)
-        //    {
-        //        encounter++;
-        //        stageManager.setToggles(2, encounter);
-        //        advanceToNextWave();
-        //    }
-        //    else if (encounter == 2)
-        //    {
-        //        encounter = 0;
-        //        stage = 3;
-        //        stageManager.setToggles(2, 3);
-        //        endCombat();
-        //    }
-        //}
-        //else if (stage == 3)
-        //{
-        //    if (encounter == 0 || encounter == 1 || encounter == 2)
-        //    {
-        //        encounter++;
-        //        stageManager.setToggles(3, encounter);
-        //        advanceToNextWave();
-        //    }
-        //    else if (encounter == 4)
-        //    {
-        //        stageManager.setToggles(3, 4);
-        //        endCombat();
-        //    }
-        //}
     }
 
     /// <summary>

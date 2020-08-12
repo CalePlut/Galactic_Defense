@@ -44,7 +44,11 @@ public class SupportShip : PlayerShip
         {
             ship.ReceiveHealing(toHeal);
         }
-        affect.healShip(upgrade);
+
+        var healValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+        var healTension = new Emotion(EmotionDirection.decrease, EmotionStrength.weak);
+        affect.CreatePastEvent(healValence, null, healTension, 10.0f);
+
         globalCooldowns();
 
         SetStance(AttackStance.regenerative);
@@ -98,11 +102,6 @@ public class SupportShip : PlayerShip
     //    ultimateButton.clearTargetting();
     //    ultimateButton.sendToButton(ultimateCooldown);
     //}
-    protected override void affectHeathUpdate()
-    {
-        base.affectHeathUpdate();
-        affect.updateSupportHealth(percentHealth());
-    }
 
     protected override void tellGM()
     {

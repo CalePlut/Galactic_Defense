@@ -7,12 +7,10 @@ public class AffectVariables : ScriptableObject
     [Range(0, 1.0f)]
     public float resetSpeed;
 
-    [Header("Emotion strength levels")]
-    public float weakValence = 15;
+    [Header("Thresholds for emotional changes")]
+    public float changeThreshold = 5.0f;
 
-    public float moderateValence = 30, strongValence = 45;
-    public float weakTension = 5, moderateTension = 10, strongTension = 15;
-    public float arousalScalar = 2.0f;
+    public float strongThreshold = 10.0f;
 
     [Header("Mood Variables")]
     [Header("Stage 1")]

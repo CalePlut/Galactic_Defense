@@ -281,8 +281,11 @@ public class PlayerShip : BasicShip
     {
         SFX.PlayOneShot(SFX_explode);
         base.die();
-        affect.loseShip(this);
         tellGM();
+
+        var valenceEmotion = new Emotion(EmotionDirection.decrease, EmotionStrength.strong);
+        var tensionEmotion = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+        affect.CreatePastEvent(valenceEmotion, null, tensionEmotion, 15.0f);
     }
 
     protected override void doneDeath()
@@ -298,6 +301,12 @@ public class PlayerShip : BasicShip
     {
         var windowOpen = false;
         var respawn = attr.respawnTimer;
+
+        var respawnValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+        var respawnArousal = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+        var respawnTension = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
+        affect.CreateProspectiveEvent(respawnValence, respawnArousal, respawnTension, respawn, true);
+
         abilityButton.startCooldown(respawn);
 
         while (respawn > 0.0f && !alive)
@@ -345,7 +354,11 @@ public class PlayerShip : BasicShip
         alive = true;
         healthBar.gameObject.SetActive(true);
         fullHeal();
-        affect.respawn(this);
+
+        var respawnValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+        var respawnTension = new Emotion(EmotionDirection.decrease, EmotionStrength.weak);
+        affect.CreatePastEvent(respawnValence, null, respawnTension, 10.0f);
+
         StartCoroutine(healthUpdate());
 
         BeginAutoAttack();
@@ -364,7 +377,20 @@ public class PlayerShip : BasicShip
     protected override void passDamageToAffect(float damage)
     {
         base.passDamageToAffect(damage);
-        affect.playerHit(damage);
+
+        var valenceChange = EmotionStrength.weak;
+        if (percentHealth() < 0.1f && !lowHealthProspective)
+        {
+            valenceChange = EmotionStrength.moderate;
+            //If we're receiving an attack at a low health, we create a prospective "Get destroyed" event 15 seconds from nowe with moderate change. This will disappear if we heal.
+            var playerDestroyValence = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
+            var playerDestroyTension = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+            var lowHealthPlayer = affect.CreateProspectiveEvent(playerDestroyValence, null, playerDestroyTension, 15.0f);
+            StartCoroutine(lowHealthEvent(lowHealthPlayer));
+            lowHealthProspective = true;
+        }
+        var valenceEmotion = new Emotion(EmotionDirection.decrease, valenceChange);
+        affect.CreatePastEvent(valenceEmotion, null, null, 5.0f);
     }
 
     protected virtual void tellGM()

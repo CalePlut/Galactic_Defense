@@ -96,7 +96,10 @@ public class EnemyBase : BasicShip //Provides the common elements in all enemy s
         {
             audioSource.PlayOneShot(SFX_explosion);
         }
-        affect.CreatePastEvent(affectVars.moderateValence, 0, -affectVars.weakTension, 10.0f);
+
+        var valenceEmotion = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+        var tensionEmotion = new Emotion(EmotionDirection.decrease, EmotionStrength.weak);
+        affect.CreatePastEvent(valenceEmotion, null, tensionEmotion, 10.0f);
         base.die();
     }
 
@@ -104,7 +107,6 @@ public class EnemyBase : BasicShip //Provides the common elements in all enemy s
     {
         base.doneDeath();
         healthBar.deActivate();
-        // Destroy(gameObject);
     }
 
     #endregion bookKeeping

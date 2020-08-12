@@ -11,34 +11,40 @@ public class AffectBarText : MonoBehaviour
     [Range(1, 3)]
     public int Affect;
 
-    int myAffect;
+    private OrdinalAffect currentAffect;
 
     private void Start()
     {
-        Affect = 1;
+        currentAffect = OrdinalAffect.low;
         Medium.isOn = false;
         High.isOn = false;
     }
-    private void Update()
+
+    /// <summary>
+    /// Updates affect bar given incoming affect. This only changes if the affect has changed, so just call it every frame.
+    /// </summary>
+    /// <param name="affect"></param>
+    public void UpdateAffect(OrdinalAffect affect)
     {
-        if (Affect != myAffect)
+        //If we've changed affect, let's consider our bars
+        if (affect != currentAffect)
         {
-            if (Affect == 1)
+            if (affect == OrdinalAffect.low)
             {
-                if (Medium.isOn) { Medium.isOn = false; }
-                if (High.isOn) { High.isOn = false; }
+                Medium.isOn = false;
+                High.isOn = false;
             }
-            if (Affect == 2)
+            else if (affect == OrdinalAffect.medium)
             {
-                if (!Medium.isOn) { Medium.isOn = true; }
-                if (High.isOn) { High.isOn = false; }
+                Medium.isOn = true;
+                High.isOn = false;
             }
-            if (Affect == 3)
+            else if (affect == OrdinalAffect.high)
             {
-                if (!Medium.isOn) { Medium.isOn = true; }
-                if (!High.isOn) { High.isOn = true; }
+                Medium.isOn = true;
+                High.isOn = true;
             }
+            currentAffect = affect;
         }
     }
-
 }

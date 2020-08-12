@@ -13,28 +13,17 @@ MonoBehaviour:
   m_Name: AffectVariables
   m_EditorClassIdentifier: 
   resetSpeed: 0.05
-  weakValence: 11
-  moderateValence: 16
-  strongValence: 33
-  weakTension: 3
-  moderateTension: 6
-  strongTension: 12
-  arousalScalar: 2
+  changeThreshold: 1.1
+  strongThreshold: 2.1
   V11: 35
   A11: 35
   T11: 20
-  V12: 40
-  A12: 35
-  T12: 35
   V21: 30
   A21: 30
   T21: 20
   V22: 30
   A22: 30
   T22: 30
-  V23: 45
-  A23: 45
-  T23: 35
   V31: 40
   A31: 40
   T31: 20
@@ -44,6 +33,3 @@ MonoBehaviour:
   V33: 50
   A33: 50
   T33: 35
-  V34: 50
-  A34: 60
-  T34: 40

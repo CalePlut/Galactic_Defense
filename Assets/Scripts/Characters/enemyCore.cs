@@ -98,7 +98,10 @@ public class EnemyCore : MonoBehaviour
     {
         healing = false;
         StartCoroutine(waitForFusion());
-        affect.interruptFusionCannon();
+
+        var valenceEmotion = new Emotion(EmotionDirection.increase, EmotionStrength.strong);
+        var tensionEmotion = new Emotion(EmotionDirection.decrease, EmotionStrength.weak);
+        affect.CreatePastEvent(valenceEmotion, null, tensionEmotion, 10.0f);
     }
 
     /// <summary>
@@ -218,7 +221,6 @@ public class EnemyCore : MonoBehaviour
         else if (attack == AttackType.specialAttack) //If the player isn't shielded, fire normal lasers. Otherwise, fire fake laser and trigger riposte.
         {
             SpecialAttack();
-            affect.enemyAbility();
         }
         else if (attack == AttackType.heal)
         {
@@ -396,71 +398,6 @@ public class EnemyCore : MonoBehaviour
         healing = true;
     }
 
-    ///// <summary>
-    ///// Tracks time to automatically select and implement attacks and actions -- Replaced with new CombatAI system
-    ///// </summary>
-    ///// <returns></returns>
-    //private IEnumerator AutoAttack()
-    //{
-    //    var counter = 0.0f;
-    //    var flare = false;
-
-    //    while (alive)
-    //    {
-    //        if (jammed) //If we were jammed, add 2 seconds to counter.
-    //        {
-    //            counter += 2f;
-    //            jammed = false;
-    //        }
-
-    //        if (counter > 0.0f)
-    //        {
-    //            counter -= Time.deltaTime;
-    //            if (counter <= 2.5f)
-    //            {
-    //                if (toAttack == AttackType.specialAttack) //Special Attack is countered by reactive shield, and glows red
-    //                {
-    //                    if (!flare)
-    //                    {
-    //                        affect.setParryFrame(true);
-    //                        mainEnemy.specialIndicator(Color.red);
-    //                        flare = true;
-    //                    }
-    //                }
-    //                if (toAttack == AttackType.heal) //Heal is interruptible by fusion cannon, and glows yelow
-    //                {
-    //                    if (!flare)
-    //                    {
-    //                        mainEnemy.specialIndicator(Color.yellow);
-    //                        flare = true;
-    //                        healing = true;
-    //                    }
-    //                }
-    //            }
-    //        }
-    //        else
-    //        {
-    //            //Trigger ability and re-set the tracking variables
-    //            attackImplement(toAttack);
-    //            flare = false;
-    //            healing = false;
-
-    //            //Next, selects next attack and begins countdown to it.
-    //            toAttack = AttackSelect();
-    //            if (toAttack == AttackType.autoAttack) //If we have selected AutoAttack, set time remaining to the attack speed
-    //            {
-    //                counter = attackSpeed;
-    //            }
-    //            else //Otherwise, set timer to 3 seconds (2 measures) to give parry possibility.
-    //            {
-    //                counter = 3.0f;
-    //                affect.setParryFrame(false);
-    //            }
-    //        }
-    //        yield return null;
-    //    }
-    //}
-
     /// <summary>
     /// Selects one of the player ships as a target at random. If non-alive ship selected, select random alive ship.
     /// </summary>
@@ -538,8 +475,6 @@ public class CombatAI
     /// <param name="jammed">Are we jammed or not</param>
     public void Advance(float deltaTime)
     {
-        var enemyTension = 0.0f; //This is the value that we'll send to the Affect Manager at the end. Simple addition of all tension values
-
         if (enemyAttacks.Count == 0) //If we don't have a pattern, create one.
 
         {
@@ -555,18 +490,12 @@ public class CombatAI
                 //Advance attack clocks - stand in for Update()
                 attack.Advance(deltaTime);
 
-                //Add attack's scaled tension value to enemyTension
-                enemyTension += attack.tension;
-
                 //Faux garbage collection - add to list
                 if (attack.toCull)
                 {
                     toCull.Add(attack);
                 }
             }
-
-            //Send tension to Affect Manager
-            affect.UpdateEnemyTension(enemyTension);
 
             //Faux garbage collection - remove expired attacks
             foreach (EnemyAttack toRemove in toCull)
@@ -613,14 +542,14 @@ public class CombatAI
         foreach (AttackType attackType in pattern)
         {
             timer += timeByAttack(attackType); //Add delay before attack to timer, to use to line up the attacks in time
-            if (attackType == AttackType.heal || attackType == AttackType.specialAttack) //If we have a special attack, we need to add the parry frame
+            if (attackType == AttackType.heal || attackType == AttackType.specialAttack)
             {
-                var newAttack = new EnemyAttack(this, attackType, timer, tensionByAttack(attackType), timeByAttack(attackType));
+                var newAttack = new EnemyAttack(this, attackType, timer, timeByAttack(attackType));
                 enemyAttacks.Add(newAttack);
             }
-            else //Otherwise, use 0.0 as a parry frame and the logic won't really fire anyways
+            else
             {
-                var newAttack = new EnemyAttack(this, attackType, timer, tensionByAttack(attackType));
+                var newAttack = new EnemyAttack(this, attackType, timer);
                 enemyAttacks.Add(newAttack);
             }
         }
@@ -639,14 +568,18 @@ public class CombatAI
             timer += timeByAttack(attackType); //Add delay before attack to timer, to use to line up the attacks in time
             if (attackType == AttackType.heal || attackType == AttackType.specialAttack)
             {
-                var newAttack = new EnemyAttack(this, attackType, timer, tensionByAttack(attackType), timeByAttack(attackType));
+                var newAttack = new EnemyAttack(this, attackType, timer, timeByAttack(attackType));
                 enemyAttacks.Add(newAttack);
             }
             else
             {
-                var newAttack = new EnemyAttack(this, attackType, timer, tensionByAttack(attackType));
+                var newAttack = new EnemyAttack(this, attackType, timer);
                 enemyAttacks.Add(newAttack);
             }
+
+            //Create the related affective prospectve event
+            var tensionEmotion = new Emotion(EmotionDirection.increase, tensionByAttack(attackType));
+            affect.CreateProspectiveEvent(null, null, tensionEmotion, timer, true);
         }
     }
 
@@ -669,19 +602,19 @@ public class CombatAI
         }
     }
 
-    private float tensionByAttack(AttackType type)
+    private EmotionStrength tensionByAttack(AttackType type)
     {
         switch (type)
         {
             case AttackType.leftTurret:
             case AttackType.rightTurret:
-                return attr.turretTension;
+                return EmotionStrength.weak;
 
             case AttackType.specialAttack:
-                return attr.specialAttackTension;
+                return EmotionStrength.strong;
 
             case AttackType.heal:
-                return attr.healTension;
+                return EmotionStrength.moderate;
 
             default:
                 return 0.0f; //This is the bad place!
@@ -734,8 +667,7 @@ public class EnemyAttack
 
     public AttackType type { get; private set; }
     private float timing;
-    private float fullTension;
-    public float tension { get; private set; }
+    private Emotion tension;
     private bool specialTrigger = false; //Tracks whether we've sent the parry frame
     public float triggerTime { get; private set; }
 
@@ -748,21 +680,19 @@ public class EnemyAttack
 
     #endregion Bookkeeping and References
 
-    public EnemyAttack(CombatAI _AI, AttackType _type, float _time, float _fullTension)
+    public EnemyAttack(CombatAI _AI, AttackType _type, float _time)
     {
         combatAI = _AI;
         type = _type;
         timing = _time;
-        fullTension = _fullTension;
         triggerTime = 0.0f;
     }
 
-    public EnemyAttack(CombatAI _AI, AttackType _type, float _time, float _fullTension, float _triggerTime)
+    public EnemyAttack(CombatAI _AI, AttackType _type, float _time, float _triggerTime)
     {
         combatAI = _AI;
         type = _type;
         timing = _time;
-        fullTension = _fullTension;
         triggerTime = _triggerTime;
     }
 
@@ -776,7 +706,13 @@ public class EnemyAttack
         timing -= deltaTime;
 
         specialTriggerCalculate(timing);
-        tensionCalculate(timing);
+
+        if (timing <= 0.0f) //If timing is exhausted, execute action via callback (probably? gotta figure this out)
+        {
+            combatAI.completeAction(this);
+            toCull = true;
+        }
+        //tensionCalculate(timing);
     }
 
     private void specialTriggerCalculate(float timing)
@@ -795,30 +731,6 @@ public class EnemyAttack
                 }
                 specialTrigger = true;
             }
-        }
-    }
-
-    private void tensionCalculate(float timing)
-    {
-        //Tension is related to how close the attack is to firing
-        if (timing <= 0.0f) //If timing is exhausted, execute action via callback (probably? gotta figure this out)
-        {
-            combatAI.completeAction(this);
-            toCull = true;
-        }
-        else if (timing < 5.0f)
-        {
-            //Tension scales linearly when 5 seconds remain, and scales to full Tension as the attack triggers
-            tension = fullTension * ((5.0f - timing) / 5.0f);
-        }
-        else if (timing < 10.0f)
-        {
-            //Otherwise it scales at half to sort of maybe set up expectancy?
-            tension = fullTension * (((10f - timing) / 10.0f) / 2.0f);
-        }
-        else //No point in worrying about it past here anyways
-        {
-            tension = 0;
         }
     }
 }

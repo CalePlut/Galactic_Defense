@@ -12,6 +12,7 @@ public class BasicShip : MonoBehaviour
     protected bool upgrade = false;
     public bool alive { get; protected set; } = true;
     protected bool ultimate;
+    protected bool lowHealthProspective = false;
 
     #endregion Attributes
 
@@ -143,6 +144,21 @@ public class BasicShip : MonoBehaviour
     { }
 
     #endregion Empty virtuals
+
+    /// <summary>
+    /// Used when we have a low health event - watches health value and culls low health event when appropriate
+    /// </summary>
+    /// <param name="_event"></param>
+    /// <returns></returns>
+    protected IEnumerator lowHealthEvent(Event _event)
+    {
+        while (percentHealth() < 0.1f && alive)
+        {
+            yield return null;
+        }
+        lowHealthProspective = false;
+        affect.CullEvent(_event);
+    }
 
     /// <summary>
     /// Checks to see if we've died, called while alive to make sure we're actually still alive

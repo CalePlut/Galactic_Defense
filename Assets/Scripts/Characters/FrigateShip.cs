@@ -64,19 +64,17 @@ public class FrigateShip : PlayerShip
         base.shipSetup();
     }
 
-    protected override void affectHeathUpdate()
-    {
-        base.affectHeathUpdate();
-        affect.updateFrigateHealth(percentHealth());
-    }
-
     #endregion Ship
 
     #region ultimate
 
     public void triggerUltimate()
     {
-        affect.ultimateAbility();
+        var valenceEmotion = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+        var arousalEmotion = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+
+        affect.CreatePastEvent(valenceEmotion, arousalEmotion, null, 15.0f);
+
         activateUltimate(attr.hasteTime);
         foreach (PlayerShip ship in otherShips)
         {
@@ -103,6 +101,7 @@ public class FrigateShip : PlayerShip
     {
         //    Debug.Log("Shields up");
         shielded = true;
+
         //  parry = true;
         retaliate = false;
         SFX.PlayOneShot(SFX_shieldActivate);
@@ -158,7 +157,11 @@ public class FrigateShip : PlayerShip
         SFX.PlayOneShot(SFX_absorbAttack);
         //abilityButton.alterCooldown(1.5f);
         retaliate = true;
-        affect.parry();
+
+        var parryValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+        var parryArousal = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+        var parryTension = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
+        affect.CreatePastEvent(parryValence, parryArousal, parryTension, 10.0f);
         // Debug.Log("Absorbed attack");
     }
 

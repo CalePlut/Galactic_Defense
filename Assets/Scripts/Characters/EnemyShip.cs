@@ -67,14 +67,27 @@ public class EnemyShip : EnemyBase
         Destroy(gameObject);
     }
 
+    /// <summary>
+    /// In enemy world, creates a past valence and arousal event
+    /// </summary>
+    /// <param name="damage"></param>
     protected override void passDamageToAffect(float damage)
     {
         base.passDamageToAffect(damage);
-        affect.enemyHit(damage);
-
-        //Also check health percentage because why not do it here?
-        var healthPercent = (float)health / (float)maxHealth;
-        affect.updateEnemyHealth(healthPercent, pos);
+        var valenceChange = EmotionStrength.weak;
+        if (percentHealth() < 0.1f && !lowHealthProspective)
+        {
+            valenceChange = EmotionStrength.moderate;
+            //If we're receiving an attack at a low health, we create a prospective "Get destroyed" event 15 seconds from nowe with moderate change. This will disappear if we heal.
+            var enemyDestroyValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+            var enemyDestroyTension = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+            var lowHealthEnemy = affect.CreateProspectiveEvent(enemyDestroyValence, null, enemyDestroyTension, 15.0f);
+            StartCoroutine(lowHealthEvent(lowHealthEnemy));
+            lowHealthProspective = true;
+        }
+        var valenceEmotion = new Emotion(EmotionDirection.increase, valenceChange);
+        var arousalEmotion = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
+        affect.CreatePastEvent(valenceEmotion, arousalEmotion, null, 5.0f);
     }
 
     private void laserBarrage()

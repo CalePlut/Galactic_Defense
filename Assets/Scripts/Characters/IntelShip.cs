@@ -27,12 +27,6 @@ public class IntelShip : PlayerShip
         base.shipSetup();
     }
 
-    protected override void affectHeathUpdate()
-    {
-        base.affectHeathUpdate();
-        affect.updateIntelHealth(percentHealth());
-    }
-
     protected override void tellGM()
     {
         base.tellGM();
