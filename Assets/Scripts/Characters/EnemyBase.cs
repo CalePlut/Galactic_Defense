@@ -11,7 +11,7 @@ public class EnemyBase : BasicShip //Provides the common elements in all enemy s
     public EnemyCore core;
 
     public enemyAttributes attr;
-
+    public AffectVariables affectVars;
     public position pos;
 
     #endregion mechanic variables
@@ -96,7 +96,7 @@ public class EnemyBase : BasicShip //Provides the common elements in all enemy s
         {
             audioSource.PlayOneShot(SFX_explosion);
         }
-        affect.enemydie(pos);
+        affect.CreatePastEvent(affectVars.moderateValence, 0, -affectVars.weakTension, 10.0f);
         base.die();
     }
 
