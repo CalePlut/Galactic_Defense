@@ -4,47 +4,78 @@
 public class PlayerAttributes : ScriptableObject
 {
     [Header("Basic Attributes")]
-    public int frigateHealth;
-
-    public int intelHealth;
-    public int supportHealth;
-
-    [Space]
     public int frigateDamage;
 
-    public int intelDamage;
     public int supportDamage;
+    public float attackSpeed; //Speed of attacks when attacking
+
+    [Space]
+    public int frigateHealth; //Health of centre ship
+
+    public int supportHealth; //Health of support ships
+
+    public float armorModifier; //Modifier for strength of armor
 
     [Space]
     public float respawnTimer;
 
-    [Header("Upgraded Attributes")]
-    public int frigateUpgradeHealth;
-
-    public int intelUpgradeHealth;
-    public int supportUpgradeHealth;
-
-    [Space]
-    public int frigateUpgradeDamage;
-
-    public int intelUpgradeDamage;
-    public int supportUpgradeDamage;
-
     [Header("Basic Abilities")]
-    public int bigCannon;
+    public int fusionCannon;
 
+    public float cannonSpeedBoost;
     public int retaliateDamage;
+    public float retaliateJamLength;
 
     [Range(0, 1)]
     public float percentHeal;
 
-    [Header("Upgraded Abilities")]
-    public int bigCannonUpgrade;
+    [Range(0, 1)]
+    public float lifesteal;
+
+    [Header("Attack Upgrades")]
+    public int upgradedFrigateDamage;
+
+    public int upgradedSupportDamage;
+
+    public float upgradeAttackSpeed;
+
+    public int maxFrigateDamage;
+    public int maxSupportDamage;
+    public float maxAttackSpeed;
+
+    [Header("Defense Upgrades")]
+    public int upgradedFrigateHealth;
+
+    public int upgradedSupportHealth;
+    public float upgradedArmorMoifier;
+
+    public int maxFrigateHealth;
+    public int maxSupportHealth;
+    public float maxArmorModifier;
+
+    [Header("Skills upgrade")]
+    public int fusionCannonUpgrade;
+
+    public float cannonSpeedBoostUpgrade;
 
     public int retaliateDamageUpgrade;
+    public float retaliateJamUpgrade;
 
     [Range(0, 1)]
     public float percentHealUpgrade;
+
+    [Range(0, 1)]
+    public float lifestealUpgrade;
+
+    public int maxFusionCannon;
+    public float maxCannonSpeedBoost;
+    public int maxRetaliateDamage, maxRetaliateJam;
+
+    [Range(0, 1)]
+    public float maxPercentHeal;
+
+    [Range(0, 1)]
+    public float maxLifesteal;
 
     [Header("Ultimate")]
     public float hasteMultiplier;
@@ -53,9 +84,5 @@ public class PlayerAttributes : ScriptableObject
     public float hasteTime;
 
     [Header("Cooldowns")]
-    // public float fusionCannonCD;
-    //  public float shieldCD;
-    // public float healCD;
-    //  public float GCD;
     public float ultimateCD;
 }

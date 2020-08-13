@@ -13,7 +13,7 @@ public class Turret : EnemyBase
 
         health = attr.turretHP[stage];
         maxHealth = attr.turretHP[stage];
-        baseDamage = attr.turretDamage[stage];
+        attackDamage = attr.turretDamage[stage];
 
         base.setAttributes(_stage);
     }

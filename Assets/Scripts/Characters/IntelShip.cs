@@ -5,26 +5,64 @@ public class IntelShip : PlayerShip
 {
     public GameObject FusionCannon;
 
+    private float cannonDamage;
+
     #region ship
 
-    public override void shipSetup()
+    protected override void setAttacks(int _upgrade)
     {
-        SFX = GetComponent<AudioSource>();
-        health = attr.intelHealth;
-        maxHealth = attr.intelHealth;
-        baseDamage = attr.intelDamage;
-        upgrade = false;
+        if (_upgrade == 0)
+        {
+            attackDamage = attr.supportDamage;
+        }
+        else if (_upgrade == 1)
+        {
+            attackDamage = attr.upgradedSupportDamage;
+        }
+        else if (_upgrade == 2)
+        {
+            attackDamage = attr.maxSupportDamage;
+        }
+        else { Debug.Log("Tried to upgrade beyond max level"); }
 
-        base.shipSetup();
+        base.setAttacks(_upgrade);
     }
 
-    public override void upgradeShip()
+    protected override void setDefend(int _upgrade)
     {
-        base.upgradeShip();
-        health = attr.intelUpgradeHealth;
-        maxHealth = attr.intelUpgradeHealth;
-        baseDamage = attr.intelUpgradeDamage;
-        base.shipSetup();
+        if (_upgrade == 0)
+        {
+            maxHealth = attr.supportHealth;
+        }
+        else if (_upgrade == 1)
+        {
+            maxHealth = attr.upgradedSupportHealth;
+        }
+        else if (_upgrade == 2)
+        {
+            maxHealth = attr.maxSupportHealth;
+        }
+        else { Debug.Log("Tried to upgrade beyond max level"); }
+        health = maxHealth;
+        base.setDefend(_upgrade);
+    }
+
+    protected override void setSkill(int _upgrade)
+    {
+        if (_upgrade == 0)
+        {
+            cannonDamage = attr.fusionCannon;
+        }
+        else if (_upgrade == 1)
+        {
+            cannonDamage = attr.fusionCannonUpgrade;
+        }
+        else if (_upgrade == 2)
+        {
+            cannonDamage = attr.maxFusionCannon;
+        }
+        else { Debug.Log("Tried to upgrade beyond max level"); }
+        base.setSkill(_upgrade);
     }
 
     protected override void tellGM()
@@ -40,8 +78,7 @@ public class IntelShip : PlayerShip
     public void fireFusionCannon() //New artillery move is just a big cannon
     {
         var target = mainEnemy;
-        var damage = attr.bigCannon;
-        if (upgrade) { damage = attr.bigCannonUpgrade; }
+        var damage = cannonDamage;
         if (target != null)
         {
             weaponSpawn1.transform.LookAt(target.transform);
@@ -49,7 +86,7 @@ public class IntelShip : PlayerShip
             cannon.transform.SetParent(this.transform);
             cannon.gameObject.tag = tag;
             cannon.layer = 9;
-            cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, target);
+            cannon.GetComponent<SciFiProjectileScript>().CannonSetup(Mathf.RoundToInt(damage), target);
             //cannon.transform.localScale = new Vector3(1.25f, 1.25f, 1.25f);
             cannon.transform.LookAt(target.transform);
             cannon.GetComponent<Rigidbody>().AddForce(cannon.transform.forward * 2500);

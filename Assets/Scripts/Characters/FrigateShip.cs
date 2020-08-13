@@ -9,6 +9,9 @@ public class FrigateShip : PlayerShip
 
     private GameObject shield;
 
+    public float jamDuration = 2.5f;
+    private float retaliateDamage;
+
     public float shieldDuration = 1.5f;
     public shieldStamina shieldStamina;
 
@@ -37,31 +40,71 @@ public class FrigateShip : PlayerShip
 
     #region Ship
 
-    public override void shipSetup()
-    {
-        health = attr.frigateHealth;
-        maxHealth = attr.frigateHealth;
-        baseDamage = attr.frigateDamage;
-        upgrade = false;
-        // laserCharge = false;
-
-        base.shipSetup();
-    }
-
     protected override void die()
     {
         base.die();
         gameManager.LoseGame();
     }
 
-    public override void upgradeShip()
+    protected override void setAttacks(int _upgrade)
     {
-        base.upgradeShip();
+        if (_upgrade == 0)
+        {
+            attackDamage = attr.frigateDamage;
+        }
+        else if (_upgrade == 1)
+        {
+            attackDamage = attr.upgradedFrigateDamage;
+        }
+        else if (_upgrade == 2)
+        {
+            attackDamage = attr.maxFrigateDamage;
+        }
+        else { Debug.Log("Tried to upgrade beyond max level"); }
 
-        health = attr.frigateUpgradeHealth;
-        maxHealth = attr.frigateUpgradeHealth;
-        baseDamage = attr.frigateUpgradeDamage;
-        base.shipSetup();
+        base.setAttacks(_upgrade);
+    }
+
+    protected override void setDefend(int _upgrade)
+    {
+        if (_upgrade == 0)
+        {
+            maxHealth = attr.frigateHealth;
+            health = maxHealth;
+            jamDuration = 2.5f;
+        }
+        else if (_upgrade == 1)
+        {
+            maxHealth = attr.upgradedFrigateHealth;
+            health = maxHealth;
+            jamDuration = 5.0f;
+        }
+        else if (_upgrade == 2)
+        {
+            maxHealth = attr.maxFrigateHealth;
+            health = maxHealth;
+            jamDuration = 7.5f;
+        }
+        else { Debug.Log("Tried to upgrade beyond max level"); }
+        base.setDefend(_upgrade);
+    }
+
+    protected override void setSkill(int _upgrade)
+    {
+        if (_upgrade == 0)
+        {
+            retaliateDamage = attr.retaliateDamage;
+        }
+        else if (_upgrade == 1)
+        {
+            retaliateDamage = attr.retaliateDamageUpgrade;
+        }
+        else if (_upgrade == 2)
+        {
+            retaliateDamage = attr.maxRetaliateDamage;
+        }
+        else { Debug.Log("Tried to upgrade beyond max level"); }
+        base.setSkill(_upgrade);
     }
 
     #endregion Ship
@@ -175,17 +218,16 @@ public class FrigateShip : PlayerShip
     {
         //Debug.Log("Firing lasers");
         var emitter = retaliateSpawn.position;
-        var damage = attr.retaliateDamage;
-        if (upgrade) { damage = attr.retaliateDamageUpgrade; }
+        var damage = retaliateDamage;
 
         spawnLaser(emitter, mainEnemy.transform.position);
-        mainEnemy.receiveDamage(damage);
+        mainEnemy.receiveDamage(Mathf.RoundToInt(damage));
 
         foreach (Turret turret in turrets)
         {
             if (turret.alive)
             {
-                turret.receiveDamage(damage);
+                turret.receiveDamage(Mathf.RoundToInt(damage));
                 spawnLaser(emitter, turret.transform.position);
             }
         }

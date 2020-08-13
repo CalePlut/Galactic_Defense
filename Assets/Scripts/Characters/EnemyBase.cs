@@ -74,9 +74,9 @@ public class EnemyBase : BasicShip //Provides the common elements in all enemy s
         warpIn.GetComponent<ParticleSystem>().Play();
     }
 
-    public void reactiveShieldJam()
+    public void reactiveShieldJam(float duration)
     {
-        StartCoroutine(disableFireSpawn(2f));
+        StartCoroutine(disableFireSpawn(duration));
     }
 
     private IEnumerator disableFireSpawn(float _duration)

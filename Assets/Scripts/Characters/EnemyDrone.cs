@@ -8,7 +8,7 @@
         health = attr.droneHP[stage];
         maxHealth = attr.droneHP[stage];
 
-        baseDamage = attr.droneDamage[stage];
+        attackDamage = attr.droneDamage[stage];
         specialDamage = attr.droneBeam[stage];
 
         core.attackSpeed = attr.droneAttackSpeed;

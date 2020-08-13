@@ -22,6 +22,8 @@ public class GameManager : MonoBehaviour
     public SupportShip tender;
     public GameObject frigateHealth, artilleryHealth, tenderHealth;
 
+    private int attackUpgrade = 0, defendUpgrade = 0, skillUpgrade = 0;
+
     #endregion Player Variables and Objects
 
     #region Managers
@@ -91,6 +93,7 @@ public class GameManager : MonoBehaviour
 
     public GameObject spawnPoint;
     public GameObject stage1Clear;
+    public GameObject stage2Clear;
 
     #endregion Enemies and Waves
 
@@ -242,29 +245,56 @@ public class GameManager : MonoBehaviour
             //Unlocks ultimate ability at stage 2
             playerButtons.unlockUltimate();
 
-            //Sets UI elements
+            //Brings up clear slide and allows for level up
             stage1Clear.SetActive(true);
-            mapMenu.SetActive(true);
+            upgradeMenu.SetActive(true);
         }
         if (stage == 3)
         {
-            //Gives player option to select one ship to upgrade.
+            //Brings up clear slide and allows for level up
+            stage2Clear.SetActive(true);
             upgradeMenu.SetActive(true);
         }
     }
 
     /// <summary>
-    /// Callable after 2nd Stage - upgrades single ship
+    /// Closes upgrade and stage clear menus and brigns up the map
     /// </summary>
-    /// <param name="toUpgrade"></param>
-    public void upgradeShip(string toUpgrade)
+    private void ToMapMenu()
     {
-        if (toUpgrade == "frigate") { frigate.upgradeShip(); }
-        if (toUpgrade == "intel") { artillery.upgradeShip(); }
-        if (toUpgrade == "support") { tender.upgradeShip(); }
-
+        stage1Clear.SetActive(false);
+        stage2Clear.SetActive(false);
         upgradeMenu.SetActive(false);
         mapMenu.SetActive(true);
+    }
+
+    /// <summary>
+    /// Upgrades basic attack damage and speed
+    /// </summary>
+    public void upgradeAttack()
+    {
+        attackUpgrade++;
+        AdjustShipStats();
+        ToMapMenu();
+    }
+
+    /// <summary>
+    /// Upgrades health and reduces incoming damage
+    /// </summary>
+    public void upgradeDefense()
+    {
+        defendUpgrade++;
+        AdjustShipStats();
+        ToMapMenu();
+    }
+
+    /// <summary>
+    /// Probably overpowered right now - upgrades skills/abilities
+    /// </summary>
+    public void upgradeSkills()
+    {
+        skillUpgrade++;
+        AdjustShipStats();
     }
 
     #endregion Hyperspace/Map Screen
@@ -538,9 +568,11 @@ public class GameManager : MonoBehaviour
         affect = GetComponent<AffectManager>();
 
         //Calls relevant setup functions and sets variables
-        frigate.shipSetup();
-        artillery.shipSetup();
-        tender.shipSetup();
+        attackUpgrade = 0;
+        defendUpgrade = 0;
+        skillUpgrade = 0;
+        SetupShips();
+
         music.RunActionPreset("HyperSpace");
         EnterHyperspace();
         mapMenu.SetActive(true);
@@ -557,6 +589,20 @@ public class GameManager : MonoBehaviour
 
         //Unlocks ultimate early for tutorial
         if (tutorial) { playerButtons.unlockUltimate(); }
+    }
+
+    private void SetupShips()
+    {
+        frigate.ShipSetup(attackUpgrade, defendUpgrade, skillUpgrade);
+        artillery.ShipSetup(attackUpgrade, defendUpgrade, skillUpgrade);
+        tender.ShipSetup(attackUpgrade, defendUpgrade, skillUpgrade);
+    }
+
+    private void AdjustShipStats()
+    {
+        frigate.SetAttributes(attackUpgrade, defendUpgrade, skillUpgrade);
+        artillery.SetAttributes(attackUpgrade, defendUpgrade, skillUpgrade);
+        tender.SetAttributes(attackUpgrade, defendUpgrade, skillUpgrade);
     }
 
     // Update is called once per frame

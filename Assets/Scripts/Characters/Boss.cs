@@ -8,7 +8,7 @@
         health = attr.bossHP;
         maxHealth = attr.bossHP;
 
-        baseDamage = attr.bossDamage;
+        attackDamage = attr.bossDamage;
         specialDamage = attr.bossBeam;
 
         core.attackSpeed = attr.bossAttackSpeed;

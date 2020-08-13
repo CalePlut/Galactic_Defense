@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 public enum AttackStance { aggressive, defensive, regenerative, holdFire }
@@ -26,11 +27,15 @@ public class PlayerShip : BasicShip
     public static bool parry = false;
     public static bool shielded = false;
 
+    protected float attackSpeed;
+
+    protected float attackSpeedBoost = 1.0f;
+
     //Auto Attack
     public float weaponCooldown;
 
     private bool autoAttack;
-    private float hasteMod = 1.0f;
+    protected float stanceAttackSpeedBonus = 1.0f;
     protected static AttackStance stance;
 
     #endregion Mechanics
@@ -71,18 +76,91 @@ public class PlayerShip : BasicShip
     {
         SFX = GetComponent<AudioSource>();
         abilityButton.myCD = abilityCooldown;
-        //ultimateButton.myCD = ultimateCooldown;
     }
 
-    public virtual void shipSetup()
+    /// <summary>
+    /// Basic ship setup. Runs attribute setup and then sets up references etc.
+    /// </summary>
+    /// <param name="upgradeLevel"></param>
+    public void ShipSetup(int attack = 0, int defend = 0, int skill = 0)
     {
-        alive = true;
-        if (!healthBar.gameObject.activeSelf) { healthBar.gameObject.SetActive(true); }
-        healthBar.Refresh(maxHealth, health);
+        SetAttributes(attack, defend, skill);
+
         affect = gameManager.gameObject.GetComponent<AffectManager>();
         StartCoroutine(healthUpdate()); //Begins constant health evaluation
         stance = AttackStance.holdFire;
         targetManager = gameManager.targets;
+    }
+
+    /// <summary>
+    /// Sets all attributes based on player build.
+    /// </summary>
+    /// <param name="attack"></param>
+    /// <param name="defend"></param>
+    /// <param name="skills"></param>
+    public void SetAttributes(int attack, int defend, int skills)
+    {
+        setAttacks(attack);
+        setDefend(defend);
+        setSkill(skills);
+
+        alive = true;
+        if (!healthBar.gameObject.activeSelf) { healthBar.gameObject.SetActive(true); }
+        healthBar.Refresh(maxHealth, health);
+    }
+
+    protected virtual void setAttacks(int _upgrade)
+    {
+        if (_upgrade == 0)
+        {
+            attackSpeed = attr.attackSpeed;
+            stanceAttackSpeedBonus = attr.cannonSpeedBoost;
+        }
+        else if (_upgrade == 1)
+        {
+            attackSpeed = attr.upgradeAttackSpeed;
+            stanceAttackSpeedBonus = attr.cannonSpeedBoost;
+        }
+        else if (_upgrade == 2)
+        {
+            attackSpeed = attr.maxAttackSpeed;
+            stanceAttackSpeedBonus = attr.maxCannonSpeedBoost;
+        }
+        else { Debug.Log("Tried to upgrade beyond max level"); }
+    }
+
+    protected virtual void setDefend(int _upgrade)
+    {
+        if (_upgrade == 0)
+        {
+            armorMod = attr.armorModifier;
+        }
+        else if (_upgrade == 1)
+        {
+            armorMod = attr.upgradedArmorMoifier;
+        }
+        else if (_upgrade == 2)
+        {
+            armorMod = attr.maxArmorModifier;
+        }
+        else { Debug.Log("Tried to upgrade beyond max level"); }
+    }
+
+    protected virtual void setSkill(int _upgrade)
+    {
+        if (_upgrade == 0)
+        {
+            lifesteal = attr.lifesteal;
+        }
+        else if (_upgrade == 1)
+        {
+            lifesteal = attr.lifestealUpgrade;
+        }
+        else if (_upgrade == 2)
+        {
+            lifesteal = attr.maxLifesteal;
+        }
+        else { Debug.Log("Tried to upgrade beyond max level"); }
     }
 
     #endregion Setup
@@ -110,7 +188,7 @@ public class PlayerShip : BasicShip
             StartCoroutine(respawnWarp());
         }
         hasteEffect.SetActive(true);
-        hasteMod = 2.0f;
+        stanceAttackSpeedBonus = 2.0f;
         ultimate = true;
         StartCoroutine(hasteTimer(_time));
     }
@@ -120,7 +198,7 @@ public class PlayerShip : BasicShip
         yield return new WaitForSeconds(_time);
         hasteEffect.SetActive(false);
         ultimate = false;
-        hasteMod = 1.0f;
+        stanceAttackSpeedBonus = 1.0f;
     }
 
     #endregion Ability and Ultimate
@@ -144,6 +222,7 @@ public class PlayerShip : BasicShip
         {
             autoAttack = true;
             StartCoroutine(AutoFire());
+            Debug.Log("Starting AutoFire");
         }
     }
 
@@ -159,7 +238,7 @@ public class PlayerShip : BasicShip
             //If there is still time left on our timer, reduce it and inform the slider
             if (timer > 0.0f)
             {
-                timer -= Time.deltaTime * hasteMod;
+                timer -= Time.deltaTime;
             }
             else //Otherwise, execute attack based on attack pattern
             {
@@ -180,30 +259,9 @@ public class PlayerShip : BasicShip
 
         if (stance != AttackStance.holdFire)
         {
-            var damage = DamageCalculator();
             var toHeal = stance == AttackStance.regenerative;
-            FireWeapons(target, "Player", damage, toHeal);
+            FireWeapons(target, "Player", toHeal);
         }
-    }
-
-    /// <summary>
-    /// Determines the damage an attack should do, based on stance
-    /// </summary>
-    /// <returns></returns>
-    private float DamageCalculator()
-    {
-        var totalModifier = 1.0f;
-
-        if (stance == AttackStance.regenerative)
-        {
-            totalModifier *= 0.5f;
-        }
-        if (ultimate)
-        {
-            totalModifier *= 2;
-        }
-
-        return totalModifier;
     }
 
     /// <summary>
@@ -212,15 +270,18 @@ public class PlayerShip : BasicShip
     /// <returns>Seconds until next firing</returns>
     private float FireRateCalculator()
     {
-        var toReturn = weaponCooldown;
+        var toReturn = attackSpeed * attackSpeedBoost;
+        Debug.Log("Starting value is " + attackSpeed + "* aspeedBoost " + attackSpeedBoost + " = " + toReturn);
         if (stance == AttackStance.aggressive)
         {
-            toReturn *= 0.75f;
+            toReturn *= stanceAttackSpeedBonus;
+            Debug.Log("Multiplied by " + stanceAttackSpeedBonus);
         }
         if (stance == AttackStance.holdFire)
         {
-            toReturn = 0.5f; //Yes, overwrite toReturn if we're holding fire
+            toReturn = 0.5f; //Yes, overwrite toReturn if we're holding fire. This lets us constantly re-evaluate fire rate
         }
+        Debug.Log("Stance = " + stance + ", aSpeed = " + toReturn);
 
         return toReturn;
     }
@@ -232,6 +293,11 @@ public class PlayerShip : BasicShip
     public void SetStance(AttackStance _stance)
     {
         stance = _stance;
+        if (stance == AttackStance.aggressive)
+        {
+            attackSpeedBoost = 0.75f;
+        }
+        else { attackSpeedBoost = 1.0f; }
     }
 
     public void delayFirstFire()
@@ -405,11 +471,6 @@ public class PlayerShip : BasicShip
     public void playWarp()
     {
         warpIn.GetComponent<ParticleSystem>().Play();
-    }
-
-    public virtual void upgradeShip()
-    {
-        upgrade = true;
     }
 
     #endregion Game states and mechanics

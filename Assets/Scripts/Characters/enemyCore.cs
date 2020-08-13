@@ -306,10 +306,10 @@ public class EnemyCore : MonoBehaviour
         }
         else
         {
-            jam = 2.5f;
-            mainEnemy.reactiveShieldJam();
-            if (leftTurret.alive) { leftTurret.reactiveShieldJam(); }
-            if (rightTurret.alive) { rightTurret.reactiveShieldJam(); }
+            jam = frigate.jamDuration;
+            mainEnemy.reactiveShieldJam(jam);
+            if (leftTurret.alive) { leftTurret.reactiveShieldJam(jam); }
+            if (rightTurret.alive) { rightTurret.reactiveShieldJam(jam); }
             mainEnemy.dummyLaser();
             frigate.absorbedSpeccialAttack();
         }

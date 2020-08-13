@@ -8,11 +8,12 @@ public class BasicShip : MonoBehaviour
 
     protected int health = 100;
     protected int maxHealth = 100;
-    protected int baseDamage = 10;
-    protected bool upgrade = false;
+    protected int attackDamage = 10;
     public bool alive { get; protected set; } = true;
     protected bool ultimate;
     protected bool lowHealthProspective = false;
+    protected float armorMod = 1.0f;
+    protected float lifesteal = 0.0f;
 
     #endregion Attributes
 
@@ -40,64 +41,69 @@ public class BasicShip : MonoBehaviour
     #region Health and Damage
 
     /// <summary>
-    /// Basic Auto-attack
-    /// </summary>
-    /// <param name="target">What we're shooting at</param>
-    /// <param name="tag">What we are</param>
-    public virtual void FireWeapons(BasicShip target, string tag)
-    {
-        if (target != null)
-        {
-            lookAtShip(target);
-            StartCoroutine(doubleShot(target, tag));
-
-            var outgoing = baseDamage;
-            if (ultimate)
-            {
-                outgoing *= 2;
-                ReceiveHealing((float)outgoing * 0.1f);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Advanced form of Auto attack - capable of different dmage types and of healing
+    /// Autoattack - can be extended with damage multiplioer and the possibility to heal
     /// </summary>
     /// <param name="target">What we're shooting at</param>
     /// <param name="tag">What we are</param>
     /// <param name="multiplier">Damage multiplier</param>
-    public virtual void FireWeapons(BasicShip target, string tag, float multiplier, bool heal)
+    public virtual void FireWeapons(BasicShip target, string tag, bool heal = false, float multiplier = 1.0f)
     {
         if (target != null)
         {
             lookAtShip(target);
-            StartCoroutine(doubleShot(target, tag));
 
             if (heal)
             {
-                ReceiveHealing(baseDamage * multiplier);
+                multiplier = 0.5f;
+                attackLifesteal(attackDamage);
             }
+            if (ultimate)
+            {
+                multiplier = 2.0f;
+                attackLifesteal(attackDamage * 2);
+            }
+
+            StartCoroutine(doubleShot(target, tag, multiplier));
         }
     }
 
     /// <summary>
-    /// This is how things get hit
+    /// This is how things get hit, adjusted by armormod(only used by players)
     /// </summary>
     /// <param name="_amount">Amount of damage to receive</param>
     public void receiveDamage(int _amount)
     {
         if (alive)
         {
-            var amount = _amount;
-            var percent = (float)amount / health;
+            var amount = (float)_amount;
+            amount *= armorMod;
+            var percent = amount / health;
 
-            passDamageToAffect((float)amount);
+            passDamageToAffect(amount);
 
-            damageText.takeDamage(amount, percent);
-            healthBar.takeDamage(amount);
+            var intAmount = Mathf.RoundToInt(amount);
 
-            health -= amount;
+            damageText.takeDamage(intAmount, percent);
+            healthBar.takeDamage(intAmount);
+
+            health -= intAmount;
         }
+    }
+
+    /// <summary>
+    /// Heals for life stolen from attack
+    /// </summary>
+    /// <param name="damage">The damage that the attack did</param>
+    public void attackLifesteal(float damage)
+    {
+        var healthAdd = (float)damage * lifesteal;
+        var floatHealth = (float)health + healthAdd;
+        health = Mathf.RoundToInt(floatHealth);
+        if (health > maxHealth)
+        {
+            health = maxHealth;
+        }
+        healthBar.addValue(Mathf.RoundToInt(healthAdd));
     }
 
     /// <summary>
@@ -119,7 +125,6 @@ public class BasicShip : MonoBehaviour
         var healingEffect = Instantiate(healEffect, transform.position, Quaternion.identity, this.transform);
         var missingDisp = maxHealth - health;
         var toDisplay = missingDisp * percentage;
-        damageText.receiveHealing((int)toDisplay, percentage);
     }
 
     /// <summary>
@@ -229,8 +234,12 @@ public class BasicShip : MonoBehaviour
         StartCoroutine(doubleShot(target, tag));
     }
 
-    protected IEnumerator doubleShot(BasicShip target, string tag)
+    protected IEnumerator doubleShot(BasicShip target, string tag, float damageMultiplier = 1.0f)
     {
+        var damage = (float)attackDamage;
+        damage *= damageMultiplier;
+        damage *= 0.5f;
+        var weaponDamage = Mathf.RoundToInt(damage);
         if (target != null)
         {
             weaponSpawn1.transform.LookAt(target.transform);
@@ -238,7 +247,7 @@ public class BasicShip : MonoBehaviour
             cannon.transform.SetParent(this.transform);
             cannon.gameObject.tag = tag;
             cannon.layer = 9;
-            cannon.GetComponent<SciFiProjectileScript>().CannonSetup(baseDamage / 2, target);
+            cannon.GetComponent<SciFiProjectileScript>().CannonSetup(weaponDamage, target);
             //cannon.transform.localScale = new Vector3(1.25f, 1.25f, 1.25f);
             cannon.transform.LookAt(target.transform);
             cannon.GetComponent<Rigidbody>().AddForce(cannon.transform.forward * 2500);
@@ -252,7 +261,7 @@ public class BasicShip : MonoBehaviour
             cannon.transform.SetParent(this.transform);
             cannon.gameObject.tag = tag;
             cannon.layer = 9;
-            cannon.GetComponent<SciFiProjectileScript>().CannonSetup(baseDamage / 2, target);
+            cannon.GetComponent<SciFiProjectileScript>().CannonSetup(weaponDamage, target);
             //cannon.transform.localScale = new Vector3(1.25f, 1.25f, 1.25f);
             cannon.transform.LookAt(target.transform);
             cannon.GetComponent<Rigidbody>().AddForce(cannon.transform.forward * 2500);

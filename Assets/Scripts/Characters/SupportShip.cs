@@ -11,33 +11,70 @@ public class SupportShip : PlayerShip
     public GameObject hasteActive;
     public Slider hasteRemain;
 
+    private float healAmount;
+
     public AudioClip SFX_Heal;
 
-    public override void shipSetup()
+    protected override void setAttacks(int _upgrade)
     {
-        health = attr.supportHealth;
-        maxHealth = attr.supportHealth;
-        baseDamage = attr.supportDamage;
-        upgrade = false;
+        if (_upgrade == 0)
+        {
+            attackDamage = attr.supportDamage;
+        }
+        else if (_upgrade == 1)
+        {
+            attackDamage = attr.upgradedSupportDamage;
+        }
+        else if (_upgrade == 2)
+        {
+            attackDamage = attr.maxSupportDamage;
+        }
+        else { Debug.Log("Tried to upgrade beyond max level"); }
 
-        base.shipSetup();
+        base.setAttacks(_upgrade);
     }
 
-    public override void upgradeShip()
+    protected override void setDefend(int _upgrade)
     {
-        base.upgradeShip();
+        if (_upgrade == 0)
+        {
+            maxHealth = attr.supportHealth;
+        }
+        else if (_upgrade == 1)
+        {
+            maxHealth = attr.upgradedSupportHealth;
+        }
+        else if (_upgrade == 2)
+        {
+            maxHealth = attr.maxSupportHealth;
+        }
+        else { Debug.Log("Tried to upgrade beyond max level"); }
+        health = maxHealth;
+        base.setDefend(_upgrade);
+    }
 
-        health = attr.supportUpgradeHealth;
-        maxHealth = attr.supportUpgradeHealth;
-        baseDamage = attr.supportUpgradeDamage;
-        base.shipSetup();
+    protected override void setSkill(int _upgrade)
+    {
+        if (_upgrade == 0)
+        {
+            healAmount = attr.percentHeal;
+        }
+        else if (_upgrade == 1)
+        {
+            healAmount = attr.percentHealUpgrade;
+        }
+        else if (_upgrade == 2)
+        {
+            healAmount = attr.maxPercentHeal;
+        }
+        else { Debug.Log("Tried to upgrade beyond max level"); }
+        base.setSkill(_upgrade);
     }
 
     public void heal()
     {
         SFX.PlayOneShot(SFX_Heal);
-        var toHeal = attr.percentHeal;
-        if (upgrade) { toHeal = attr.percentHealUpgrade; }
+        var toHeal = healAmount;
         //supportTarget.receiveHealing(toHeal);
         ReceiveHealing(toHeal);
         foreach (PlayerShip ship in otherShips)
@@ -53,55 +90,6 @@ public class SupportShip : PlayerShip
 
         SetStance(AttackStance.regenerative);
     }
-
-    public void haste()
-    {
-        //audio.ability2Sound();
-        var hasteMultiplier = attr.hasteMultiplier;
-        if (upgrade) { hasteMultiplier = attr.hasteMultiplierUpgrade; }
-        //supportTarget.hasteShip(hasteMultiplier, 15.0f);
-
-        //buttonManager.setHaste(hasteMultiplier, 20.0f);
-        buttonManager.globalCooldown(15.0f);
-        StartCoroutine(hasteIndicator(15.0f));
-
-        //activateUltimate(15.0f, 4.0f);
-        foreach (PlayerShip ship in otherShips)
-        {
-            //ship.activateUltimate(15.0f, hasteMultiplier);
-        }
-        //affect.hasteBuff();
-        globalCooldowns();
-    }
-
-    private IEnumerator hasteIndicator(float time)
-    {
-        hasteActive.SetActive(true);
-        hasteRemain.gameObject.SetActive(true);
-        hasteRemain.maxValue = time;
-        hasteRemain.value = time;
-        while (hasteRemain.value > 0)
-        {
-            hasteRemain.value -= Time.deltaTime;
-            yield return null;
-        }
-        hasteActive.SetActive(false);
-        hasteRemain.gameObject.SetActive(false);
-        //affect.clearHaste();
-    }
-
-    //public void setHealTarget(PlayerShip _tar)
-    //{
-    //    supportTarget = _tar;
-    //    abilityButton.clearTargetting();
-    //    abilityButton.sendToButton(abilityCooldown);
-    //}
-    //public void setHasteTarget(PlayerShip _tar)
-    //{
-    //    supportTarget = _tar;
-    //    ultimateButton.clearTargetting();
-    //    ultimateButton.sendToButton(ultimateCooldown);
-    //}
 
     protected override void tellGM()
     {

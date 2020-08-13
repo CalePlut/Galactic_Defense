@@ -113,7 +113,7 @@ public class AffectManager : MonoBehaviour
                 tensionValue += tensionAdd;
             }
             //Garbage collection - removes toCull and creates new one
-            foreach(Event _event in toCull)
+            foreach (Event _event in toCull)
             {
                 if (events.Contains(_event))
                 {

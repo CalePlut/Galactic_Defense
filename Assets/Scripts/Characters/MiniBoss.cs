@@ -8,7 +8,7 @@
         health = attr.minibossHP[stage];
         maxHealth = attr.minibossHP[stage];
 
-        baseDamage = attr.minibossDamage[stage];
+        attackDamage = attr.minibossDamage[stage];
         specialDamage = attr.minibossBeam[stage];
 
         core.attackSpeed = attr.minibossAttackSpeed;
