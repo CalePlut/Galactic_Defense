@@ -112,10 +112,15 @@ public class AffectManager : MonoBehaviour
                 arousalValue += arousalAdd;
                 tensionValue += tensionAdd;
             }
+            //Garbage collection - removes toCull and creates new one
             foreach(Event _event in toCull)
             {
-                events.Remove(_event);
+                if (events.Contains(_event))
+                {
+                    events.Remove(_event);
+                }
             }
+            toCull = new List<Event>();
 
             //Debug.Log("Total VAT Values: " + valenceValue + "," + arousalValue + "," + tensionValue);
 
