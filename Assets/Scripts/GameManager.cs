@@ -295,6 +295,7 @@ public class GameManager : MonoBehaviour
     {
         skillUpgrade++;
         AdjustShipStats();
+        ToMapMenu();
     }
 
     #endregion Hyperspace/Map Screen
