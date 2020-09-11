@@ -631,25 +631,25 @@ public class CombatAI
         switch (pattern)
         {
             case 0:
-                return new List<AttackType>() { AttackType.rightTurret, AttackType.leftTurret, AttackType.specialAttack }; //R-L-Special
+                return new List<AttackType>() { AttackType.rightTurret, AttackType.rightTurret, AttackType.leftTurret, AttackType.specialAttack }; //R-R-L-Special
 
             case 1:
-                return new List<AttackType>() { AttackType.leftTurret, AttackType.rightTurret, AttackType.heal }; //L-R-Heal
+                return new List<AttackType>() { AttackType.leftTurret, AttackType.leftTurret, AttackType.rightTurret, AttackType.heal }; //L-L-R-Heal
 
             case 2:
-                return new List<AttackType>() { AttackType.leftTurret, AttackType.rightTurret, AttackType.rightTurret, AttackType.specialAttack, AttackType.heal }; //L-R-R-Special-Heal
+                return new List<AttackType>() { AttackType.leftTurret, AttackType.leftTurret, AttackType.rightTurret, AttackType.rightTurret, AttackType.specialAttack, AttackType.heal }; //L-L-R-R-Special-Heal
 
             case 3:
-                return new List<AttackType>() { AttackType.rightTurret, AttackType.leftTurret, AttackType.leftTurret, AttackType.heal, AttackType.specialAttack }; //R-L-L-Heal-Special
+                return new List<AttackType>() { AttackType.rightTurret, AttackType.rightTurret, AttackType.leftTurret, AttackType.leftTurret, AttackType.heal, AttackType.specialAttack }; //R-R-L-L-Heal-Special
 
             case 4:
                 if (Random.value < 0.5f)
                 {
-                    return new List<AttackType>() { AttackType.leftTurret, AttackType.rightTurret, AttackType.leftTurret, AttackType.rightTurret, AttackType.specialAttack, AttackType.heal }; //L-R-L-R-Special-Heal
+                    return new List<AttackType>() { AttackType.leftTurret, AttackType.rightTurret, AttackType.rightTurret, AttackType.leftTurret, AttackType.rightTurret, AttackType.rightTurret, AttackType.specialAttack, AttackType.heal }; //L-R-R-L-R-R-Special-Heal
                 }
                 else
                 {
-                    return new List<AttackType>() { AttackType.rightTurret, AttackType.leftTurret, AttackType.rightTurret, AttackType.leftTurret, AttackType.specialAttack, AttackType.heal }; //R-L-R-L-Special_Heal
+                    return new List<AttackType>() { AttackType.rightTurret, AttackType.leftTurret, AttackType.leftTurret, AttackType.rightTurret, AttackType.leftTurret, AttackType.leftTurret, AttackType.specialAttack, AttackType.heal }; //R-L-L-R-L-L-Special_Heal
                 }
             default:
                 return new List<AttackType>() { AttackType.rightTurret, AttackType.leftTurret, AttackType.specialAttack };

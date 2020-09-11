@@ -5396,6 +5396,14 @@ MonoBehaviour:
       m_Groups: 
       m_Action: Hot Key
       m_Flags: 0
+    - m_Name: 
+      m_Id: 7deaed9f-d389-46e0-b5d0-1e384442a6d4
+      m_Path: <XInputController>/buttonWest
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Hot Key
+      m_Flags: 0
   cooldownSlider: {fileID: 463060950}
   otherButtons:
   - {fileID: 1406448387}
@@ -35465,6 +35473,14 @@ MonoBehaviour:
       m_Groups: 
       m_Action: Hot Key
       m_Flags: 0
+    - m_Name: 
+      m_Id: 390827f7-4573-4dfe-85c7-ead0fe71d3f2
+      m_Path: <XInputController>/buttonEast
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Hot Key
+      m_Flags: 0
   cooldownSlider: {fileID: 1296869636}
   otherButtons:
   - {fileID: 0}
@@ -36928,6 +36944,14 @@ MonoBehaviour:
     - m_Name: 
       m_Id: a76d49f7-a5f0-4b97-bad5-bff1efd6595a
       m_Path: <Keyboard>/r
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Hot Key
+      m_Flags: 0
+    - m_Name: 
+      m_Id: a0ac9e8c-1f38-4ce5-adfe-9e4e9cdd6493
+      m_Path: <XInputController>/buttonNorth
       m_Interactions: 
       m_Processors: 
       m_Groups: 
@@ -39438,7 +39462,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!223 &1582258275
 Canvas:
   m_ObjectHideFlags: 0
@@ -49611,6 +49635,14 @@ MonoBehaviour:
       m_Groups: 
       m_Action: Hot Key
       m_Flags: 0
+    - m_Name: 
+      m_Id: 6cd87e88-5a08-499f-8abf-f62b4267c502
+      m_Path: <XInputController>/buttonSouth
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Hot Key
+      m_Flags: 0
   cooldownSlider: {fileID: 22618506}
   otherButtons: []
   initialCall:
@@ -49657,6 +49689,14 @@ MonoBehaviour:
     - m_Name: 
       m_Id: 80ad010b-3952-4c54-9960-efe1c0d5f10d
       m_Path: <Keyboard>/w
+      m_Interactions: Press(behavior=1)
+      m_Processors: 
+      m_Groups: 
+      m_Action: Release
+      m_Flags: 0
+    - m_Name: 
+      m_Id: 5b7e3d5d-b6a1-4361-a837-b695d461245b
+      m_Path: <XInputController>/buttonSouth
       m_Interactions: Press(behavior=1)
       m_Processors: 
       m_Groups: 
