@@ -1,4 +1,4 @@
-# Galactic_Conquest
-Galactic Conquest is a game intended for affective user research and affective music research.
+# Galactic_Defense
+Galactic Defense is a game intended for affective user research and affective music research.
 
-Galactic Conquest is designed for Unity
+Galactic Defense is designed for Unity
