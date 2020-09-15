@@ -35,7 +35,7 @@ public class buttonManager : MonoBehaviour
         {
             if (button.gameObject.activeSelf)
             {
-                button.startCooldown(gcdValue);
+                button.StartCooldown(gcdValue);
             }
         }
 
@@ -49,7 +49,7 @@ public class buttonManager : MonoBehaviour
         {
             if (button.gameObject.activeSelf)
             {
-                button.startCooldown(_customCD);
+                button.StartCooldown(_customCD);
             }
         }
 
@@ -57,34 +57,16 @@ public class buttonManager : MonoBehaviour
         StartCoroutine(ActionUsed());
     }
 
-    //public void setHaste(float multiplier, float time)
-    //{
-    //    foreach(basicButton button in standardAbilities)
-    //    {
-    //        button.setHaste(multiplier);
-    //    }
-    //    StartCoroutine(hasteTimer(time));
-    //}
-
     public void unlockUltimate()
     {
         ultimate.gameObject.SetActive(true);
     }
 
-    //IEnumerator hasteTimer(float _time)
-    //{
-    //    yield return new WaitForSeconds(_time);
-    //    foreach(basicButton button in standardAbilities)
-    //    {
-    //        button.setHaste(1.0f);
-    //    }
-    //}
-
     public void refreshAllCooldowns()
     {
         foreach (basicButton button in buttons)
         {
-            button.clearCooldown();
+            button.ClearCooldown();
         }
     }
 
@@ -100,14 +82,6 @@ public class buttonManager : MonoBehaviour
 
         postCooldown += Time.deltaTime;
     }
-
-    //public void cooldownPause(basicButton button)
-    //{
-    //    if (button.GetType() != typeof(targettedbasicButton))
-    //    {
-    //        gm.pauseGame();
-    //    }
-    //}
 
     private IEnumerator ActionUsed()
     {

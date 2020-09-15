@@ -17,7 +17,7 @@ namespace SciFiArsenal
 
         #region Cale added
 
-        private int damage;
+        private float damage;
         private BasicShip target;
 
         #endregion Cale added
@@ -34,16 +34,18 @@ namespace SciFiArsenal
             }
         }
 
-        public void CannonSetup(int _damage, BasicShip _target)
+        public void CannonSetup(float _damage, BasicShip _target)
         {
             damage = _damage;
             target = _target;
+            //GetComponent<Collider>().enabled = false;
             StartCoroutine(cannonDelay());
         }
 
         private IEnumerator cannonDelay()
         {
-            yield return new WaitForSeconds(0.5f);
+            //yield return new WaitForSeconds(0.5f);
+            // GetComponent<Collider>().enabled = true;
             while (target != null)
             {
                 transform.position = Vector3.MoveTowards(transform.position, target.transform.position, 100.0f * Time.deltaTime);
@@ -64,7 +66,7 @@ namespace SciFiArsenal
 
                         if (!(hit.gameObject.name == "Shield"))
                         {
-                            target.receiveDamage(damage);
+                            target.TakeDamage(damage);
                         }
 
                         ////Here we compare to enemy base and deal damage ON HIT, not on spawn.

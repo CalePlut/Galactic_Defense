@@ -1,6 +1,6 @@
 ﻿public enum move { Attack, missileLock, Defend } //This enum handles the RPS-combat
 
-public class PlayerController : BasicShip
+public class PlayerController : BasicShip_old
 {
     //   //Player object containst the values for its stats, the bars are all controlled by the player
     //   public int reactor { get; private set; }

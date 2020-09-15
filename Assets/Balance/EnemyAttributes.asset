@@ -29,8 +29,8 @@ MonoBehaviour:
   turretTension: 15
   specialAttackTension: 35
   healTension: 25
-  turretDelay: 0.5
+  turretDelay: 1
   initialDelayMin: 3
   initialDelayMax: 5
-  specialDelay: 1.5
-  healDelay: 2
+  specialDelay: 1
+  healDelay: 0

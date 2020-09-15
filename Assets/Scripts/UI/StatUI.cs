@@ -75,7 +75,7 @@ public class StatUI : MonoBehaviour
 
     public void passDamage(int damage)
     {
-        shields.takeDamage(damage);
+        shields.TakeDamage(damage);
     }
 
     public void rechargeShield(int toAdd)

@@ -1,4 +1,4 @@
-﻿public class MiniBoss : EnemyShip
+﻿public class MiniBoss : EnemyShip_old
 {
     public override void setAttributes(int _stage)
     {

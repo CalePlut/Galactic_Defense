@@ -22,6 +22,9 @@ public class basicButton : MonoBehaviour
     [Header("Mechanics and Values")]
     protected bool onCooldown = false;
 
+    public Image fill;
+    private Color baseColor;
+
     public float cooldown { get; protected set; } = 0.0f;
     public float myCD;
     public float haste = 1.0f;
@@ -31,6 +34,7 @@ public class basicButton : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
+        baseColor = fill.color;
         if (!GameManager.tutorial)
         {
             hotKey.Enable();
@@ -69,7 +73,7 @@ public class basicButton : MonoBehaviour
         {
             // Debug.Log("No cooldown, firing!");
             triggerAbility();
-            startCooldown(_cooldown);
+            StartCooldown(_cooldown);
         }
         else if (cooldown < 1.0f)
         {
@@ -96,11 +100,12 @@ public class basicButton : MonoBehaviour
         }
         else //If the cooldown is expired and the ability is queued, fire the ability.
         {
+            fill.color = baseColor;
             if (queued)
             {
                 clearQueue();
                 triggerAbility();
-                startCooldown(myCD);
+                StartCooldown(myCD);
             }
         }
     }
@@ -123,12 +128,22 @@ public class basicButton : MonoBehaviour
     /// </summary>
     /// <param name="time"></param>
     //Cooldown functions are called by the player ship and check whether the button is activatable
-    public void startCooldown(float time)
+    public void StartCooldown(float time)
     {
         if (cooldown < time)
         {
             cooldownSlider.maxValue = time;
             cooldown = time;
+        }
+    }
+
+    public void StartCooldown(float time, Color col)
+    {
+        if (cooldown < time)
+        {
+            cooldownSlider.maxValue = time;
+            cooldown = time;
+            fill.color = col;
         }
     }
 
@@ -139,10 +154,11 @@ public class basicButton : MonoBehaviour
         cooldownSlider.value = cooldown;
     }
 
-    public void clearCooldown()
+    public void ClearCooldown()
     {
         cooldown = 0.0f;
         cooldownSlider.value = cooldown;
+        fill.color = baseColor;
     }
 
     public bool canActivate()

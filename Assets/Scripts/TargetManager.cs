@@ -4,10 +4,10 @@ using UnityEngine;
 public class TargetManager : MonoBehaviour
 {
     public List<EnemyBase> ships;
-    private EnemyShip main;
+    private EnemyShip_old main;
     private Turret leftTurret, rightTurret;
 
-    public void setShips(EnemyShip _main, Turret _leftTurret, Turret _rightTurret)
+    public void setShips(EnemyShip_old _main, Turret _leftTurret, Turret _rightTurret)
     {
         main = _main;
         leftTurret = _leftTurret;

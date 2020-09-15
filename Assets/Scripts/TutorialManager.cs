@@ -19,7 +19,7 @@ public class TutorialManager : MonoBehaviour
     public InputAction reactiveShield;
     public InputAction heal;
 
-    public EnemyShip centreEnemy;
+    public EnemyShip_old centreEnemy;
 
     // Start is called before the first frame update
     private void Start()

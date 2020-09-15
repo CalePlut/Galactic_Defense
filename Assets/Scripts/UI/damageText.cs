@@ -4,7 +4,7 @@ public class damageText : MonoBehaviour
 {
     public GameObject textFloat;
 
-    public void takeDamage(int damage, float damagePercent)
+    public void TakeDamage(int damage, float damagePercent)
     {
         var floatObject = GameObject.Instantiate(textFloat, Vector3.zero, Quaternion.identity, this.transform);
         var floatScript = floatObject.GetComponent<textFloat>();

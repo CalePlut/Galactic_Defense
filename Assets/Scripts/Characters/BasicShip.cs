@@ -1,199 +1,223 @@
-﻿using SciFiArsenal;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Video;
+using SciFiArsenal;
+
+public enum cannonPosition { fore, aft };
 
 public class BasicShip : MonoBehaviour
 {
-    #region Attributes
+    [Header("Basic Attributes - Base")]
+    public float maxHealth = 100.0f;
 
-    protected int health = 100;
-    protected int maxHealth = 100;
-    protected int attackDamage = 10;
-    public bool alive { get; protected set; } = true;
-    protected bool ultimate;
-    protected bool lowHealthProspective = false;
-    protected float armorMod = 1.0f;
-    protected float lifesteal = 0.0f;
+    public float attackDamage;
 
-    #endregion Attributes
+    public float health { get; protected set; } = 100.0f;
+    public float healTime = 0.75f; //Time until the heal starts after triggered
+    public bool healing { get; protected set; } = false;
+    public int punishShots;
 
-    #region References
+    [Header("Modifiers")]
+    public float damageMod = 1.0f;
 
-    //Managers and objects for passing
-    public GameManager gameManager;
+    public float armorMod = 1.0f;
 
-    protected AffectManager affect;
+    [Range(0.0f, 1.0f)]
+    public float healPercent;
 
-    //Weapons and effects
-    public GameObject explosion;
-
-    public GameObject weaponPrefab;
-    public Transform weaponSpawn1, weaponSpawn2;
-    public GameObject healEffect;
-
-    //UI
+    [Header("UI")]
     public damageText damageText;
 
     public healthBarAnimator healthBar;
 
-    #endregion References
+    [Header("Weapons - Base")]
+    public Transform laserEmitter;
 
-    #region Health and Damage
+    public Transform foreCannons;
+    public Transform aftCannons;
+
+    public Transform flareLoc;
+
+    public GameObject basicCannon;
+
+    [Header("Effects - Base")]
+    public GameObject warningFlare;
+
+    public GameObject healEffect;
+
+    public GameObject explosion;
+
+    [Header("Laser objects")]
+    public GameObject beamStartPrefab;
+
+    public GameObject beamEndPrefab, beamPrefab;
+
+    [Header("Laser Presentation Variables")]
+    public float beamEndOffset = 1f; //How far from the raycast hit point the end effect is positioned
+
+    public float textureScrollSpeed = 8f; //How fast the texture scrolls along the beam
+    public float textureLengthScale = 3; //Length of the beam texture
+
+    [Header("Other")]
+    public AffectManager affect;
+
+    public GameManager manager;
+
+    public bool alive { get; private set; } = true;
 
     /// <summary>
-    /// Autoattack - can be extended with damage multiplioer and the possibility to heal
+    /// Sets up ship and finds references as needed
     /// </summary>
-    /// <param name="target">What we're shooting at</param>
-    /// <param name="tag">What we are</param>
-    /// <param name="multiplier">Damage multiplier</param>
-    public virtual void FireWeapons(BasicShip target, string tag, bool heal = false, float multiplier = 1.0f)
+    public virtual void ShipSetup()
     {
-        if (target != null)
-        {
-            lookAtShip(target);
+        var cameraObj = GameObject.Find("Main Camera");
+        affect = cameraObj.GetComponent<AffectManager>();
+        manager = cameraObj.GetComponent<GameManager>();
 
-            if (heal)
-            {
-                multiplier = 0.5f;
-                attackLifesteal(attackDamage);
-            }
-            if (ultimate)
-            {
-                multiplier = 2.0f;
-                attackLifesteal(attackDamage * 2);
-            }
-
-            StartCoroutine(doubleShot(target, tag, multiplier));
-        }
+        health = maxHealth;
+        healthBar.Refresh(maxHealth, health);
+        alive = true;
     }
 
     /// <summary>
-    /// This is how things get hit, adjusted by armormod(only used by players)
+    /// This takes damage from any source
     /// </summary>
-    /// <param name="_amount">Amount of damage to receive</param>
-    public void receiveDamage(int _amount)
+    /// <param name="_damage"></param>
+    public void TakeDamage(float _damage)
     {
         if (alive)
         {
-            var amount = (float)_amount;
-            amount *= armorMod;
-            var percent = amount / health;
+            var damage = _damage * armorMod;
+            var intDamage = Mathf.RoundToInt(damage);
+            var percent = damage / health;
 
-            passDamageToAffect(amount);
+            health -= damage; //Actually adjust health...
+            damageText.TakeDamage(intDamage, percent);
+            healthBar.TakeDamage(intDamage);
 
-            var intAmount = Mathf.RoundToInt(amount);
-
-            damageText.takeDamage(intAmount, percent);
-            healthBar.takeDamage(intAmount);
-
-            health -= intAmount;
+            if (health <= 0.0f) { die(); } //If we're dead, we're dead
         }
     }
 
     /// <summary>
-    /// Heals for life stolen from attack
+    /// Fires cannons "shots" number of times,
     /// </summary>
-    /// <param name="damage">The damage that the attack did</param>
-    public void attackLifesteal(float damage)
-    {
-        var healthAdd = (float)damage * lifesteal;
-        var floatHealth = (float)health + healthAdd;
-        health = Mathf.RoundToInt(floatHealth);
-        if (health > maxHealth)
-        {
-            health = maxHealth;
-        }
-        healthBar.addValue(Mathf.RoundToInt(healthAdd));
-    }
-
-    /// <summary>
-    /// This is used to heal the ship by a percentage of missing health.
-    /// </summary>
-    /// <param name="percentage">Float between 0.0f and 1.0f</param>
-    public virtual void ReceiveHealing(float percentage) //Heals ship for incoming health percentage
-    {
-        var missingHealth = maxHealth - health;
-        var amount = percentage * missingHealth;
-
-        health += Mathf.RoundToInt(amount);
-        if (health > maxHealth)
-        {
-            health = maxHealth;
-        }
-        healthBar.addValue(Mathf.RoundToInt(amount));
-
-        var healingEffect = Instantiate(healEffect, transform.position, Quaternion.identity, this.transform);
-        var missingDisp = maxHealth - health;
-        var toDisplay = missingDisp * percentage;
-    }
-
-    /// <summary>
-    /// Does some basic math to return the current percentage health level
-    /// </summary>
-    /// <returns>Returns health as percentage</returns>
-    public float percentHealth()
-    {
-        return (float)health / (float)maxHealth;
-    }
-
-    #region Empty virtuals
-
-    /// <summary>
-    /// Used to send damage to affect manager, but different between player and enemy ships.
-    /// </summary>
-    /// <param name="damage"></param>
-    protected virtual void passDamageToAffect(float damage)
-    { }
-
-    protected virtual void affectHeathUpdate()
-    { }
-
-    #endregion Empty virtuals
-
-    /// <summary>
-    /// Used when we have a low health event - watches health value and culls low health event when appropriate
-    /// </summary>
-    /// <param name="_event"></param>
+    /// <param name="target">Target</param>
+    /// <param name="position">Fore (aggressive) or Aft (defensive)</param>
+    /// <param name="shots">Number of shots to fire</param>
     /// <returns></returns>
-    protected IEnumerator lowHealthEvent(Event _event)
+    protected IEnumerator FireBroadside(BasicShip target, cannonPosition position, int shots)
     {
-        while (percentHealth() < 0.1f && alive)
+        //Debug.Log("Firing " + shots + " shots from " + position);
+        var remainingShots = shots;
+
+        while (remainingShots > 0)
         {
+            var damage = attackDamage * damageMod;
+            if (target.alive)
+            {
+                //Sets somewhat random position based on cannon position
+                var pos = foreCannons.position;
+                if (position == cannonPosition.aft)
+                {
+                    pos = aftCannons.position;
+                }
+                pos.z += Random.Range(-5, 5);
+
+                //Fires cannon from position
+                var cannon = Instantiate(basicCannon, pos, Quaternion.identity);
+                cannon.transform.SetParent(this.transform);
+                cannon.gameObject.tag = tag;
+                cannon.layer = 9;
+                cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, target);
+                cannon.transform.LookAt(target.transform);
+                cannon.GetComponent<Rigidbody>().AddForce(foreCannons.transform.forward * 2500);
+
+                //Removes shot from remaining
+                remainingShots--;
+            }
+
+            yield return new WaitForSeconds(0.23075f); //Waits 1 eighth note at 130 bpm
+        }
+    }
+
+    /// <summary>
+    /// Begins healing process
+    /// </summary>
+    public virtual void HealTrigger()
+    {
+        StartCoroutine(HealDelay());
+        SpecialIndicator(Color.green, healTime);
+    }
+
+    /// <summary>
+    /// Plays a flare with supplied color
+    /// </summary>
+    /// <param name="col">Color of flare</param>
+    /// <param name="duration">Time that it should take</param>
+    public void SpecialIndicator(Color col, float duration)
+    {
+        var beamWarning = Instantiate(warningFlare, transform.position, Quaternion.identity, this.transform);
+        beamWarning.transform.position = flareLoc.position;
+        var flare = beamWarning.GetComponent<ParticleSystem>();
+        var main = flare.main;
+        main.duration = duration;
+        main.startLifetime = duration;
+        main.startColor = col;
+        flare.Play();
+    }
+
+    /// <summary>
+    /// Called during special attack, if a heal is being interrupted
+    /// </summary>
+    public virtual void HealPunish(BasicShip target, int shots)
+    {
+        //Debug.Log("Punishing Heal");
+        target.healing = false;
+        StartCoroutine(FireBroadside(target, cannonPosition.fore, shots));
+        StartCoroutine(FireBroadside(target, cannonPosition.aft, shots));
+    }
+
+    public IEnumerator HealDelay()
+    {
+        healing = true;
+        var timer = healTime;
+        while (timer > 0.0f)
+        {
+            timer -= Time.deltaTime;
             yield return null;
         }
-        lowHealthProspective = false;
-        affect.CullEvent(_event);
+        Heal();
     }
 
     /// <summary>
-    /// Checks to see if we've died, called while alive to make sure we're actually still alive
+    /// Heals self for % of missing health, determined by healPercent modifier attribute
     /// </summary>
-    protected virtual void healthEval()
+    public virtual void Heal()
     {
-        if (health <= 0)
+        if (healing)
         {
-            die();
-        }
-        if (health > maxHealth)
-        {
-            health = maxHealth;
+            var missingHealth = maxHealth - health;
+            // Debug.Log("missing " + missingHealth + "health");
+            var amount = healPercent * missingHealth;
+            //  Debug.Log("Amount = " + healPercent + "* missing = " + amount);
+
+            // Debug.Log("Healing for " + amount);
+            health += amount;
+
+            if (health > maxHealth)
+            {
+                health = maxHealth;
+            }
+            healthBar.addValue(Mathf.RoundToInt(amount));
+
+            healing = false;
+
+            var healingEffect = Instantiate(healEffect, transform.position, Quaternion.identity, this.transform);
+            healingEffect.transform.SetParent(this.transform);
         }
     }
-
-    /// <summary>
-    /// Always checks health while alive, so that we don't miss death triggers.
-    /// </summary>
-    /// <returns></returns>
-    protected IEnumerator healthUpdate()
-    {
-        while (alive)
-        {
-            healthEval();
-            yield return null;
-        }
-    }
-
-    #endregion Health and Damage
 
     #region Death
 
@@ -218,55 +242,56 @@ public class BasicShip : MonoBehaviour
 
     #endregion Death
 
-    #region Effects and Animation
+    #region Laser Fire
 
-    protected void lookAtShip(BasicShip ship)
+    protected void SpawnLaser(Vector3 startLoc, Vector3 endLoc)
     {
-        if (ship != null)
-        {
-            var toLook = ship.gameObject.transform;
-            transform.LookAt(toLook);
-        }
+        var beamStart = Instantiate(beamStartPrefab, Vector3.zero, Quaternion.identity);
+        var beamEnd = Instantiate(beamEndPrefab, Vector3.zero, Quaternion.identity);
+        var beam = Instantiate(beamPrefab, Vector3.zero, Quaternion.identity);
+        var line = beam.GetComponent<LineRenderer>();
+
+        AlignLaser(startLoc, endLoc, beamStart, beamEnd, beam, line);
     }
 
-    protected void weaponPrefabSpawn(BasicShip target, string tag)
+    private void AlignLaser(Vector3 start, Vector3 target, GameObject beamStart, GameObject beamEnd, GameObject beam, LineRenderer line)
     {
-        StartCoroutine(doubleShot(target, tag));
+        RaycastHit hit;
+        if (Physics.Linecast(start, target, out hit))
+        {
+            beamEnd.transform.position = hit.point;
+        }
+
+        line.useWorldSpace = false;
+
+        line.positionCount = 2;
+        line.SetPosition(0, start);
+        beamStart.transform.position = start;
+        //beamEnd.transform.position = target;
+        line.SetPosition(1, target);
+
+        beamStart.transform.LookAt(beamEnd.transform.position);
+        beamEnd.transform.LookAt(beamStart.transform.position);
+
+        float distance = Vector3.Distance(start, target);
+        line.sharedMaterial.mainTextureScale = new Vector2(distance / textureLengthScale, 1);
+        line.sharedMaterial.mainTextureOffset -= new Vector2(Time.deltaTime * textureScrollSpeed, 0);
+
+        StartCoroutine(laserLifetime(beamStart, beamEnd, beam));
     }
 
-    protected IEnumerator doubleShot(BasicShip target, string tag, float damageMultiplier = 1.0f)
+    private IEnumerator laserLifetime(GameObject start, GameObject end, GameObject beam)
     {
-        var damage = (float)attackDamage;
-        damage *= damageMultiplier;
-        damage *= 0.5f;
-        var weaponDamage = Mathf.RoundToInt(damage);
-        if (target != null)
-        {
-            weaponSpawn1.transform.LookAt(target.transform);
-            var cannon = Instantiate(weaponPrefab, weaponSpawn1.position, Quaternion.identity);
-            cannon.transform.SetParent(this.transform);
-            cannon.gameObject.tag = tag;
-            cannon.layer = 9;
-            cannon.GetComponent<SciFiProjectileScript>().CannonSetup(weaponDamage, target);
-            //cannon.transform.localScale = new Vector3(1.25f, 1.25f, 1.25f);
-            cannon.transform.LookAt(target.transform);
-            cannon.GetComponent<Rigidbody>().AddForce(cannon.transform.forward * 2500);
-        }
-        yield return new WaitForSeconds(0.188f);
-        if (target != null)
-        {
-            weaponSpawn2.transform.LookAt(target.transform);
-            var cannon = Instantiate(weaponPrefab, weaponSpawn2.position, Quaternion.identity);
-            // weaponSpawn2.transform.LookAt(target.transform);
-            cannon.transform.SetParent(this.transform);
-            cannon.gameObject.tag = tag;
-            cannon.layer = 9;
-            cannon.GetComponent<SciFiProjectileScript>().CannonSetup(weaponDamage, target);
-            //cannon.transform.localScale = new Vector3(1.25f, 1.25f, 1.25f);
-            cannon.transform.LookAt(target.transform);
-            cannon.GetComponent<Rigidbody>().AddForce(cannon.transform.forward * 2500);
-        }
+        yield return new WaitForSeconds(2.5f);
+        DestroyLaser(start, end, beam);
     }
 
-    #endregion Effects and Animation
+    private void DestroyLaser(GameObject start, GameObject end, GameObject _beam)
+    {
+        Destroy(start);
+        Destroy(end);
+        Destroy(_beam);
+    }
+
+    #endregion Laser Fire
 }

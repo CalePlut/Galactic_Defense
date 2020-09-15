@@ -2,7 +2,7 @@
 
 public class holdButton : basicButton
 {
-    public FrigateShip ship;
+    public PlayerShip ship;
     public InputAction release;
 
     protected override void Behaviour()
@@ -15,8 +15,8 @@ public class holdButton : basicButton
         }
         if (release.triggered)
         {
-            ship.shieldDown();
-            startCooldown(myCD);
+            ship.ShieldsDown();
+            StartCooldown(myCD);
         }
 
         base.Behaviour();

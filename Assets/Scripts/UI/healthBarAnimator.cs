@@ -11,7 +11,7 @@ public class healthBarAnimator : MonoBehaviour
     public float adjustSpeed = 5.0f;
     private Color fillCol;
 
-    public bool textDisplay = true;
+    public bool textDisplay = false;
 
     public int max { get; private set; }
     public int health { get; private set; }
@@ -31,6 +31,17 @@ public class healthBarAnimator : MonoBehaviour
 
         setHealthText(health);
         setHealthColor(_value);
+    }
+
+    public void Refresh(float _max, float _value)
+    {
+        max = Mathf.RoundToInt(_max);
+        health = Mathf.RoundToInt(_value);
+        healthBar.maxValue = _max;
+        healthBar.value = _value;
+
+        setHealthText(health);
+        setHealthColor(health);
     }
 
     public void deActivate()
@@ -67,7 +78,7 @@ public class healthBarAnimator : MonoBehaviour
         else { healthText.text = ""; }
     }
 
-    public void takeDamage(int _dam)
+    public void TakeDamage(int _dam)
     {
         health -= _dam;
     }

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class FrigateShip : PlayerShip
+public class FrigateShip : PlayerShip_old
 {
     //Reactive Shield
     [Header("Reactive Shield ability")]
@@ -121,7 +121,7 @@ public class FrigateShip : PlayerShip
         activateUltimate(attr.hasteTime);
         foreach (PlayerShip ship in otherShips)
         {
-            ship.activateUltimate(attr.hasteTime);
+            // ship.activateUltimate(attr.hasteTime);
         }
     }
 

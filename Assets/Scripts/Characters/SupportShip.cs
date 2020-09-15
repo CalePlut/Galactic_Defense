@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SupportShip : PlayerShip
+public class SupportShip : PlayerShip_old
 {
     public GameObject weapons;
     public Transform spawn1, spawn2;
@@ -79,7 +79,7 @@ public class SupportShip : PlayerShip
         ReceiveHealing(toHeal);
         foreach (PlayerShip ship in otherShips)
         {
-            ship.ReceiveHealing(toHeal);
+            //ship.ReceiveHealing(toHeal);
         }
 
         var healValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
@@ -94,6 +94,6 @@ public class SupportShip : PlayerShip
     protected override void tellGM()
     {
         base.tellGM();
-        gameManager.disableTenderUI();
+        // gameManager.disableTenderUI();
     }
 }

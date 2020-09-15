@@ -1,7 +1,7 @@
 ﻿using SciFiArsenal;
 using UnityEngine;
 
-public class IntelShip : PlayerShip
+public class IntelShip : PlayerShip_old
 {
     public GameObject FusionCannon;
 
@@ -68,7 +68,7 @@ public class IntelShip : PlayerShip
     protected override void tellGM()
     {
         base.tellGM();
-        gameManager.disableArtilleryUI();
+        // gameManager.disableArtilleryUI();
     }
 
     #endregion ship
@@ -86,7 +86,7 @@ public class IntelShip : PlayerShip
             cannon.transform.SetParent(this.transform);
             cannon.gameObject.tag = tag;
             cannon.layer = 9;
-            cannon.GetComponent<SciFiProjectileScript>().CannonSetup(Mathf.RoundToInt(damage), target);
+            // cannon.GetComponent<SciFiProjectileScript>().CannonSetup(Mathf.RoundToInt(damage), target);
             //cannon.transform.localScale = new Vector3(1.25f, 1.25f, 1.25f);
             cannon.transform.LookAt(target.transform);
             cannon.GetComponent<Rigidbody>().AddForce(cannon.transform.forward * 2500);

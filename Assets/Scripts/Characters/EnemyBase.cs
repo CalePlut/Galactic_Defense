@@ -3,7 +3,7 @@ using UnityEngine;
 
 public enum position { left, centre, right };
 
-public class EnemyBase : BasicShip //Provides the common elements in all enemy ships. Base class for EnemyShips AND turrets
+public class EnemyBase : BasicShip_old //Provides the common elements in all enemy ships. Base class for EnemyShips AND turrets
 {
     #region mechanic variables
 
@@ -51,7 +51,7 @@ public class EnemyBase : BasicShip //Provides the common elements in all enemy s
         StartCoroutine(healthUpdate());
     }
 
-    public virtual void dummyFire(BasicShip target)
+    public virtual void dummyFire(BasicShip_old target)
     {
         StartCoroutine(doubleShot(target, "Enemy"));
     }

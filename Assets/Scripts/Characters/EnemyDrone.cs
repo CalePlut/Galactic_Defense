@@ -1,4 +1,4 @@
-﻿public class EnemyDrone : EnemyShip
+﻿public class EnemyDrone : EnemyShip_old
 {
     public override void setAttributes(int _stage)
     {

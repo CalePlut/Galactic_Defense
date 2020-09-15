@@ -1,477 +1,296 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using UnityEngine;
-
-public enum AttackStance { aggressive, defensive, regenerative, holdFire }
+using SciFiArsenal;
+using UnityEditor;
 
 public class PlayerShip : BasicShip
 {
-    #region Balance
+    [Header("Basic Attributes - PC")]
+    public float maxShield = 2.5f;
 
-    [Header("Balance")]
-    public PlayerAttributes attr;
+    public bool shielded { get; private set; } = false;
+    public float shieldPower { get; private set; } = 2.5f;
+    public float fusionAlpha = 10.0f;
+    public float retaliateDamage;
 
-    #endregion Balance
+    public float globalCooldown = 2.5f;
+    public float healCooldown = 5.0f;
+    public float ultimateCooldown = 30.0f;
 
-    #region Mechanics
+    private GameObject enemyShipObj;
+    private EnemyShip enemyShip;
 
-    [Header("Button Management")]
+    [Header("Positioning objects")]
+    public Transform fusionCannon;
+
+    [Header("Effects and Weapons")]
+    public GameObject fusionCannonPrefab;
+
+    public GameObject shieldPrefab;
+
+    public shieldStamina shieldStamina;
+
+    [Header("Ship-specific Audio")]
+    public AudioSource SFX;
+
+    public AudioClip SFX_shieldActivate;
+
+    public AudioClip SFX_absorbAttack;//, SFX_retaliate;
+
+    public AudioClip SFX_Heal;
+
+    [Header("Hotbar Buttons")]
+    public basicButton cannonButton;
+
+    public basicButton shieldButton;
+    public basicButton healButton;
+    public basicButton ultimateButton;
     public buttonManager buttonManager;
 
-    public basicButton abilityButton;
+    private bool retaliate = false; //Variables for shield mechanics
+    private GameObject shield;
 
-    [Header("Ability attributes")]
-    public float abilityCooldown, ultimateCooldown;
-
-    public static bool parry = false;
-    public static bool shielded = false;
-
-    protected float attackSpeed;
-
-    protected float attackSpeedBoost = 1.0f;
-
-    //Auto Attack
-    public float weaponCooldown;
-
-    private bool autoAttack;
-    protected float stanceAttackSpeedBonus = 1.0f;
-    protected static AttackStance stance;
-
-    #endregion Mechanics
-
-    #region Object references
-
-    [Header("Other objects")]
-    public EnemyShip mainEnemy;
-
-    public List<PlayerShip> otherShips;
-    public List<Turret> turrets;
-    public TargetManager targetManager;
-
-    #endregion Object references
-
-    #region UI and SFX
-
-    [Header("UI and SFX")]
-    public GameObject hasteEffect;
-
-    public GameObject hpWarn;
-    public GameObject warpIn;
-    public GameObject warpWindow;
-    private bool lowHP = false;
-
-    //Audio
-    protected AudioSource SFX;
-
-    public AudioClip SFX_explode;
-
-    public AudioClip SFX_lowHealth;
-
-    #endregion UI and SFX
-
-    #region Setup
-
-    private void Start()
+    public void SetEnemyReference(GameObject _enemyShipObj)
     {
-        SFX = GetComponent<AudioSource>();
-        abilityButton.myCD = abilityCooldown;
+        enemyShipObj = _enemyShipObj;
+        enemyShip = enemyShipObj.GetComponent<EnemyShip>();
+    }
+
+    #region Abilities
+
+    public void CannonTrigger()
+    {
+        if (cannonButton.canActivate())
+        {
+            cannonButton.sendToButton(globalCooldown);
+        }
     }
 
     /// <summary>
-    /// Basic ship setup. Runs attribute setup and then sets up references etc.
+    /// Fires fusion cannon and starts volley
+    /// If cannon interrupts heal, fire 2x volley
     /// </summary>
-    /// <param name="upgradeLevel"></param>
-    public void ShipSetup(int attack = 0, int defend = 0, int skill = 0)
+    public void FireCannon()
     {
-        SetAttributes(attack, defend, skill);
+        //Debug.Log("Firing Fusion Cannon");
+        var targetObj = enemyShipObj;
+        var target = targetObj.GetComponent<EnemyShip>();
+        var damage = fusionAlpha;
+        if (target.alive)
+        {
+            fusionCannon.transform.LookAt(target.transform);
+            var cannon = Instantiate(fusionCannonPrefab, fusionCannon.position, Quaternion.identity);
+            cannon.transform.SetParent(fusionCannon);
+            cannon.gameObject.tag = tag;
+            cannon.layer = 9;
+            cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, enemyShip);
 
-        affect = gameManager.gameObject.GetComponent<AffectManager>();
-        StartCoroutine(healthUpdate()); //Begins constant health evaluation
-        stance = AttackStance.holdFire;
-        targetManager = gameManager.targets;
+            //If we interrupt, we fire a more massive broadside
+            //If we interrupt, produce a large affect swing. Otherwise, normal affect swing.
+            var valenceEmotion = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
+            var tensionEmotion = new Emotion(EmotionDirection.none, EmotionStrength.none);
+            //Debug.Log("Checking if target is healing and firing");
+            if (target.healing)
+            {
+                HealPunish(target, punishShots);
+                valenceEmotion = new Emotion(EmotionDirection.increase, EmotionStrength.strong);
+                tensionEmotion = new Emotion(EmotionDirection.decrease, EmotionStrength.weak);
+            }
+            else
+            {
+                StartCoroutine(FireBroadside(enemyShip, cannonPosition.fore, 3));
+            }
+            affect.CreatePastEvent(valenceEmotion, null, tensionEmotion, 10.0f);
+        }
+
+        Cooldown();
+    }
+
+    public void ShieldTrigger()
+    {
+        if (shieldButton.canActivate())
+        {
+            shieldButton.sendToButton(healCooldown);
+        }
     }
 
     /// <summary>
-    /// Sets all attributes based on player build.
+    /// Overrides heal with affect and fires two shots from aft cannon
     /// </summary>
-    /// <param name="attack"></param>
-    /// <param name="defend"></param>
-    /// <param name="skills"></param>
-    public void SetAttributes(int attack, int defend, int skills)
+    public override void Heal()
     {
-        setAttacks(attack);
-        setDefend(defend);
-        setSkill(skills);
+        base.Heal();
 
-        alive = true;
-        if (!healthBar.gameObject.activeSelf) { healthBar.gameObject.SetActive(true); }
-        healthBar.Refresh(maxHealth, health);
+        var healValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+        var healTension = new Emotion(EmotionDirection.decrease, EmotionStrength.weak);
+        affect.CreatePastEvent(healValence, null, healTension, 10.0f);
+
+        FireBroadside(enemyShip, cannonPosition.aft, 2);
     }
 
-    protected virtual void setAttacks(int _upgrade)
+    /// <summary>
+    /// Overrides heal trigger and starts cooldown
+    /// </summary>
+    public override void HealTrigger()
     {
-        if (_upgrade == 0)
-        {
-            attackSpeed = attr.attackSpeed;
-            stanceAttackSpeedBonus = attr.cannonSpeedBoost;
-        }
-        else if (_upgrade == 1)
-        {
-            attackSpeed = attr.upgradeAttackSpeed;
-            stanceAttackSpeedBonus = attr.cannonSpeedBoost;
-        }
-        else if (_upgrade == 2)
-        {
-            attackSpeed = attr.maxAttackSpeed;
-            stanceAttackSpeedBonus = attr.maxCannonSpeedBoost;
-        }
-        else { Debug.Log("Tried to upgrade beyond max level"); }
+        base.HealTrigger();
+        Cooldown();
     }
 
-    protected virtual void setDefend(int _upgrade)
+    /// <summary>
+    /// Used between stages to fully heal ship
+    /// </summary>
+    public void FullHeal()
     {
-        if (_upgrade == 0)
-        {
-            armorMod = attr.armorModifier;
-        }
-        else if (_upgrade == 1)
-        {
-            armorMod = attr.upgradedArmorMoifier;
-        }
-        else if (_upgrade == 2)
-        {
-            armorMod = attr.maxArmorModifier;
-        }
-        else { Debug.Log("Tried to upgrade beyond max level"); }
+        health = maxHealth;
+        healthBar.addValue((int)maxHealth);
     }
 
-    protected virtual void setSkill(int _upgrade)
+    public void UltimateTrigger()
     {
-        if (_upgrade == 0)
+        if (ultimateButton.canActivate())
         {
-            lifesteal = attr.lifesteal;
-        }
-        else if (_upgrade == 1)
-        {
-            lifesteal = attr.lifestealUpgrade;
-        }
-        else if (_upgrade == 2)
-        {
-            lifesteal = attr.maxLifesteal;
-        }
-        else { Debug.Log("Tried to upgrade beyond max level"); }
-    }
-
-    #endregion Setup
-
-    #region Ability and Ultimate
-
-    public virtual void standardAbility()
-    {
-        if (abilityButton.canActivate())
-        {
-            abilityButton.sendToButton(abilityCooldown);
+            ultimateButton.sendToButton(ultimateCooldown);
         }
     }
 
-    protected void globalCooldowns()
+    /// <summary>
+    /// Refreshes all cooldowns and fires 5 shots from each cannon
+    /// </summary>
+    public void Ultimate()
+    {
+        buttonManager.refreshAllCooldowns();
+        StartCoroutine(FireBroadside(enemyShip, cannonPosition.fore, 5));
+        StartCoroutine(FireBroadside(enemyShip, cannonPosition.aft, 5));
+    }
+
+    /// <summary>
+    /// For now, disables a random part between cannon or heal (creates 30 second cooldown)
+    /// </summary>
+    public void PartDisable()
+    {
+        var whichPart = Random.value > 0.5f;
+        if (whichPart)
+        {
+            cannonButton.StartCooldown(30.0f, Color.red);
+        }
+        else { healButton.StartCooldown(30.0f, Color.red); }
+    }
+
+    private void Cooldown()
     {
         buttonManager.globalCooldown();
     }
 
-    public void activateUltimate(float _time)
+    #endregion Abilities
+
+    #region Shields
+
+    public void ShieldsUp()
     {
-        if (!alive)
-        {
-            alive = true;
-            StartCoroutine(respawnWarp());
-        }
-        hasteEffect.SetActive(true);
-        stanceAttackSpeedBonus = 2.0f;
-        ultimate = true;
-        StartCoroutine(hasteTimer(_time));
-    }
-
-    private IEnumerator hasteTimer(float _time)
-    {
-        yield return new WaitForSeconds(_time);
-        hasteEffect.SetActive(false);
-        ultimate = false;
-        stanceAttackSpeedBonus = 1.0f;
-    }
-
-    #endregion Ability and Ultimate
-
-    #region Auto-Attack
-
-    /// <summary>
-    /// Looks at and returns a target ship
-    /// </summary>
-    /// <returns>New target based on attack stance</returns>
-    protected EnemyBase GetTarget()
-    {
-        var target = targetManager.GetTarget(stance);
-        lookAtShip(target);
-        return target;
-    }
-
-    public void BeginAutoAttack()
-    {
-        if (!autoAttack)
-        {
-            autoAttack = true;
-            StartCoroutine(AutoFire());
-            Debug.Log("Starting AutoFire");
-        }
+        shielded = true;
+        //  parry = true;
+        retaliate = false;
+        SFX.PlayOneShot(SFX_shieldActivate);
+        shield = Instantiate(shieldPrefab, transform.position, Quaternion.identity, this.transform);
+        shield.tag = "Player";
+        shield.name = "Shield";
+        shield.transform.SetParent(this.transform);
+        shield.transform.localScale = new Vector3(10, 10, 10);
+        StartCoroutine(ShieldSustain());
     }
 
     /// <summary>
-    /// Automatically fires weapons, based on attack stance
+    /// Keeps shield up as long as key is held down
     /// </summary>
     /// <returns></returns>
-    private IEnumerator AutoFire()
+    private IEnumerator ShieldSustain()  //Keeps shield up for duration, and removes afterwards
     {
-        var timer = weaponCooldown;
-        while (autoAttack)
-        {
-            //If there is still time left on our timer, reduce it and inform the slider
-            if (timer > 0.0f)
-            {
-                timer -= Time.deltaTime;
-            }
-            else //Otherwise, execute attack based on attack pattern
-            {
-                PlayerFireControl();
-                timer = FireRateCalculator();
-            }
+        shieldStamina.shieldsUp(); //Passes shields up message to shieldsustain bar
 
+        while (shieldStamina.shielded)
+        {
             yield return null;
         }
+
+        //Shields down
+        ShieldsDown();
     }
 
     /// <summary>
-    /// Executes the firing of a weapon, dealing damage based on multiplier and healing if regenerative.
+    /// Disables shields - if retaliate is triggered, do so
     /// </summary>
-    private void PlayerFireControl()
+    public void ShieldsDown()
     {
-        var target = GetTarget();
-
-        if (stance != AttackStance.holdFire)
+        if (retaliate)
         {
-            var toHeal = stance == AttackStance.regenerative;
-            FireWeapons(target, "Player", toHeal);
+            Retaliate();
         }
+        retaliate = false;
+
+        shieldStamina.shieldsDown();
+        shielded = false;
+        Destroy(shield);
     }
+
+    public void SetRetaliate()//Absorbs attack and primes for retaliation
+    {
+        SFX.PlayOneShot(SFX_absorbAttack);
+        //abilityButton.alterCooldown(1.5f);
+        retaliate = true;
+
+        var parryValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+        var parryArousal = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+        var parryTension = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
+        affect.CreatePastEvent(parryValence, parryArousal, parryTension, 10.0f);
+        // Debug.Log("Absorbed attack");
+    }
+
+    #endregion Shields
+
+    #region Laser Barrage
 
     /// <summary>
-    /// Calculates the fire rate based on stance
+    /// Fires retaliation laser
     /// </summary>
-    /// <returns>Seconds until next firing</returns>
-    private float FireRateCalculator()
+    public void Retaliate()
     {
-        var toReturn = attackSpeed * attackSpeedBoost;
-        Debug.Log("Starting value is " + attackSpeed + "* aspeedBoost " + attackSpeedBoost + " = " + toReturn);
-        if (stance == AttackStance.aggressive)
-        {
-            toReturn *= stanceAttackSpeedBonus;
-            Debug.Log("Multiplied by " + stanceAttackSpeedBonus);
-        }
-        if (stance == AttackStance.holdFire)
-        {
-            toReturn = 0.5f; //Yes, overwrite toReturn if we're holding fire. This lets us constantly re-evaluate fire rate
-        }
-        Debug.Log("Stance = " + stance + ", aSpeed = " + toReturn);
+        var emitter = laserEmitter.position;
+        var damage = retaliateDamage;
 
-        return toReturn;
+        SpawnLaser(emitter, enemyShipObj.transform.position);
+        enemyShip.TakeDamage(Mathf.RoundToInt(damage));
     }
 
-    /// <summary>
-    /// Sets stance, based on incoming. Used with abilities
-    /// </summary>
-    /// <param name="_stance">new stance to take</param>
-    public void SetStance(AttackStance _stance)
-    {
-        stance = _stance;
-        if (stance == AttackStance.aggressive)
-        {
-            attackSpeedBoost = 0.75f;
-        }
-        else { attackSpeedBoost = 1.0f; }
-    }
-
-    public void delayFirstFire()
-    {
-        StartCoroutine(FirstFire());
-    }
-
-    private IEnumerator FirstFire()
-    {
-        yield return new WaitForSeconds(Random.Range(2.5f, 5.0f));
-        BeginAutoAttack();
-    }
-
-    #endregion Auto-Attack
-
-    #region Health, Death, and Respawn
-
-    protected override void healthEval()
-    {
-        base.healthEval();
-        if (!lowHP)
-        {
-            if (health < (0.25f * maxHealth))
-            {
-                lowHP = true;
-                hpWarn.SetActive(true);
-                SFX.PlayOneShot(SFX_lowHealth);
-            }
-        }
-        if (lowHP)
-        {
-            if (health > (0.25 * maxHealth))
-            {
-                lowHP = false;
-                hpWarn.SetActive(false);
-            }
-        }
-    }
-
-    public void fullHeal()
-    {
-        health = maxHealth;
-        healthBar.Refresh(maxHealth, health);
-    }
-
-    protected override void die()
-    {
-        SFX.PlayOneShot(SFX_explode);
-        base.die();
-        tellGM();
-
-        var valenceEmotion = new Emotion(EmotionDirection.decrease, EmotionStrength.strong);
-        var tensionEmotion = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
-        affect.CreatePastEvent(valenceEmotion, null, tensionEmotion, 15.0f);
-    }
+    #endregion Laser Barrage
 
     protected override void doneDeath()
     {
         base.doneDeath();
-        hpWarn.SetActive(false);
-        GetComponent<MeshRenderer>().enabled = false;
-        autoAttack = false;
-        StartCoroutine(playerShipRespawn());
+        manager.LoseGame();
     }
 
-    private IEnumerator playerShipRespawn()
-    {
-        var windowOpen = false;
-        var respawn = attr.respawnTimer;
-
-        var respawnValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
-        var respawnArousal = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
-        var respawnTension = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
-        affect.CreateProspectiveEvent(respawnValence, respawnArousal, respawnTension, respawn, true);
-
-        abilityButton.startCooldown(respawn);
-
-        while (respawn > 0.0f && !alive)
-        {
-            respawn -= Time.deltaTime;
-
-            if (respawn <= 2.5f && !windowOpen)
-            {
-                var window = Instantiate(warpWindow, new Vector3(0, 0, -7.5f), Quaternion.Euler(90, 0, 0), this.transform);
-                window.transform.localPosition = new Vector3(0, 0, -7.5f);
-                window.GetComponent<portalAppear>().warp(0.75f);
-                windowOpen = true;
-            }
-            yield return null;
-        }
-        StartCoroutine(respawnWarp());
-    }
-
-    private IEnumerator respawnWarp()
-    {
-        GetComponent<MeshRenderer>().enabled = true;
-        var targetPos = transform.position;
-        var prewarpPos = transform.position;
-        prewarpPos.z -= 150;
-        transform.localScale = new Vector3(0.25f, 0.25f, 2.5f);
-        transform.position = prewarpPos;
-        while (Vector3.Distance(transform.position, targetPos) > 75f)
-        {
-            var newPosition = Vector3.MoveTowards(transform.position, targetPos, 250.0f * Time.deltaTime);
-            transform.position = newPosition;
-            yield return null;
-        }
-        while (transform.localScale.z < 1.0f)
-        {
-            var newPosition = Vector3.MoveTowards(transform.position, targetPos, 10.0f * Time.deltaTime);
-            transform.position = newPosition;
-            var z = transform.localScale.z;
-            z -= 40.0f * Time.deltaTime;
-            transform.localScale = new Vector3(1, 1, z);
-            yield return null;
-        }
-        transform.position = targetPos;
-        transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
-
-        alive = true;
-        healthBar.gameObject.SetActive(true);
-        fullHeal();
-
-        var respawnValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
-        var respawnTension = new Emotion(EmotionDirection.decrease, EmotionStrength.weak);
-        affect.CreatePastEvent(respawnValence, null, respawnTension, 10.0f);
-
-        StartCoroutine(healthUpdate());
-
-        BeginAutoAttack();
-    }
-
-    #endregion Health, Death, and Respawn
-
-    #region Game states and mechanics
-
-    public void updatePlayers(EnemyShip _mainShip, List<Turret> _turrets)
-    {
-        mainEnemy = _mainShip;
-        turrets = new List<Turret>(_turrets);
-    }
-
-    protected override void passDamageToAffect(float damage)
-    {
-        base.passDamageToAffect(damage);
-
-        var valenceChange = EmotionStrength.weak;
-        if (percentHealth() < 0.1f && !lowHealthProspective)
-        {
-            valenceChange = EmotionStrength.moderate;
-            //If we're receiving an attack at a low health, we create a prospective "Get destroyed" event 15 seconds from nowe with moderate change. This will disappear if we heal.
-            var playerDestroyValence = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
-            var playerDestroyTension = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
-            var lowHealthPlayer = affect.CreateProspectiveEvent(playerDestroyValence, null, playerDestroyTension, 15.0f);
-            StartCoroutine(lowHealthEvent(lowHealthPlayer));
-            lowHealthProspective = true;
-        }
-        var valenceEmotion = new Emotion(EmotionDirection.decrease, valenceChange);
-        affect.CreatePastEvent(valenceEmotion, null, null, 5.0f);
-    }
-
-    protected virtual void tellGM()
+    public void UpgradeAttack()
     {
     }
 
-    public void endCombat()
+    public void UpgradeDefense()
     {
-        autoAttack = false;
     }
 
-    public void playWarp()
+    public void UpgradeSpecial()
     {
-        warpIn.GetComponent<ParticleSystem>().Play();
     }
 
-    #endregion Game states and mechanics
+    // Start is called before the first frame update
+    private void Start()
+    {
+        ShipSetup();
+    }
+
+    // Update is called once per frame
+    private void Update()
+    {
+    }
 }

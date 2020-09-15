@@ -8,19 +8,14 @@ using UnityEngine.UI;
 
 public enum Attribute { shields, reactor, sensors, engine };
 
-public enum waveType { main, miniboss, boss };
+public enum enemyType { main, miniboss, boss };
 
 public class GameManager : MonoBehaviour
 {
     #region Player Variables and Objects
 
     [Header("Player Variables and Objects")]
-    public FrigateShip frigate;
-
-    public IntelShip artillery;
-
-    public SupportShip tender;
-    public GameObject frigateHealth, artilleryHealth, tenderHealth;
+    public PlayerShip Player;
 
     private int attackUpgrade = 0, defendUpgrade = 0, skillUpgrade = 0;
 
@@ -32,11 +27,8 @@ public class GameManager : MonoBehaviour
     private EliasPlayer music;
     private environmentAudio gmAudio;
 
-    // public GameObject pursuitText;
-    //public PursuitTracker encounterUI;
     public stageManager stageManager;
 
-    //private bool inWarp;
     public TargetManager targets;
 
     [Header("Managers")]
@@ -60,6 +52,8 @@ public class GameManager : MonoBehaviour
 
     public List<GameObject> toHide;
     public GameObject upgradeMenu;
+    public Transform playerWarpWindow;
+    public Transform enemyWarpWindow;
 
     #endregion UI
 
@@ -67,6 +61,7 @@ public class GameManager : MonoBehaviour
 
     private bool paused = false;
     private readonly bool atBoss = false;
+    private bool warpNext = false;
 
     [Header("Gameplay values")]
     public static bool autoPause = true;
@@ -82,10 +77,11 @@ public class GameManager : MonoBehaviour
     private List<Turret> turrets;
 
     [Header("Enemies")]
-    public GameObject droneWave;
+    public GameObject standardEnemy;
 
-    public GameObject minibossWave;
-    public GameObject bossWave;
+    public GameObject miniboss;
+    public GameObject boss;
+    private EnemyShip currentEnemy;
 
     public enemyAttributes enemyAttr;
 
@@ -143,16 +139,6 @@ public class GameManager : MonoBehaviour
         targets.addShip(_toRespawn);
     }
 
-    public void disableArtilleryUI()
-    {
-        artilleryHealth.SetActive(false);
-    }
-
-    public void disableTenderUI()
-    {
-        tenderHealth.SetActive(false);
-    }
-
     #endregion Deaths and Respawns
 
     #region Win/Loss
@@ -181,14 +167,15 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void EnterHyperspace()
     {
+        Player.FullHeal(); //Fully heals player
+
         //Plays the warping camera movement, sound, and screen flash
         anim.Play("Warp");
         gmAudio.enterHyperspace();
         warpFlash.flash();
 
         //Creates "window" at end for special effect and clears skybox
-        warpEffect = Instantiate(warpPrefab);
-        warpEffect.transform.position = new Vector3(0, 0, 100);
+        warpEffect = Instantiate(warpPrefab, playerWarpWindow.position, Quaternion.Euler(new Vector3(0f, 180f, 90f)), playerWarpWindow);
         sky.warp();
 
         //Hides UI
@@ -220,12 +207,6 @@ public class GameManager : MonoBehaviour
             hide.SetActive(true);
         }
 
-        //Probably redundant --- heals all ships (Should be healed immediately at end of combat, and rezzed if possible)
-        frigate.fullHeal();
-        tender.fullHeal();
-        artillery.fullHeal();
-
-        //Calls beginning of combat
         startCombat();
     }
 
@@ -273,8 +254,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void upgradeAttack()
     {
-        attackUpgrade++;
-        AdjustShipStats();
+        Player.UpgradeAttack();
+        // AdjustShipStats();
         ToMapMenu();
     }
 
@@ -283,8 +264,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void upgradeDefense()
     {
-        defendUpgrade++;
-        AdjustShipStats();
+        Player.UpgradeDefense();
+        // AdjustShipStats();
         ToMapMenu();
     }
 
@@ -293,8 +274,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void upgradeSkills()
     {
-        skillUpgrade++;
-        AdjustShipStats();
+        Player.UpgradeSpecial();
+        //AdjustShipStats();
         ToMapMenu();
     }
 
@@ -347,11 +328,7 @@ public class GameManager : MonoBehaviour
     {
         music.RunActionPreset("StartCombat");
         //affect.musicControl = true;
-        enemyCompositionSetup();
-
-        frigate.delayFirstFire();
-        artillery.delayFirstFire();
-        tender.delayFirstFire();
+        EnemyCompositionSetup();
 
         if (stage == 1)
         {
@@ -372,10 +349,6 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void endCombat()
     {
-        frigate.endCombat();
-        artillery.endCombat();
-        tender.endCombat();
-
         stageManager.RemoveUI();
 
         StartCoroutine(victoryWarp());
@@ -391,22 +364,23 @@ public class GameManager : MonoBehaviour
     /// <returns></returns>
     private IEnumerator warpWindow()
     {
-        var warpGate = Instantiate(enemyWarpPrefab, new Vector3(0, 0, 100), Quaternion.Euler(-90, 0, 0), this.transform);
+        var warpGate = Instantiate(enemyWarpPrefab, enemyWarpWindow.position, Quaternion.Euler(0, 0, -90), enemyWarpWindow);
         warpGate.GetComponent<portalAppear>().warp(10);
         yield return new WaitForSeconds(1.5f);
-        enemyCompositionSetup();
+        EnemyCompositionSetup();
     }
 
     /// <summary>
     /// Called when main enemy is destroyed. Decides whether to setup next wave or jump to hyperspace.
     /// </summary>
-    private void stageLogic()
+    private void StageLogic()
     {
         if (stage == 1)
         {
             encounter = 0;
             stage = 2;
             endCombat();
+            warpNext = true;
         }
         else if (stage == 2)
         {
@@ -421,12 +395,14 @@ public class GameManager : MonoBehaviour
                 encounter++;
                 stageManager.setEncounterProgress(2);
                 advanceToNextWave();
+                warpNext = false;
             }
             else
             {
                 encounter = 0;
                 stage = 3;
                 endCombat();
+                warpNext = true;
             }
         }
         else if (stage == 3)
@@ -436,6 +412,7 @@ public class GameManager : MonoBehaviour
                 encounter++;
                 stageManager.setEncounterProgress(1);
                 advanceToNextWave();
+                warpNext = false;
             }
             //else if (encounter == 1) //Changing to only one pre-boss encounter
             //{
@@ -453,13 +430,13 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Spawns the correct enemy composition, if necessary spawns the encounter ui, and sets the encounter text
     /// </summary>
-    private void enemyCompositionSetup()
+    private void EnemyCompositionSetup()
     {
         if (stage == 1)
         {
             stageManager.setWaveLength(1);
             stageManager.setText("1-1");
-            spawnEnemies(waveType.miniboss);
+            SpawnEnemy(enemyType.miniboss, false);
         }
         else if (stage == 2)
         {
@@ -467,17 +444,17 @@ public class GameManager : MonoBehaviour
             {
                 stageManager.setWaveLength(3);
                 stageManager.setText("2-1");
-                spawnEnemies(waveType.main);
+                SpawnEnemy(enemyType.main, false);
             }
             else if (encounter == 1)
             {
                 stageManager.setText("2-2");
-                spawnEnemies(waveType.main);
+                SpawnEnemy(enemyType.main, true);
             }
             else
             {
                 stageManager.setText("2-3");
-                spawnEnemies(waveType.miniboss);
+                SpawnEnemy(enemyType.miniboss, true);
             }
         }
         else if (stage == 3)
@@ -486,7 +463,7 @@ public class GameManager : MonoBehaviour
             {
                 stageManager.setWaveLength(2);
                 stageManager.setText("3-1");
-                spawnEnemies(waveType.main);
+                SpawnEnemy(enemyType.main, false);
             }
             //else if (encounter == 1)
             //{
@@ -496,46 +473,36 @@ public class GameManager : MonoBehaviour
             else
             {
                 stageManager.setText("3-3");
-                spawnEnemies(waveType.boss);
+                SpawnEnemy(enemyType.boss, true);
             }
         }
         else
         {
-            spawnEnemies(waveType.main);
+            SpawnEnemy(enemyType.main, true);
             Debug.Log("Fell through all cases for spawning, which is probably bad");
         }
     }
 
-    private void spawnEnemies(waveType type)
+    private void SpawnEnemy(enemyType type, bool warp)
     {
         //Selects appropriate main enemy
-        var enemyToInstantiate = droneWave;
-        if (type == waveType.miniboss) { enemyToInstantiate = minibossWave; }
-        else if (type == waveType.boss) { enemyToInstantiate = bossWave; }
+        var enemyToInstantiate = standardEnemy;
+        if (type == enemyType.miniboss) { enemyToInstantiate = miniboss; }
+        else if (type == enemyType.boss) { enemyToInstantiate = boss; }
 
         //Instantiates wave, sets position, and gets reference
-        var wave = GameObject.Instantiate(enemyToInstantiate);
-        wave.transform.position = spawnPoint.transform.position;
-        var core = wave.GetComponent<EnemyCore>();
+        var newEnemy = GameObject.Instantiate(enemyToInstantiate);
+        newEnemy.transform.position = spawnPoint.transform.position;
+        currentEnemy = newEnemy.GetComponent<EnemyShip>();
+        currentEnemy.ShipSetup();
+
+        Player.SetEnemyReference(newEnemy);
+
+        if (warp)
+        {
+            StartCoroutine(currentEnemy.FlyIn());
+        }
         //enemyCore = core;
-
-        //Tells core to run setup for the wave
-
-        core.setEnemyReferences(frigate, artillery, tender);
-        core.setupWave(stage, this.gameObject);
-
-        //Get divisions of ships from core
-        var enemyShips = core.getWaveList();
-        var mainEnemy = core.getMainShip();
-        turrets = core.getTurrets();
-
-        //Finally, use the  lists to inform the other objects references
-        targets.setShips(mainEnemy, turrets[0], turrets[1]);
-        frigate.updatePlayers(mainEnemy, turrets);
-        artillery.updatePlayers(mainEnemy, turrets);
-        tender.updatePlayers(mainEnemy, turrets);
-
-        if (tutorial) { tutorialManager.centreEnemy = core.getMainShip(); }
     }
 
     /// <summary>
@@ -546,12 +513,23 @@ public class GameManager : MonoBehaviour
         StartCoroutine(warpWindow());
     }
 
-    public void mainShipDie() //If we aren't at the boss, we continue playing. Otherwise, we've won!
+    /// <summary>
+    /// Pans camera for enemy arrival - called during enemy death
+    /// </summary>
+    public void WarpPan()
+    {
+        if (warpNext)
+        {
+            anim.Play("cameraEnemyArrive");
+        }
+    }
+
+    public void EnemyDie() //If we aren't at the boss, we continue playing. Otherwise, we've won!
     {
         affect.ClearWave(); //Calls the clearWave void, resetting emotions
         if (!atBoss)
         {
-            stageLogic();
+            StageLogic();
         }
         else { win(); }
     }
@@ -572,7 +550,7 @@ public class GameManager : MonoBehaviour
         attackUpgrade = 0;
         defendUpgrade = 0;
         skillUpgrade = 0;
-        SetupShips();
+        //SetupShips();
 
         music.RunActionPreset("HyperSpace");
         EnterHyperspace();
@@ -590,20 +568,6 @@ public class GameManager : MonoBehaviour
 
         //Unlocks ultimate early for tutorial
         if (tutorial) { playerButtons.unlockUltimate(); }
-    }
-
-    private void SetupShips()
-    {
-        frigate.ShipSetup(attackUpgrade, defendUpgrade, skillUpgrade);
-        artillery.ShipSetup(attackUpgrade, defendUpgrade, skillUpgrade);
-        tender.ShipSetup(attackUpgrade, defendUpgrade, skillUpgrade);
-    }
-
-    private void AdjustShipStats()
-    {
-        frigate.SetAttributes(attackUpgrade, defendUpgrade, skillUpgrade);
-        artillery.SetAttributes(attackUpgrade, defendUpgrade, skillUpgrade);
-        tender.SetAttributes(attackUpgrade, defendUpgrade, skillUpgrade);
     }
 
     // Update is called once per frame
