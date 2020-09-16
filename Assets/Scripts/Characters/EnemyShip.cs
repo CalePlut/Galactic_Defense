@@ -2,16 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Attack type is used only in selecting which move to fire by the AI
+/// </summary>
+public enum AttackType { foreTurret, aftTurret, specialAttack, heal, delay }
+
 public class EnemyShip : BasicShip
 {
-    public float specialAttackDamage;
+    public float attackLength;
+    public float delayLength;
+
+    public float specialAttackFrameLength;
+
+    public float firstAttackMinimum, firstAttackMaximum;
+
     private GameObject playerShipObj;
     private PlayerShip playerShip;
     public GameObject warpEffect;
 
     private CombatAI CombatAI;
-
-    public enemyAttributes attr;
 
     private float jam = 0.0f;
 
@@ -23,7 +32,7 @@ public class EnemyShip : BasicShip
     public override void ShipSetup()
     {
         base.ShipSetup();
-        CombatAI = new CombatAI(this, affect, attr);
+        CombatAI = new CombatAI(this, affect);
         SetReferences();
         StartCoroutine(RunCombatAI());
     }
@@ -120,20 +129,37 @@ public class EnemyShip : BasicShip
     {
         if (attack == AttackType.foreTurret)  //Attacks with left turret, falls back to centre if left turret is destroyed
         {
-            StartCoroutine(FireBroadside(playerShip, cannonPosition.fore, 3));
+            StartCoroutine(FireBroadside(playerShip, turretPosition.fore, foreShots));
         }
         else if (attack == AttackType.aftTurret) //Attacks with right turret, falls back to centre if rt is destroyed.
         {
-            StartCoroutine(FireBroadside(playerShip, cannonPosition.aft, 2));
+            StartCoroutine(FireBroadside(playerShip, turretPosition.aft, aftShots));
         }
         else if (attack == AttackType.specialAttack) //If the player isn't shielded, fire normal lasers. Otherwise, fire fake laser and trigger riposte.
         {
-            SpecialAttack();
+            SpecialAttackTrigger();
         }
         else if (attack == AttackType.heal)
         {
             HealTrigger();
         }
+    }
+
+    public void SpecialAttackTrigger()
+    {
+        StartCoroutine(SpecialAttackFlare());
+        SpecialIndicator(Color.red, specialAttackFrameLength);
+    }
+
+    private IEnumerator SpecialAttackFlare()
+    {
+        var timer = specialAttackFrameLength;
+        while (timer > 0.0f)
+        {
+            timer -= Time.deltaTime;
+            yield return null;
+        }
+        SpecialAttack();
     }
 
     /// <summary>
@@ -142,7 +168,7 @@ public class EnemyShip : BasicShip
     public void SpecialAttack()
     {
         var emitter = laserEmitter.position;
-        var damage = specialAttackDamage;
+        var damage = laserDamage;
 
         SpawnLaser(emitter, playerShipObj.transform.position);
 
@@ -152,12 +178,12 @@ public class EnemyShip : BasicShip
         }
         else if (playerShip.healing)
         {
-            HealPunish(playerShip, punishShots);
+            HealPunish(playerShip);
         }
         else
         {
             playerShip.TakeDamage(damage);
-            playerShip.PartDisable();
+            playerShip.DisableShot(disableDuration);
         }
     }
 
@@ -174,6 +200,12 @@ public class EnemyShip : BasicShip
         base.doneDeath();
         manager.EnemyDie();
         Destroy(this.gameObject);
+    }
+
+    public override void DisableShot(float duration)
+    {
+        jam = duration;
+        base.DisableShot(duration);
     }
 
     // Start is called before the first frame update
@@ -195,14 +227,13 @@ public class CombatAI
 {
     private EnemyShip ship;
     private AffectManager affect;
-    private enemyAttributes attr;
+    private ShipAttributes attr;
     private List<EnemyAttack> enemyAttacks;
 
-    public CombatAI(EnemyShip _core, AffectManager _affect, enemyAttributes _attr)
+    public CombatAI(EnemyShip _core, AffectManager _affect)
     {
         ship = _core;
         affect = _affect;
-        attr = _attr;
         enemyAttacks = new List<EnemyAttack>();
     }
 
@@ -214,7 +245,6 @@ public class CombatAI
     public void Advance(float deltaTime)
     {
         if (enemyAttacks.Count == 0) //If we don't have a pattern, create one.
-
         {
             CreatePattern();
         }
@@ -244,14 +274,6 @@ public class CombatAI
     }
 
     /// <summary>
-    /// Sends laser barrage (Reactive shield counter) callback to EnemyCore
-    /// </summary>
-    public void SetSpecialAttackFrame()
-    {
-        ship.SpecialIndicator(Color.red, timeByAttack(AttackType.specialAttack));
-    }
-
-    /// <summary>
     /// Sends heal (Fusion cannon counter) callback to EnemyCore
     /// </summary>
     public void SetHealFrame()
@@ -275,68 +297,18 @@ public class CombatAI
     private void CreatePattern()
     {
         enemyAttacks = new List<EnemyAttack>();
-        var timer = attr.InitialDelay(); //This will be some random initial delay
+        var timer = Random.Range(ship.firstAttackMinimum, ship.firstAttackMaximum); //This will be some random initial delay
         var pattern = PatternSelect(Random.Range(0, 5));
         foreach (AttackType attackType in pattern)
         {
-            timer += timeByAttack(attackType); //Add delay before attack to timer, to use to line up the attacks in time
-            if (attackType == AttackType.heal || attackType == AttackType.specialAttack)
-            {
-                var newAttack = new EnemyAttack(this, attackType, timer, timeByAttack(attackType));
-                enemyAttacks.Add(newAttack);
-            }
+            timer += ship.attackLength; //Add delay before attack to timer, to use to line up the attacks in time
+
+            if (attackType == AttackType.delay) { timer += ship.delayLength; }
             else
             {
                 var newAttack = new EnemyAttack(this, attackType, timer);
                 enemyAttacks.Add(newAttack);
             }
-        }
-    }
-
-    /// <summary>
-    /// Creates specific EnemyAttacks and stores them to list, with timing lined up for combo.
-    /// </summary>
-    /// <param name="pattern">List of all attacks to create</param>
-    private void CreatePattern(List<AttackType> pattern)
-    {
-        enemyAttacks = new List<EnemyAttack>();
-        var timer = attr.InitialDelay(); //This will be some random initial delay
-        foreach (AttackType attackType in pattern)
-        {
-            timer += timeByAttack(attackType); //Add delay before attack to timer, to use to line up the attacks in time
-            if (attackType == AttackType.heal || attackType == AttackType.specialAttack)
-            {
-                var newAttack = new EnemyAttack(this, attackType, timer, timeByAttack(attackType));
-                enemyAttacks.Add(newAttack);
-            }
-            else
-            {
-                var newAttack = new EnemyAttack(this, attackType, timer);
-                enemyAttacks.Add(newAttack);
-            }
-
-            //Create the related affective prospectve event
-            var tensionEmotion = new Emotion(EmotionDirection.increase, tensionByAttack(attackType));
-            affect.CreateProspectiveEvent(null, null, tensionEmotion, timer, true);
-        }
-    }
-
-    private float timeByAttack(AttackType type)
-    {
-        switch (type)
-        {
-            case AttackType.foreTurret:
-            case AttackType.aftTurret:
-                return attr.turretDelay;
-
-            case AttackType.specialAttack:
-                return attr.specialDelay;
-
-            case AttackType.heal:
-                return attr.healDelay;
-
-            default:
-                return 0.0f; //Shouldn't happen!
         }
     }
 
@@ -369,25 +341,21 @@ public class CombatAI
         switch (pattern)
         {
             case 0:
-                return new List<AttackType>() { AttackType.foreTurret, AttackType.foreTurret, AttackType.specialAttack };
+                return new List<AttackType>() { AttackType.foreTurret, AttackType.delay, AttackType.foreTurret, AttackType.specialAttack };
 
             case 1:
-                return new List<AttackType>() { AttackType.aftTurret, AttackType.aftTurret, AttackType.heal };
+                return new List<AttackType>() { AttackType.aftTurret, AttackType.delay, AttackType.aftTurret, AttackType.heal };
 
             case 2:
-                return new List<AttackType>() { AttackType.foreTurret, AttackType.foreTurret, AttackType.specialAttack, AttackType.aftTurret, AttackType.aftTurret, AttackType.heal };//FFSAAH
+                return new List<AttackType>() { AttackType.foreTurret, AttackType.foreTurret, AttackType.specialAttack };
+
             case 3:
-                return new List<AttackType>() { AttackType.aftTurret, AttackType.aftTurret, AttackType.heal, AttackType.foreTurret, AttackType.foreTurret, AttackType.specialAttack };
+                return new List<AttackType>() { AttackType.aftTurret, AttackType.aftTurret, AttackType.heal };
 
             case 4:
-                if (Random.value < 0.5f)
-                {
-                    return new List<AttackType>() { AttackType.aftTurret, AttackType.heal, AttackType.foreTurret, AttackType.foreTurret, AttackType.specialAttack };
-                }
-                else
-                {
-                    return new List<AttackType>() { AttackType.foreTurret, AttackType.foreTurret, AttackType.specialAttack, AttackType.aftTurret, AttackType.heal }; //R-L-L-R-L-L-Special_Heal
-                }
+
+                return new List<AttackType>() { AttackType.foreTurret, AttackType.foreTurret, AttackType.specialAttack, AttackType.aftTurret, AttackType.heal };
+
             default:
                 return new List<AttackType>() { AttackType.aftTurret, AttackType.foreTurret, AttackType.foreTurret, AttackType.specialAttack };
         }
@@ -404,9 +372,6 @@ public class EnemyAttack
 
     public AttackType type { get; private set; }
     private float timing;
-    private Emotion tension;
-    private bool specialTrigger = false; //Tracks whether we've sent the parry frame
-    public float triggerTime { get; private set; }
 
     #endregion Mechanics
 
@@ -422,7 +387,6 @@ public class EnemyAttack
         combatAI = _AI;
         type = _type;
         timing = _time;
-        triggerTime = 0.0f;
     }
 
     public EnemyAttack(CombatAI _AI, AttackType _type, float _time, float _triggerTime)
@@ -430,7 +394,6 @@ public class EnemyAttack
         combatAI = _AI;
         type = _type;
         timing = _time;
-        triggerTime = _triggerTime;
     }
 
     /// <summary>
@@ -441,33 +404,11 @@ public class EnemyAttack
     {
         //Timing counts down until the attack is implemented. Tracks flares, tension, and implementation
         timing -= deltaTime;
-
-        specialTriggerCalculate(timing);
-
         if (timing <= 0.0f) //If timing is exhausted, execute action via callback (probably? gotta figure this out)
         {
             combatAI.completeAction(this);
             toCull = true;
         }
         //tensionCalculate(timing);
-    }
-
-    private void specialTriggerCalculate(float timing)
-    {
-        if (timing < triggerTime)
-        {
-            if (!specialTrigger)
-            {
-                if (type == AttackType.specialAttack)
-                {
-                    combatAI.SetSpecialAttackFrame();
-                }
-                // if (type == AttackType.heal)
-                //    {
-                //combatAI.SetHealFrame();
-                //   }
-                specialTrigger = true;
-            }
-        }
     }
 }

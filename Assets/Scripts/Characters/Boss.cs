@@ -1,21 +1,21 @@
-﻿public class Boss : EnemyShip_old
-{
-    public override void setAttributes(int _stage)
-    {
-        base.setAttributes(_stage);
-        var stage = _stage - 1;
+﻿//public class Boss : EnemyShip_old
+//{
+//    public override void setAttributes(int _stage)
+//    {
+//        base.setAttributes(_stage);
+//        var stage = _stage - 1;
 
-        health = attr.bossHP;
-        maxHealth = attr.bossHP;
+//        health = attr.bossHP;
+//        maxHealth = attr.bossHP;
 
-        attackDamage = attr.bossDamage;
-        specialDamage = attr.bossBeam;
+//        attackDamage = attr.bossDamage;
+//        specialDamage = attr.bossBeam;
 
-        core.attackSpeed = attr.bossAttackSpeed;
-    }
+//        core.attackSpeed = attr.bossAttackSpeed;
+//    }
 
-    public override float getAttackSpeed()
-    {
-        return attr.bossAttackSpeed;
-    }
-}
+//    public override float getAttackSpeed()
+//    {
+//        return attr.bossAttackSpeed;
+//    }
+//}

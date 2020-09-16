@@ -375,7 +375,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1205281235}
   m_Layer: 0
-  m_Name: aftCannon
+  m_Name: aftTurret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -405,7 +405,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1221374218}
   m_Layer: 0
-  m_Name: foreCannon
+  m_Name: foreTurret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1235,6 +1235,46 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &538872698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 993407470212336900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9e5e5a65674aaf44bdb9ba54f915b03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attr: {fileID: 11400000, guid: 5beabbb60e8bf5a4c9cfbeac9bbc2a80, type: 2}
+  level: 3
+  damageText: {fileID: 345791974}
+  healthBar: {fileID: 1946436703}
+  laserEmitter: {fileID: 59263463}
+  foreTurret: {fileID: 1221374218}
+  aftTurret: {fileID: 1205281235}
+  flareLoc: {fileID: 7958058451876082161}
+  basicTurretShot: {fileID: 126790, guid: 8b41f5320e19912428ff12551caca1e8, type: 3}
+  warningFlare: {fileID: 7166164739200910186, guid: 28975ad4756aaf94fb3dc170d0456f10,
+    type: 3}
+  healEffect: {fileID: 1077433979050930671, guid: 34aa31306c70ebb4998f88abfaa20681,
+    type: 3}
+  explosion: {fileID: 1000011128802252, guid: 96730f8640590934eacb6f860058e7f9, type: 3}
+  beamStartPrefab: {fileID: 185238, guid: b80d00a943c44a14181b7df0488d1927, type: 3}
+  beamEndPrefab: {fileID: 149788, guid: 5b364370854f7064e9d23e9799fc4297, type: 3}
+  beamPrefab: {fileID: 113598, guid: 662c9a292b84cf54c8a9cab863559576, type: 3}
+  beamEndOffset: 1
+  textureScrollSpeed: 8
+  textureLengthScale: 3
+  affect: {fileID: 0}
+  manager: {fileID: 0}
+  attackLength: 1
+  delayLength: 0.5
+  specialAttackFrameLength: 0.5
+  firstAttackMinimum: 1
+  firstAttackMaximum: 3
+  warpEffect: {fileID: 138802, guid: a8565406c64107841a9c18dc24ba9dc4, type: 3}
 --- !u!1 &2004298653895174451
 GameObject:
   m_ObjectHideFlags: 0
@@ -1265,48 +1305,6 @@ Transform:
   m_Father: {fileID: 4292514338653028119}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &538872698
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 993407470212336900}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9e5e5a65674aaf44bdb9ba54f915b03, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 500
-  attackDamage: 5
-  healTime: 1.5
-  punishShots: 25
-  damageMod: 2
-  armorMod: 1
-  healPercent: 0.5
-  damageText: {fileID: 345791974}
-  healthBar: {fileID: 1946436703}
-  laserEmitter: {fileID: 59263463}
-  foreCannons: {fileID: 1221374218}
-  aftCannons: {fileID: 1205281235}
-  flareLoc: {fileID: 7958058451876082161}
-  basicCannon: {fileID: 135654, guid: eeb8171b60d8da849b1f6580e734d0aa, type: 3}
-  warningFlare: {fileID: 7166164739200910186, guid: 28975ad4756aaf94fb3dc170d0456f10,
-    type: 3}
-  healEffect: {fileID: 1077433979050930671, guid: 34aa31306c70ebb4998f88abfaa20681,
-    type: 3}
-  explosion: {fileID: 1000011128802252, guid: 96730f8640590934eacb6f860058e7f9, type: 3}
-  beamStartPrefab: {fileID: 185238, guid: b80d00a943c44a14181b7df0488d1927, type: 3}
-  beamEndPrefab: {fileID: 149788, guid: 5b364370854f7064e9d23e9799fc4297, type: 3}
-  beamPrefab: {fileID: 113598, guid: 662c9a292b84cf54c8a9cab863559576, type: 3}
-  beamEndOffset: 1
-  textureScrollSpeed: 8
-  textureLengthScale: 3
-  affect: {fileID: 0}
-  manager: {fileID: 0}
-  specialAttackDamage: 25
-  warpEffect: {fileID: 138802, guid: a8565406c64107841a9c18dc24ba9dc4, type: 3}
-  attr: {fileID: 11400000, guid: c2c7a18ba7bed354d94c94c71efc54a0, type: 2}
 --- !u!1001 &9144743498752627725
 PrefabInstance:
   m_ObjectHideFlags: 0

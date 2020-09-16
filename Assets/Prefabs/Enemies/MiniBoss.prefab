@@ -794,7 +794,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5438463272930233964}
   m_Layer: 0
-  m_Name: foreCannon
+  m_Name: ForeTurret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1104,7 +1104,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5438463273479998239}
   m_Layer: 0
-  m_Name: aftCannon
+  m_Name: aftTurret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1248,6 +1248,7 @@ GameObject:
   - component: {fileID: 5417008214154708117}
   - component: {fileID: 5376654763356510545}
   - component: {fileID: 5438463272983740334}
+  - component: {fileID: 2645079919187418856}
   m_Layer: 0
   m_Name: MiniBoss
   m_TagString: Enemy
@@ -1349,20 +1350,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9e5e5a65674aaf44bdb9ba54f915b03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 200
-  attackDamage: 2.5
-  healTime: 2.5
-  punishShots: 10
-  damageMod: 2
-  armorMod: 1
-  healPercent: 0.5
+  attr: {fileID: 11400000, guid: 5beabbb60e8bf5a4c9cfbeac9bbc2a80, type: 2}
+  level: 2
   damageText: {fileID: 5438463271669490432}
   healthBar: {fileID: 5438463272024223559}
   laserEmitter: {fileID: 5438463272215041174}
-  foreCannons: {fileID: 5438463272930233964}
-  aftCannons: {fileID: 5438463273479998239}
+  foreTurret: {fileID: 5438463272930233964}
+  aftTurret: {fileID: 5438463273479998239}
   flareLoc: {fileID: 7916437086571899995}
-  basicCannon: {fileID: 135654, guid: eeb8171b60d8da849b1f6580e734d0aa, type: 3}
+  basicTurretShot: {fileID: 196444, guid: 3a0fa38982e605a41b394c9146ff7b2f, type: 3}
   warningFlare: {fileID: 7166164739200910186, guid: 28975ad4756aaf94fb3dc170d0456f10,
     type: 3}
   healEffect: {fileID: 1077433979050930671, guid: 34aa31306c70ebb4998f88abfaa20681,
@@ -1376,9 +1372,31 @@ MonoBehaviour:
   textureLengthScale: 3
   affect: {fileID: 0}
   manager: {fileID: 0}
-  specialAttackDamage: 25
+  attackLength: 2
+  delayLength: 1
+  specialAttackFrameLength: 1.5
+  firstAttackMinimum: 3
+  firstAttackMaximum: 5
   warpEffect: {fileID: 138802, guid: a8565406c64107841a9c18dc24ba9dc4, type: 3}
-  attr: {fileID: 11400000, guid: c2c7a18ba7bed354d94c94c71efc54a0, type: 2}
+--- !u!95 &2645079919187418856
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5440146149927829651}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 318dac4af55775d49aa27fcc63362881, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 1
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &8172489387131547851
 GameObject:
   m_ObjectHideFlags: 0

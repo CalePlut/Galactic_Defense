@@ -17,12 +17,9 @@ public class shieldStamina : MonoBehaviour
 
     private void Start()
     {
-        stamina = maxStamina;
         shielded = false;
         recovery = false;
 
-        display.maxValue = maxStamina;
-        display.value = stamina;
         fill.color = mainColor;
     }
 
@@ -34,6 +31,19 @@ public class shieldStamina : MonoBehaviour
     public void shieldsDown()
     {
         shielded = false;
+    }
+
+    /// <summary>
+    /// Sets initial stamina
+    /// </summary>
+    /// <param name="_stamina"></param>
+    public void setStamina(float _stamina)
+    {
+        maxStamina = _stamina;
+        stamina = _stamina;
+
+        display.maxValue = maxStamina;
+        display.value = stamina;
     }
 
     // Update is called once per frame

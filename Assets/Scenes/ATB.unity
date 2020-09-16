@@ -12250,7 +12250,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33a1d2b6fe76695428abf29959d0c77d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  health: 100
+  maxHealth: 100
+  attackDamage: 10
+  <alive>k__BackingField: 1
+  ultimate: 0
+  lowHealthProspective: 0
+  armorMod: 1
+  lifesteal: 0
   gameManager: {fileID: 1339880051}
+  affect: {fileID: 0}
   explosion: {fileID: 1000013462590818, guid: ecdd96beb7f93494880c052dfccf9dc1, type: 3}
   weaponPrefab: {fileID: 179554, guid: 0d83e615f1a143845924d338711efd68, type: 3}
   weaponSpawn1: {fileID: 1167575703}
@@ -12264,7 +12273,11 @@ MonoBehaviour:
   abilityButton: {fileID: 4715089}
   abilityCooldown: 2.5
   ultimateCooldown: 60
+  attackSpeed: 0
+  attackSpeedBoost: 1
   weaponCooldown: 2.5
+  autoAttack: 0
+  stanceAttackSpeedBonus: 1
   mainEnemy: {fileID: 0}
   otherShips:
   - {fileID: 0}
@@ -12276,9 +12289,12 @@ MonoBehaviour:
   warpIn: {fileID: 1332149853}
   warpWindow: {fileID: 8900226456109351502, guid: 056217abaa2e3f9459096a06ee4f3b41,
     type: 3}
+  lowHP: 0
+  SFX: {fileID: 0}
   SFX_explode: {fileID: 8300000, guid: 80164361c240b3b4abdd3400c9c3fb77, type: 3}
   SFX_lowHealth: {fileID: 8300000, guid: d68b106e565fea140be8e2567e918383, type: 3}
   FusionCannon: {fileID: 178846, guid: 0d40627991c244c44b13eb93f05b4f91, type: 3}
+  cannonDamage: 0
 --- !u!4 &131939783 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4331568703382362, guid: 6647bc14b7f253f4aa7ed042ccbd8304,
@@ -15220,7 +15236,7 @@ GameObject:
   m_Component:
   - component: {fileID: 335840927}
   m_Layer: 0
-  m_Name: ForeCannons
+  m_Name: ForeTurret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15325,7 +15341,7 @@ GameObject:
   m_Component:
   - component: {fileID: 340322861}
   m_Layer: 0
-  m_Name: AftCannons
+  m_Name: AftTurret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -28051,7 +28067,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf42dab7a500c6f4fa786ee8ed9bf90e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  health: 100
+  maxHealth: 100
+  attackDamage: 10
+  <alive>k__BackingField: 1
+  ultimate: 0
+  lowHealthProspective: 0
+  armorMod: 1
+  lifesteal: 0
   gameManager: {fileID: 1339880051}
+  affect: {fileID: 0}
   explosion: {fileID: 1000011797152326, guid: acf39d9f4addf294d93fa56fa373961b, type: 3}
   weaponPrefab: {fileID: 161724, guid: fec710d6f8ab81c4c9edff6545732936, type: 3}
   weaponSpawn1: {fileID: 85969559}
@@ -28065,7 +28090,11 @@ MonoBehaviour:
   abilityButton: {fileID: 2100624339}
   abilityCooldown: 0.5
   ultimateCooldown: 30
+  attackSpeed: 0
+  attackSpeedBoost: 1
   weaponCooldown: 3
+  autoAttack: 0
+  stanceAttackSpeedBonus: 1
   mainEnemy: {fileID: 0}
   otherShips:
   - {fileID: 0}
@@ -28076,16 +28105,21 @@ MonoBehaviour:
   hpWarn: {fileID: 528966549}
   warpIn: {fileID: 1483177059}
   warpWindow: {fileID: 0}
+  lowHP: 0
+  SFX: {fileID: 0}
   SFX_explode: {fileID: 8300000, guid: 80164361c240b3b4abdd3400c9c3fb77, type: 3}
   SFX_lowHealth: {fileID: 8300000, guid: d68b106e565fea140be8e2567e918383, type: 3}
   shieldPrefab: {fileID: 151800, guid: 8ab93d00373fccd49856789dc57b759c, type: 3}
+  shield: {fileID: 0}
   jamDuration: 2.5
+  retaliateDamage: 0
   shieldDuration: 1.5
   shieldStamina: {fileID: 460374685}
   beamStartPrefab: {fileID: 108584, guid: 9b0245240330cec41893d8611880df8d, type: 3}
   beamEndPrefab: {fileID: 131904, guid: 16d8536db6f4c8e469e7c0929758624d, type: 3}
   beamPrefab: {fileID: 113598, guid: 9bc40fcd7e707f149b47aa3fbb1773df, type: 3}
   retaliateSpawn: {fileID: 517294676}
+  retaliate: 0
   ultimateButton: {fileID: 1476275547}
   SFX_shieldActivate: {fileID: 8300000, guid: ffe099be0b34ed44da1b04457e583ff8, type: 3}
   SFX_absorbAttack: {fileID: 8300000, guid: 38445327789f7b74ea8633d5a375c9f2, type: 3}
@@ -29072,7 +29106,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95875cca44074dd41b694693bf5594f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  health: 100
+  maxHealth: 100
+  attackDamage: 10
+  <alive>k__BackingField: 1
+  ultimate: 0
+  lowHealthProspective: 0
+  armorMod: 1
+  lifesteal: 0
   gameManager: {fileID: 1339880051}
+  affect: {fileID: 0}
   explosion: {fileID: 1000013462590818, guid: ecdd96beb7f93494880c052dfccf9dc1, type: 3}
   weaponPrefab: {fileID: 176594, guid: 703462a003caf6749b34b0854291a524, type: 3}
   weaponSpawn1: {fileID: 1618123485}
@@ -29086,7 +29129,11 @@ MonoBehaviour:
   abilityButton: {fileID: 1406448387}
   abilityCooldown: 5
   ultimateCooldown: 60
+  attackSpeed: 0
+  attackSpeedBoost: 1
   weaponCooldown: 2.5
+  autoAttack: 0
+  stanceAttackSpeedBonus: 1
   mainEnemy: {fileID: 0}
   otherShips:
   - {fileID: 0}
@@ -29098,6 +29145,8 @@ MonoBehaviour:
   warpIn: {fileID: 1149493179}
   warpWindow: {fileID: 7732441188150326603, guid: 4d7972b5b093ff24e8b75952ec59dd56,
     type: 3}
+  lowHP: 0
+  SFX: {fileID: 0}
   SFX_explode: {fileID: 8300000, guid: 80164361c240b3b4abdd3400c9c3fb77, type: 3}
   SFX_lowHealth: {fileID: 8300000, guid: d68b106e565fea140be8e2567e918383, type: 3}
   weapons: {fileID: 141064, guid: e47f6515202c70e44b65a5f7a46510ab, type: 3}
@@ -29106,6 +29155,7 @@ MonoBehaviour:
   supportTarget: {fileID: 0}
   hasteActive: {fileID: 0}
   hasteRemain: {fileID: 0}
+  healAmount: 0
   SFX_Heal: {fileID: 8300000, guid: 0b4ef63205111fd48a0d2ea733036d7b, type: 3}
 --- !u!4 &1099133340 stripped
 Transform:
@@ -32809,7 +32859,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Player: {fileID: 1478765750860414}
   stageManager: {fileID: 274446666}
-  targets: {fileID: 1727249781}
   playerButtons: {fileID: 671322362}
   map: {fileID: 73223362}
   focusUI: {fileID: 0}
@@ -32931,7 +32980,6 @@ MonoBehaviour:
       m_Groups: 
       m_Action: Focus Toggle
       m_Flags: 0
-  tutorialManager: {fileID: 704081778}
   warpFlash: {fileID: 812197119}
   warpPrefab: {fileID: 3709907576564467083, guid: d51393f5043d312458db73e4508f5252,
     type: 3}
@@ -41774,6 +41822,9 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  main: {fileID: 0}
+  leftTurret: {fileID: 0}
+  rightTurret: {fileID: 0}
 --- !u!1 &1735362276
 GameObject:
   m_ObjectHideFlags: 0
@@ -49460,20 +49511,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a2c4a39701ef5544a0d63a60c3cb27e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  attackDamage: 20
-  healTime: 1.5
-  punishShots: 10
-  damageMod: 1
-  armorMod: 1
-  healPercent: 0.5
+  attr: {fileID: 11400000, guid: 002c0366a3d4cfb45ab30c6a59d5585a, type: 2}
+  level: 1
   damageText: {fileID: 1169183755}
   healthBar: {fileID: 1280044416}
   laserEmitter: {fileID: 1403415241}
-  foreCannons: {fileID: 335840927}
-  aftCannons: {fileID: 340322861}
+  foreTurret: {fileID: 335840927}
+  aftTurret: {fileID: 340322861}
   flareLoc: {fileID: 1498762231}
-  basicCannon: {fileID: 161724, guid: fec710d6f8ab81c4c9edff6545732936, type: 3}
+  basicTurretShot: {fileID: 199764, guid: a722c1f6fea53614a920ed802bff377d, type: 3}
   warningFlare: {fileID: 7166164739200910186, guid: 28975ad4756aaf94fb3dc170d0456f10,
     type: 3}
   healEffect: {fileID: 1077433979050930671, guid: 34aa31306c70ebb4998f88abfaa20681,
@@ -49487,11 +49533,7 @@ MonoBehaviour:
   textureLengthScale: 3
   affect: {fileID: 1339880058}
   manager: {fileID: 1339880051}
-  maxShield: 2.5
-  fusionAlpha: 10
-  retaliateDamage: 25
-  globalCooldown: 2.5
-  healCooldown: 5
+  skillCooldown: 2.5
   ultimateCooldown: 30
   fusionCannon: {fileID: 468083735}
   fusionCannonPrefab: {fileID: 178846, guid: 0d40627991c244c44b13eb93f05b4f91, type: 3}

@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba4d499d2b74c934fb549b6cc19ed65c, type: 3}
+  m_Name: Enemy Attributes
+  m_EditorClassIdentifier: 
+  baseHealth: 50
+  level2Health: 100
+  level3Health: 250
+  baseArmour: 1
+  level2Armour: 1
+  level3Armour: 0.75
+  baseTurretDamage: 2
+  level2TurretDamage: 5
+  level3TurretDamage: 10
+  baseForeShots: 2
+  level2ForeShots: 3
+  level3ForeShots: 5
+  baseAftShots: 1
+  level2AftShots: 2
+  level3AftShots: 4
+  baseFusionCannonDamage: 10
+  level2FusionCannonDamage: 15
+  level3FusionCannonDamage: 20
+  baseHealPunishShots: 5
+  level2HealPunishShots: 10
+  level3HealPunishShots: 15
+  baseShieldDuration: 2.5
+  level2ShieldDuration: 3.5
+  level3ShieldDuration: 5
+  baseLaserDamage: 25
+  level2LaserDamage: 35
+  level3LaserDamage: 50
+  baseDisableDuration: 10
+  level2DisableDuration: 15
+  level3DisableDuration: 20
+  baseHealPercent: 0.5
+  level2HealPercent: 0.65
+  level3HealPercent: 0.8
+  baseHealDelay: 2.5
+  level2HealDelay: 1.5
+  level3HealDelay: 0.5

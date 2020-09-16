@@ -1,88 +1,47 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "PlayerAttributes", menuName = "Balance/playerAttributes", order = 1)]
+[CreateAssetMenu(fileName = "PlayerAttributes", menuName = "Balance/Player Attributes", order = 1)]
 public class PlayerAttributes : ScriptableObject
 {
     [Header("Basic Attributes")]
-    public int frigateDamage;
+    [Tooltip("Maximum health")]
+    public float baseHealth;
 
-    public int supportDamage;
-    public float attackSpeed; //Speed of attacks when attacking
+    public float level2Health, level3Health;
 
-    [Space]
-    public int frigateHealth; //Health of centre ship
+    [Tooltip("Auto-attack damage")]
+    public float baseDamage, level2Damage, level3Damage;
 
-    public int supportHealth; //Health of support ships
+    [Tooltip("Shots from fore cannon when offensive action taken")]
+    public float baseForeShots, level2ForeShots, level3ForeShots;
 
-    public float armorModifier; //Modifier for strength of armor
+    [Tooltip("Shots from aft cannon when defensive action taken")]
+    public float baseAftShots, level2AftShots, level3AftShots;
 
-    [Space]
-    public float respawnTimer;
+    public float baseArmour, level2Armour, level3Armour;
 
-    [Header("Basic Abilities")]
-    public int fusionCannon;
+    [Header("Abilities")]
+    public float baseFusionCannonDamage;
 
-    public float cannonSpeedBoost;
-    public int retaliateDamage;
-    public float retaliateJamLength;
+    public float level2FusionCannonDamage, level3FusionCannonDamage;
 
-    [Range(0, 1)]
-    public float percentHeal;
+    [Tooltip("Shots fired when punishing heal frame - fired from both cannons")]
+    public int baseHealPunishShots, level2HealPunishShots, level3HealPunishShots;
 
-    [Range(0, 1)]
-    public float lifesteal;
+    public float baseShieldDuration, level2ShieldDuration, level3ShieldDuration;
 
-    [Header("Attack Upgrades")]
-    public int upgradedFrigateDamage;
+    public int baseRetaliateDamage, level2RetaliateDamage, level3RetaliateDamage;
 
-    public int upgradedSupportDamage;
+    [Tooltip("Disable duration on outgoing laser")]
+    public float baseDisableDuration, level2DisableDuration, level3DisableDuration;
 
-    public float upgradeAttackSpeed;
+    [Range(0f, 1f)]
+    public float baseHealPercent, level2HealPercent, level3HealPercent;
 
-    public int maxFrigateDamage;
-    public int maxSupportDamage;
-    public float maxAttackSpeed;
-
-    [Header("Defense Upgrades")]
-    public int upgradedFrigateHealth;
-
-    public int upgradedSupportHealth;
-    public float upgradedArmorMoifier;
-
-    public int maxFrigateHealth;
-    public int maxSupportHealth;
-    public float maxArmorModifier;
-
-    [Header("Skills upgrade")]
-    public int fusionCannonUpgrade;
-
-    public float cannonSpeedBoostUpgrade;
-
-    public int retaliateDamageUpgrade;
-    public float retaliateJamUpgrade;
-
-    [Range(0, 1)]
-    public float percentHealUpgrade;
-
-    [Range(0, 1)]
-    public float lifestealUpgrade;
-
-    public int maxFusionCannon;
-    public float maxCannonSpeedBoost;
-    public int maxRetaliateDamage, maxRetaliateJam;
-
-    [Range(0, 1)]
-    public float maxPercentHeal;
-
-    [Range(0, 1)]
-    public float maxLifesteal;
-
-    [Header("Ultimate")]
-    public float hasteMultiplier;
-
-    public float hasteMultiplierUpgrade;
-    public float hasteTime;
+    public float baseHealDelay, level2HealDelay, level3HealDelay;
 
     [Header("Cooldowns")]
+    public float skillCooldown;
+
     public float ultimateCD;
 }

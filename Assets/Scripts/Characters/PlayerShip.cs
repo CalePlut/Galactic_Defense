@@ -6,16 +6,9 @@ using UnityEditor;
 
 public class PlayerShip : BasicShip
 {
-    [Header("Basic Attributes - PC")]
-    public float maxShield = 2.5f;
+    [Header("Cooldowns")]
+    public float skillCooldown = 2.5f;
 
-    public bool shielded { get; private set; } = false;
-    public float shieldPower { get; private set; } = 2.5f;
-    public float fusionAlpha = 10.0f;
-    public float retaliateDamage;
-
-    public float globalCooldown = 2.5f;
-    public float healCooldown = 5.0f;
     public float ultimateCooldown = 30.0f;
 
     private GameObject enemyShipObj;
@@ -48,13 +41,22 @@ public class PlayerShip : BasicShip
     public basicButton ultimateButton;
     public buttonManager buttonManager;
 
+    //Internal Mechanics
     private bool retaliate = false; //Variables for shield mechanics
+
     private GameObject shield;
+    private int attackLevel = 1, defenseLevel = 1, specialLevel = 1;
 
     public void SetEnemyReference(GameObject _enemyShipObj)
     {
         enemyShipObj = _enemyShipObj;
         enemyShip = enemyShipObj.GetComponent<EnemyShip>();
+    }
+
+    public override void SetDefense(int level)
+    {
+        base.SetDefense(level);
+        shieldStamina.setStamina(shieldDuration);
     }
 
     #region Abilities
@@ -63,7 +65,7 @@ public class PlayerShip : BasicShip
     {
         if (cannonButton.canActivate())
         {
-            cannonButton.sendToButton(globalCooldown);
+            cannonButton.sendToButton(skillCooldown);
         }
     }
 
@@ -76,7 +78,7 @@ public class PlayerShip : BasicShip
         //Debug.Log("Firing Fusion Cannon");
         var targetObj = enemyShipObj;
         var target = targetObj.GetComponent<EnemyShip>();
-        var damage = fusionAlpha;
+        var damage = fusionCannonDamage;
         if (target.alive)
         {
             fusionCannon.transform.LookAt(target.transform);
@@ -93,13 +95,13 @@ public class PlayerShip : BasicShip
             //Debug.Log("Checking if target is healing and firing");
             if (target.healing)
             {
-                HealPunish(target, punishShots);
+                HealPunish(target);
                 valenceEmotion = new Emotion(EmotionDirection.increase, EmotionStrength.strong);
                 tensionEmotion = new Emotion(EmotionDirection.decrease, EmotionStrength.weak);
             }
             else
             {
-                StartCoroutine(FireBroadside(enemyShip, cannonPosition.fore, 3));
+                StartCoroutine(FireBroadside(enemyShip, turretPosition.fore, foreShots));
             }
             affect.CreatePastEvent(valenceEmotion, null, tensionEmotion, 10.0f);
         }
@@ -111,7 +113,7 @@ public class PlayerShip : BasicShip
     {
         if (shieldButton.canActivate())
         {
-            shieldButton.sendToButton(healCooldown);
+            shieldButton.sendToButton(skillCooldown);
         }
     }
 
@@ -125,8 +127,7 @@ public class PlayerShip : BasicShip
         var healValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
         var healTension = new Emotion(EmotionDirection.decrease, EmotionStrength.weak);
         affect.CreatePastEvent(healValence, null, healTension, 10.0f);
-
-        FireBroadside(enemyShip, cannonPosition.aft, 2);
+        StartCoroutine(FireBroadside(enemyShip, turretPosition.aft, aftShots));
     }
 
     /// <summary>
@@ -136,15 +137,6 @@ public class PlayerShip : BasicShip
     {
         base.HealTrigger();
         Cooldown();
-    }
-
-    /// <summary>
-    /// Used between stages to fully heal ship
-    /// </summary>
-    public void FullHeal()
-    {
-        health = maxHealth;
-        healthBar.addValue((int)maxHealth);
     }
 
     public void UltimateTrigger()
@@ -161,21 +153,21 @@ public class PlayerShip : BasicShip
     public void Ultimate()
     {
         buttonManager.refreshAllCooldowns();
-        StartCoroutine(FireBroadside(enemyShip, cannonPosition.fore, 5));
-        StartCoroutine(FireBroadside(enemyShip, cannonPosition.aft, 5));
+        StartCoroutine(FireBroadside(enemyShip, turretPosition.fore, healPunishShots));
+        StartCoroutine(FireBroadside(enemyShip, turretPosition.aft, healPunishShots));
     }
 
     /// <summary>
     /// For now, disables a random part between cannon or heal (creates 30 second cooldown)
     /// </summary>
-    public void PartDisable()
+    public override void DisableShot(float duration)
     {
         var whichPart = Random.value > 0.5f;
         if (whichPart)
         {
-            cannonButton.StartCooldown(30.0f, Color.red);
+            cannonButton.StartCooldown(duration, Color.red);
         }
-        else { healButton.StartCooldown(30.0f, Color.red); }
+        else { healButton.StartCooldown(duration, Color.red); }
     }
 
     private void Cooldown()
@@ -257,10 +249,11 @@ public class PlayerShip : BasicShip
     public void Retaliate()
     {
         var emitter = laserEmitter.position;
-        var damage = retaliateDamage;
+        var damage = laserDamage;
 
         SpawnLaser(emitter, enemyShipObj.transform.position);
-        enemyShip.TakeDamage(Mathf.RoundToInt(damage));
+        enemyShip.TakeDamage(damage);
+        enemyShip.DisableShot(disableDuration);
     }
 
     #endregion Laser Barrage
@@ -273,14 +266,20 @@ public class PlayerShip : BasicShip
 
     public void UpgradeAttack()
     {
+        attackLevel++;
+        SetAttack(attackLevel);
     }
 
     public void UpgradeDefense()
     {
+        defenseLevel++;
+        SetDefense(defenseLevel);
     }
 
     public void UpgradeSpecial()
     {
+        specialLevel++;
+        SetSpecial(specialLevel);
     }
 
     // Start is called before the first frame update

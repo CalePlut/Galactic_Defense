@@ -4,27 +4,31 @@ using UnityEngine;
 using UnityEngine.Video;
 using SciFiArsenal;
 
-public enum cannonPosition { fore, aft };
+public enum turretPosition { fore, aft };
 
 public class BasicShip : MonoBehaviour
 {
-    [Header("Basic Attributes - Base")]
-    public float maxHealth = 100.0f;
+    [Header("Attributes")]
+    public ShipAttributes attr;
 
-    public float attackDamage;
+    protected float maxHealth, health;
 
-    public float health { get; protected set; } = 100.0f;
-    public float healTime = 0.75f; //Time until the heal starts after triggered
-    public bool healing { get; protected set; } = false;
-    public int punishShots;
+    protected float armour;
 
-    [Header("Modifiers")]
-    public float damageMod = 1.0f;
+    protected float turretDamage;
+    protected int foreShots, aftShots;
 
-    public float armorMod = 1.0f;
+    protected float fusionCannonDamage;
+    protected int healPunishShots;
+    protected float shieldDuration;
+    protected float laserDamage;
+    protected float disableDuration;
+    public bool shielded { get; protected set; } = false;
 
-    [Range(0.0f, 1.0f)]
-    public float healPercent;
+    protected float healPercent, healDelay;
+
+    public bool healing { get; private set; } = false;
+    public int level = 1;
 
     [Header("UI")]
     public damageText damageText;
@@ -34,12 +38,12 @@ public class BasicShip : MonoBehaviour
     [Header("Weapons - Base")]
     public Transform laserEmitter;
 
-    public Transform foreCannons;
-    public Transform aftCannons;
+    public Transform foreTurret;
+    public Transform aftTurret;
 
     public Transform flareLoc;
 
-    public GameObject basicCannon;
+    public GameObject basicTurretShot;
 
     [Header("Effects - Base")]
     public GameObject warningFlare;
@@ -75,9 +79,69 @@ public class BasicShip : MonoBehaviour
         affect = cameraObj.GetComponent<AffectManager>();
         manager = cameraObj.GetComponent<GameManager>();
 
-        health = maxHealth;
+        SetAttributes(level);
         healthBar.Refresh(maxHealth, health);
         alive = true;
+    }
+
+    /// <summary>
+    /// Sets all attributes based on level
+    /// Used in initial setups and spawning enemies
+    /// Also fully heals ship
+    /// </summary>
+    /// <param name="level"></param>
+    public void SetAttributes(int level)
+    {
+        SetAttack(level);
+        SetDefense(level);
+        SetSpecial(level);
+        FullHeal();
+    }
+
+    /// <summary>
+    /// Sets attack attributes based on level
+    /// Resets health
+    /// </summary>
+    /// <param name="level"></param>
+    public virtual void SetAttack(int level)
+    {
+        turretDamage = attr.turretDamage(level);
+        foreShots = attr.foreShots(level);
+        aftShots = attr.aftShots(level);
+        healPunishShots = attr.healPunishShots(level);
+    }
+
+    /// <summary>
+    /// Sets defense attributes based on level
+    /// </summary>
+    /// <param name="level"></param>
+    public virtual void SetDefense(int level)
+    {
+        maxHealth = attr.health(level);
+        disableDuration = attr.disableDuration(level);
+        armour = attr.armour(level);
+        shieldDuration = attr.shieldDuration(level);
+    }
+
+    /// <summary>
+    /// Sets special attributes based on level
+    /// </summary>
+    /// <param name="level"></param>
+    public virtual void SetSpecial(int level)
+    {
+        healDelay = attr.healDelay(level);
+        laserDamage = attr.laserDamage(level);
+        fusionCannonDamage = attr.fusionCannonDamage(level);
+        healPercent = attr.healPercent(level);
+    }
+
+    /// <summary>
+    /// Used between stages to fully heal ship
+    /// </summary>
+    public void FullHeal()
+    {
+        health = maxHealth;
+        healthBar.addValue((int)maxHealth);
     }
 
     /// <summary>
@@ -88,7 +152,7 @@ public class BasicShip : MonoBehaviour
     {
         if (alive)
         {
-            var damage = _damage * armorMod;
+            var damage = _damage * armour;
             var intDamage = Mathf.RoundToInt(damage);
             var percent = damage / health;
 
@@ -100,39 +164,43 @@ public class BasicShip : MonoBehaviour
         }
     }
 
+    public virtual void DisableShot(float duration)
+    {
+    }
+
     /// <summary>
     /// Fires cannons "shots" number of times,
     /// </summary>
     /// <param name="target">Target</param>
     /// <param name="position">Fore (aggressive) or Aft (defensive)</param>
-    /// <param name="shots">Number of shots to fire</param>
+    /// <param name="shots"># of shots. Yes, this seems redundant, but it turns out healPunish needs this. Whoops</param>
     /// <returns></returns>
-    protected IEnumerator FireBroadside(BasicShip target, cannonPosition position, int shots)
+    protected IEnumerator FireBroadside(BasicShip target, turretPosition position, int shots)
     {
         //Debug.Log("Firing " + shots + " shots from " + position);
         var remainingShots = shots;
 
         while (remainingShots > 0)
         {
-            var damage = attackDamage * damageMod;
+            var damage = turretDamage;
             if (target.alive)
             {
                 //Sets somewhat random position based on cannon position
-                var pos = foreCannons.position;
-                if (position == cannonPosition.aft)
+                var pos = foreTurret.position;
+                if (position == turretPosition.aft)
                 {
-                    pos = aftCannons.position;
+                    pos = aftTurret.position;
                 }
                 pos.z += Random.Range(-5, 5);
 
                 //Fires cannon from position
-                var cannon = Instantiate(basicCannon, pos, Quaternion.identity);
+                var cannon = Instantiate(basicTurretShot, pos, Quaternion.identity);
                 cannon.transform.SetParent(this.transform);
                 cannon.gameObject.tag = tag;
                 cannon.layer = 9;
                 cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, target);
                 cannon.transform.LookAt(target.transform);
-                cannon.GetComponent<Rigidbody>().AddForce(foreCannons.transform.forward * 2500);
+                cannon.GetComponent<Rigidbody>().AddForce(foreTurret.transform.forward * 2500);
 
                 //Removes shot from remaining
                 remainingShots--;
@@ -140,15 +208,6 @@ public class BasicShip : MonoBehaviour
 
             yield return new WaitForSeconds(0.23075f); //Waits 1 eighth note at 130 bpm
         }
-    }
-
-    /// <summary>
-    /// Begins healing process
-    /// </summary>
-    public virtual void HealTrigger()
-    {
-        StartCoroutine(HealDelay());
-        SpecialIndicator(Color.green, healTime);
     }
 
     /// <summary>
@@ -171,18 +230,27 @@ public class BasicShip : MonoBehaviour
     /// <summary>
     /// Called during special attack, if a heal is being interrupted
     /// </summary>
-    public virtual void HealPunish(BasicShip target, int shots)
+    public virtual void HealPunish(BasicShip target)
     {
         //Debug.Log("Punishing Heal");
         target.healing = false;
-        StartCoroutine(FireBroadside(target, cannonPosition.fore, shots));
-        StartCoroutine(FireBroadside(target, cannonPosition.aft, shots));
+        StartCoroutine(FireBroadside(target, turretPosition.fore, healPunishShots));
+        StartCoroutine(FireBroadside(target, turretPosition.aft, healPunishShots));
+    }
+
+    /// <summary>
+    /// Begins healing process
+    /// </summary>
+    public virtual void HealTrigger()
+    {
+        StartCoroutine(HealDelay());
+        SpecialIndicator(Color.green, healDelay);
     }
 
     public IEnumerator HealDelay()
     {
         healing = true;
-        var timer = healTime;
+        var timer = healDelay;
         while (timer > 0.0f)
         {
             timer -= Time.deltaTime;

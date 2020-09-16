@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
 
     public stageManager stageManager;
 
-    public TargetManager targets;
+    //  public TargetManager targets;
 
     [Header("Managers")]
     public buttonManager playerButtons;
@@ -104,7 +104,7 @@ public class GameManager : MonoBehaviour
 
     #region tutorial
 
-    public TutorialManager tutorialManager;
+    //  public TutorialManager tutorialManager;
 
     #endregion tutorial
 
@@ -133,11 +133,6 @@ public class GameManager : MonoBehaviour
     //        targets.advanceTarget();
     //    }
     //}
-
-    public void addTurrettoTargetting(Turret _toRespawn)
-    {
-        targets.addShip(_toRespawn);
-    }
 
     #endregion Deaths and Respawns
 

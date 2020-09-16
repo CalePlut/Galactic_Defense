@@ -7,11 +7,6 @@ using System.Threading;
 using UnityEngine;
 
 /// <summary>
-/// Attack type is used only in selecting which move to fire by the AI
-/// </summary>
-public enum AttackType { foreTurret, aftTurret, specialAttack, heal }
-
-/// <summary>
 /// The EnemyCore Controls the enemy behaviour. Uses CombatAI to execute attack patterns and track tension.
 /// </summary>
 public class EnemyCore : MonoBehaviour

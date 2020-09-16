@@ -79,7 +79,7 @@ public class Turret : EnemyBase
         transform.position = targetPos;
         transform.localScale = new Vector3(1, 1, 1);
 
-        gameManager.addTurrettoTargetting(this); //Except for this part, which adds the turret back to the gm.
+       //gameManager.addTurrettoTargetting(this); //Except for this part, which adds the turret back to the gm.
         healthBar.gameObject.SetActive(true);
         health = maxHealth;
         healthBar.Refresh(maxHealth, health);

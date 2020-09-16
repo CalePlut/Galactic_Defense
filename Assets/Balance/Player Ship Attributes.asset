@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba4d499d2b74c934fb549b6cc19ed65c, type: 3}
+  m_Name: Player Ship Attributes
+  m_EditorClassIdentifier: 
+  baseHealth: 100
+  level2Health: 150
+  level3Health: 200
+  baseArmour: 1
+  level2Armour: 0.9
+  level3Armour: 0.75
+  baseTurretDamage: 2
+  level2TurretDamage: 4
+  level3TurretDamage: 6
+  baseForeShots: 3
+  level2ForeShots: 4
+  level3ForeShots: 5
+  baseAftShots: 2
+  level2AftShots: 3
+  level3AftShots: 4
+  baseFusionCannonDamage: 10
+  level2FusionCannonDamage: 20
+  level3FusionCannonDamage: 30
+  baseHealPunishShots: 10
+  level2HealPunishShots: 12
+  level3HealPunishShots: 15
+  baseShieldDuration: 1.5
+  level2ShieldDuration: 2.5
+  level3ShieldDuration: 4
+  baseLaserDamage: 5
+  level2LaserDamage: 10
+  level3LaserDamage: 15
+  baseDisableDuration: 2.5
+  level2DisableDuration: 5
+  level3DisableDuration: 10
+  baseHealPercent: 0.5
+  level2HealPercent: 0.75
+  level3HealPercent: 0.9
+  baseHealDelay: 2.5
+  level2HealDelay: 1.5
+  level3HealDelay: 1
