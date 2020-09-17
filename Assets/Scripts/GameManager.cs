@@ -21,6 +21,12 @@ public class GameManager : MonoBehaviour
 
     #endregion Player Variables and Objects
 
+    #region Affect Variables
+
+    private string VAT;
+
+    #endregion Affect Variables
+
     #region Managers
 
     private AffectManager affect;
@@ -209,7 +215,7 @@ public class GameManager : MonoBehaviour
     {
         //First we do the special effects
         //affect.musicControl = false;
-        music.RunActionPreset("HyperSpace");
+        music.RunActionPreset("Hyperspace");
         yield return new WaitForSeconds(2.5f);
         EnterHyperspace();
         yield return new WaitForSeconds(1.0f);
@@ -321,7 +327,7 @@ public class GameManager : MonoBehaviour
 
     public void startCombat()
     {
-        music.RunActionPreset("StartCombat");
+        music.RunActionPreset("Mid-Mid-Mid");
         //affect.musicControl = true;
         EnemyCompositionSetup();
 
@@ -336,6 +342,15 @@ public class GameManager : MonoBehaviour
         else if (stage == 3)
         {
             affect.setMood(OrdinalAffect.medium, OrdinalAffect.high, OrdinalAffect.medium);
+        }
+    }
+
+    private void CombatAffectUpdate()
+    {
+        if (VAT != affect.GetMusicLevel())
+        {
+            VAT = affect.GetMusicLevel();
+            music.RunActionPreset(VAT);
         }
     }
 
@@ -547,7 +562,7 @@ public class GameManager : MonoBehaviour
         skillUpgrade = 0;
         //SetupShips();
 
-        music.RunActionPreset("HyperSpace");
+        music.RunActionPreset("Hyperspace");
         EnterHyperspace();
         mapMenu.SetActive(true);
         stage = 1;
@@ -568,6 +583,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     private void Update() //non-combat hotkeys
     {
+        CombatAffectUpdate();
         if (screenshot.triggered)
         {
             var now = System.DateTime.Now.ToString("M-dd-H-mm");

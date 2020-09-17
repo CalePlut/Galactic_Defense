@@ -131,7 +131,7 @@ public class AffectManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Processes emotion values as derived from event processing.
+    /// Processes emotion values as derived from event processing, and updates music string if there is a change in emotion.
     /// </summary>
     private void ProcessEmotions(float valenceChange, float arousalChange, float tensionChange)
     {
@@ -145,6 +145,28 @@ public class AffectManager : MonoBehaviour
         valenceDisplay.UpdateAffect(valence);
         arousalDisplay.UpdateAffect(arousal);
         tensionDisplay.UpdateAffect(tension);
+    }
+
+    public string GetMusicLevel()
+    {
+        var musicLevel = convertToString(valence) + "-" + convertToString(arousal) + "-" + convertToString(tension);
+        return musicLevel;
+    }
+
+    private string convertToString(OrdinalAffect affect)
+    {
+        if (affect == OrdinalAffect.low)
+        {
+            return "Low";
+        }
+        else if (affect == OrdinalAffect.high)
+        {
+            return "High";
+        }
+        else
+        {
+            return "Mid";
+        }
     }
 
     private OrdinalAffect ProcessEmotion(OrdinalAffect mood, float emotionValue)
