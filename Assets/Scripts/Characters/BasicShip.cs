@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.Video;
 using SciFiArsenal;
 
@@ -51,6 +52,8 @@ public class BasicShip : MonoBehaviour
     public GameObject healEffect;
 
     public GameObject explosion;
+    public AudioClip SFX_Explosion;
+    protected AudioSource SFX;
 
     [Header("Laser objects")]
     public GameObject beamStartPrefab;
@@ -75,6 +78,7 @@ public class BasicShip : MonoBehaviour
     /// </summary>
     public virtual void ShipSetup()
     {
+        SFX = GetComponent<AudioSource>();
         var cameraObj = GameObject.Find("Main Camera");
         affect = cameraObj.GetComponent<AffectManager>();
         manager = cameraObj.GetComponent<GameManager>();
@@ -295,6 +299,7 @@ public class BasicShip : MonoBehaviour
     protected virtual void die()
     {
         alive = false;
+        SFX.PlayOneShot(SFX_Explosion);
         var deathExplode = Instantiate(explosion, this.transform.position, Quaternion.identity, this.transform);
         StartCoroutine(death());
     }

@@ -25,8 +25,6 @@ public class PlayerShip : BasicShip
     public shieldStamina shieldStamina;
 
     [Header("Ship-specific Audio")]
-    public AudioSource SFX;
-
     public AudioClip SFX_shieldActivate;
 
     public AudioClip SFX_absorbAttack;//, SFX_retaliate;
