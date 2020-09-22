@@ -52,6 +52,8 @@ public class BasicShip : MonoBehaviour
     public GameObject healEffect;
     private GameObject warningFlareRuntimeObject;
 
+    public GameObject nearDeathFirePrefab, nearDeathFire;
+
     public GameObject explosion;
     public GameObject fire;
     public AudioClip SFX_Explosion;

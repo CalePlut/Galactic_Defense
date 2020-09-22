@@ -60,7 +60,7 @@ public class PlayerShip : BasicShip
     public override void SetDefense(int level)
     {
         base.SetDefense(level);
-        shieldStamina.setStamina(shieldDuration);
+        shieldStamina.SetStamina(shieldDuration);
     }
 
     #region Abilities
@@ -251,7 +251,7 @@ public class PlayerShip : BasicShip
         shield.tag = "Player";
         shield.name = "Shield";
         shield.transform.SetParent(this.transform);
-        shield.transform.localScale = new Vector3(10, 10, 10);
+        shield.transform.localScale = new Vector3(4, 4, 4);
         StartCoroutine(ShieldSustain());
     }
 
@@ -261,7 +261,7 @@ public class PlayerShip : BasicShip
     /// <returns></returns>
     private IEnumerator ShieldSustain()  //Keeps shield up for duration, and removes afterwards
     {
-        shieldStamina.shieldsUp(); //Passes shields up message to shieldsustain bar
+        shieldStamina.ShieldsUp(); //Passes shields up message to shieldsustain bar
 
         while (shieldStamina.shielded)
         {
@@ -270,6 +270,14 @@ public class PlayerShip : BasicShip
 
         //Shields down
         ShieldsDown();
+    }
+
+    /// <summary>
+    /// If shield is hit by a cannon shot, drain a small amount of stamina.
+    /// </summary>
+    public void ShieldHit(float _damage)
+    {
+        shieldStamina.StaminaChunk(_damage * 0.25f);
     }
 
     /// <summary>
@@ -284,7 +292,7 @@ public class PlayerShip : BasicShip
         }
         retaliate = false;
 
-        shieldStamina.shieldsDown();
+        shieldStamina.ShieldDown();
         shielded = false;
         Destroy(shield);
     }
@@ -294,6 +302,8 @@ public class PlayerShip : BasicShip
         SFX.PlayOneShot(SFX_absorbAttack);
         //abilityButton.alterCooldown(1.5f);
         retaliate = true;
+
+        shieldStamina.AbsorbAttack();
 
         var parryValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
         var parryArousal = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);

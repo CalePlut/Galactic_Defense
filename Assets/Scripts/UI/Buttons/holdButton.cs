@@ -16,7 +16,7 @@ public class holdButton : basicButton
         if (release.triggered)
         {
             ship.ShieldsDown();
-            StartCooldown(myCD);
+            //StartCooldown(myCD);
         }
 
         base.Behaviour();

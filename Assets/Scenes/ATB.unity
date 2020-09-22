@@ -16617,7 +16617,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 15}
-  m_SizeDelta: {x: 0, y: 40}
+  m_SizeDelta: {x: 180, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &460374684
 MonoBehaviour:
@@ -16664,9 +16664,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 0}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 2.5
+  m_MaxValue: 10
   m_WholeNumbers: 0
-  m_Value: 2.5
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -16683,7 +16683,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxStamina: 2.5
-  rechargeSpeed: 0.25
+  rechargeSpeed: 0.1
   recoverySpeed: 0.1
   display: {fileID: 460374684}
   fill: {fileID: 624207062}
@@ -49245,6 +49245,8 @@ MonoBehaviour:
     type: 3}
   healEffect: {fileID: 1077433979050930671, guid: 34aa31306c70ebb4998f88abfaa20681,
     type: 3}
+  nearDeathFirePrefab: {fileID: 0}
+  nearDeathFire: {fileID: 0}
   explosion: {fileID: 1000011797152326, guid: acf39d9f4addf294d93fa56fa373961b, type: 3}
   fire: {fileID: 118086, guid: 0b4783e4abed86a40961a2180adca3b0, type: 3}
   SFX_Explosion: {fileID: 8300000, guid: 80164361c240b3b4abdd3400c9c3fb77, type: 3}
@@ -49257,7 +49259,7 @@ MonoBehaviour:
   affect: {fileID: 1339880058}
   manager: {fileID: 1339880051}
   attackCooldown: 1.5
-  shieldCooldown: 0.5
+  shieldCooldown: 0.25
   healCooldown: 2.5
   ultimateCooldown: 30
   retaliateCannon: {fileID: 468083735}

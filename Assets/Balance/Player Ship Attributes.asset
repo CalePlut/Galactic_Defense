@@ -33,9 +33,9 @@ MonoBehaviour:
   baseHealPunishShots: 10
   level2HealPunishShots: 12
   level3HealPunishShots: 15
-  baseShieldDuration: 1.5
-  level2ShieldDuration: 2.5
-  level3ShieldDuration: 4
+  baseShieldDuration: 20
+  level2ShieldDuration: 30
+  level3ShieldDuration: 45
   baseLaserDamage: 5
   level2LaserDamage: 10
   level3LaserDamage: 15

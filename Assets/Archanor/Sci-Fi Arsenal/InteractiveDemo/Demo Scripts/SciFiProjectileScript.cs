@@ -68,6 +68,11 @@ namespace SciFiArsenal
                         {
                             target.TakeDamage(damage);
                         }
+                        else
+                        {
+                            var player = GameObject.Find("Player Ship");
+                            player.GetComponent<PlayerShip>().ShieldHit(damage);
+                        }
 
                         ////Here we compare to enemy base and deal damage ON HIT, not on spawn.
                         //if (!(hit.gameObject.name == "Shield")) //Don't deal damage if we hit the shield.

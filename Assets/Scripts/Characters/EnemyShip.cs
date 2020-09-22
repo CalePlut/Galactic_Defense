@@ -21,6 +21,8 @@ public class EnemyShip : BasicShip
     private PlayerShip playerShip;
     public GameObject warpEffect;
 
+    public GameObject jamFirePrefab, jamFire;
+
     #region Combat AI variables
 
     private int comboMax = 2;

@@ -11,6 +11,8 @@ public class shieldStamina : MonoBehaviour
     public bool shielded { get; private set; }
     public bool recovery { get; private set; }
 
+    public bool absorbing { get; private set; }
+
     public Slider display;
     public Image fill;
     public Color mainColor, recoveryColor;
@@ -23,27 +25,42 @@ public class shieldStamina : MonoBehaviour
         fill.color = mainColor;
     }
 
-    public void shieldsUp()
+    public void ShieldsUp()
     {
         shielded = true;
     }
 
-    public void shieldsDown()
+    public void ShieldDown()
     {
         shielded = false;
+        absorbing = false;
+    }
+
+    public void AbsorbAttack()
+    {
+        absorbing = true;
     }
 
     /// <summary>
     /// Sets initial stamina
     /// </summary>
     /// <param name="_stamina"></param>
-    public void setStamina(float _stamina)
+    public void SetStamina(float _stamina)
     {
         maxStamina = _stamina;
         stamina = _stamina;
 
         display.maxValue = maxStamina;
         display.value = stamina;
+    }
+
+    /// <summary>
+    /// Chunks down the stamina by an amount
+    /// </summary>
+    /// <param name="_toChunk"></param>
+    public void StaminaChunk(float _toChunk)
+    {
+        stamina -= _toChunk;
     }
 
     // Update is called once per frame
@@ -53,7 +70,15 @@ public class shieldStamina : MonoBehaviour
         {
             if (shielded) //While we're shielded, we lose stamina at a default rate
             {
-                stamina -= Time.deltaTime;
+                if (absorbing)
+                {
+                    stamina += Time.deltaTime * 2.0f;
+                    if (stamina >= maxStamina) { absorbing = false; }
+                }
+                else
+                {
+                    stamina -= Time.deltaTime;
+                }
                 display.value = stamina;
                 if (stamina <= 0)
                 {
