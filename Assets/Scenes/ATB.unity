@@ -5322,7 +5322,7 @@ GameObject:
   - component: {fileID: 4715089}
   - component: {fileID: 4715088}
   m_Layer: 5
-  m_Name: fusionCannon
+  m_Name: attack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5412,7 +5412,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1478765750860414}
         m_TargetAssemblyTypeName: PlayerShip, Assembly-CSharp
-        m_MethodName: CannonTrigger
+        m_MethodName: attackTrigger
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5427,7 +5427,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1478765750860414}
         m_TargetAssemblyTypeName: PlayerShip, Assembly-CSharp
-        m_MethodName: FireCannon
+        m_MethodName: Attack
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5438,7 +5438,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   fill: {fileID: 1958389526}
-  myCD: 2.5
+  myCD: 1.5
   haste: 1
 --- !u!114 &4715090
 MonoBehaviour:
@@ -6000,7 +6000,7 @@ RectTransform:
   - {fileID: 443106924}
   - {fileID: 274446665}
   m_Father: {fileID: 2017490536}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -13587,7 +13587,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1339880051}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: upgradeDefense
+        m_MethodName: UpgradeDefense
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -14283,7 +14283,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1339880051}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: upgradeAttack
+        m_MethodName: UpgradeAttack
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -14366,7 +14366,7 @@ RectTransform:
   - {fileID: 757520569}
   - {fileID: 531527472}
   m_Father: {fileID: 2017490536}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -19586,6 +19586,7 @@ GameObject:
   - component: {fileID: 641168081}
   - component: {fileID: 641168083}
   - component: {fileID: 641168082}
+  - component: {fileID: 641168084}
   m_Layer: 5
   m_Name: icon
   m_TagString: Untagged
@@ -19650,6 +19651,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 641168080}
   m_CullTransparentMesh: 0
+--- !u!114 &641168084
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 641168080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0a1aeec52bee2d448fa4bcf6d1fdbdb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  combo1: {fileID: 21300000, guid: 9170967ca53818b49afeb63ea2d8c686, type: 3}
+  combo2: {fileID: 21300000, guid: 738a7648886a6b24fa03be8d247cd643, type: 3}
+  combo3: {fileID: 21300000, guid: 4e1d1db5168b71c4888f214cf804844b, type: 3}
+  combo4: {fileID: 21300000, guid: 648d0480e5c03a049bb1a44c604daf9a, type: 3}
+  combo: {fileID: 641168082}
 --- !u!1 &646614597
 GameObject:
   m_ObjectHideFlags: 0
@@ -20228,7 +20246,7 @@ RectTransform:
   - {fileID: 1406448386}
   - {fileID: 1476275552}
   m_Father: {fileID: 2017490536}
-  m_RootOrder: 4
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -20247,7 +20265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b00040d53d76b14fbbefb73cd03968a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gcdValue: 2.5
+  gcdValue: 1
   buttons:
   - {fileID: 4715089}
   - {fileID: 2100624339}
@@ -23067,7 +23085,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2017490536}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -25287,7 +25305,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1339880051}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: upgradeSkills
+        m_MethodName: UpgradeSkills
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -31816,7 +31834,7 @@ RectTransform:
   - {fileID: 73223359}
   - {fileID: 89394420}
   m_Father: {fileID: 2017490536}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -34493,8 +34511,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1478765750860414}
-        m_TargetAssemblyTypeName: BasicShip, Assembly-CSharp
-        m_MethodName: HealTrigger
+        m_TargetAssemblyTypeName: PlayerShip, Assembly-CSharp
+        m_MethodName: HealButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -34509,7 +34527,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1478765750860414}
         m_TargetAssemblyTypeName: PlayerShip, Assembly-CSharp
-        m_MethodName: Heal
+        m_MethodName: HealTrigger
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -37805,7 +37823,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: fcf19fae8c63f0c4c8c2ca41610e28e7, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ebbcd6720f322ab408884f72565a7fbc, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -46632,11 +46650,11 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
+  - {fileID: 671322361}
   - {fileID: 272056717}
   - {fileID: 1293169736}
   - {fileID: 812197118}
   - {fileID: 42979670}
-  - {fileID: 671322361}
   - {fileID: 104328764}
   - {fileID: 1984894409}
   - {fileID: 704081775}
@@ -48579,7 +48597,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   fill: {fileID: 145216106}
-  myCD: 1
+  myCD: 1.5
   haste: 1
   ship: {fileID: 1478765750860414}
   release:
@@ -49228,7 +49246,8 @@ MonoBehaviour:
   healEffect: {fileID: 1077433979050930671, guid: 34aa31306c70ebb4998f88abfaa20681,
     type: 3}
   explosion: {fileID: 1000011797152326, guid: acf39d9f4addf294d93fa56fa373961b, type: 3}
-  SFX_Explosion: {fileID: 0}
+  fire: {fileID: 118086, guid: 0b4783e4abed86a40961a2180adca3b0, type: 3}
+  SFX_Explosion: {fileID: 8300000, guid: 80164361c240b3b4abdd3400c9c3fb77, type: 3}
   beamStartPrefab: {fileID: 108584, guid: 9b0245240330cec41893d8611880df8d, type: 3}
   beamEndPrefab: {fileID: 131904, guid: 16d8536db6f4c8e469e7c0929758624d, type: 3}
   beamPrefab: {fileID: 113598, guid: 9bc40fcd7e707f149b47aa3fbb1773df, type: 3}
@@ -49237,16 +49256,19 @@ MonoBehaviour:
   textureLengthScale: 3
   affect: {fileID: 1339880058}
   manager: {fileID: 1339880051}
-  skillCooldown: 2.5
+  attackCooldown: 1.5
+  shieldCooldown: 0.5
+  healCooldown: 2.5
   ultimateCooldown: 30
-  fusionCannon: {fileID: 468083735}
-  fusionCannonPrefab: {fileID: 178846, guid: 0d40627991c244c44b13eb93f05b4f91, type: 3}
+  retaliateCannon: {fileID: 468083735}
+  disableShotPrefab: {fileID: 150084, guid: f22db53bc2b4f7f449cf627bdc581f52, type: 3}
   shieldPrefab: {fileID: 151800, guid: 8ab93d00373fccd49856789dc57b759c, type: 3}
   shieldStamina: {fileID: 460374685}
+  comboTracker: {fileID: 641168084}
   SFX_shieldActivate: {fileID: 8300000, guid: ffe099be0b34ed44da1b04457e583ff8, type: 3}
   SFX_absorbAttack: {fileID: 8300000, guid: 38445327789f7b74ea8633d5a375c9f2, type: 3}
   SFX_Heal: {fileID: 8300000, guid: 0b4ef63205111fd48a0d2ea733036d7b, type: 3}
-  cannonButton: {fileID: 4715089}
+  attackButton: {fileID: 4715089}
   shieldButton: {fileID: 2100624339}
   healButton: {fileID: 1406448387}
   ultimateButton: {fileID: 1476275547}

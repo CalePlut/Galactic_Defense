@@ -7,7 +7,10 @@ using UnityEditor;
 public class PlayerShip : BasicShip
 {
     [Header("Cooldowns")]
-    public float skillCooldown = 2.5f;
+    public float attackCooldown = 1.5f;
+
+    public float shieldCooldown = 0.5f;
+    public float healCooldown = 2.5f;
 
     public float ultimateCooldown = 30.0f;
 
@@ -15,14 +18,17 @@ public class PlayerShip : BasicShip
     private EnemyShip enemyShip;
 
     [Header("Positioning objects")]
-    public Transform fusionCannon;
+    public Transform retaliateCannon;
 
     [Header("Effects and Weapons")]
-    public GameObject fusionCannonPrefab;
+    public GameObject disableShotPrefab;
 
     public GameObject shieldPrefab;
 
     public shieldStamina shieldStamina;
+
+    private int combo = 0;
+    public comboTracker comboTracker;
 
     [Header("Ship-specific Audio")]
     public AudioClip SFX_shieldActivate;
@@ -32,7 +38,7 @@ public class PlayerShip : BasicShip
     public AudioClip SFX_Heal;
 
     [Header("Hotbar Buttons")]
-    public basicButton cannonButton;
+    public basicButton attackButton;
 
     public basicButton shieldButton;
     public basicButton healButton;
@@ -59,12 +65,42 @@ public class PlayerShip : BasicShip
 
     #region Abilities
 
-    public void CannonTrigger()
+    public void attackTrigger()
     {
-        if (cannonButton.canActivate())
+        if (attackButton.canActivate())
         {
-            cannonButton.sendToButton(skillCooldown);
+            attackButton.sendToButton(attackCooldown);
         }
+    }
+
+    /// <summary>
+    /// Basic player attack - increases combo by one and fires shots equal to combo.
+    /// At 4, fires from both turrets and resets combo.
+    /// </summary>
+    public void Attack()
+    {
+        Cooldown();
+        combo++;
+        switch (combo)
+        {
+            case 1:
+                StartCoroutine(FireBroadside(enemyShip, turretPosition.fore, 1));
+                break;
+
+            case 2:
+                StartCoroutine(FireBroadside(enemyShip, turretPosition.fore, 2));
+                break;
+
+            case 3:
+                StartCoroutine(FireBroadside(enemyShip, turretPosition.fore, 3));
+                break;
+
+            case 4:
+                FullBroadside(enemyShip, 4);
+                combo = 0;
+                break;
+        }
+        comboTracker.SetCombo(combo + 1);
     }
 
     /// <summary>
@@ -76,12 +112,12 @@ public class PlayerShip : BasicShip
         //Debug.Log("Firing Fusion Cannon");
         var targetObj = enemyShipObj;
         var target = targetObj.GetComponent<EnemyShip>();
-        var damage = fusionCannonDamage;
+        var damage = retaliateDamage;
         if (target.alive)
         {
-            fusionCannon.transform.LookAt(target.transform);
-            var cannon = Instantiate(fusionCannonPrefab, fusionCannon.position, Quaternion.identity);
-            cannon.transform.SetParent(fusionCannon);
+            retaliateCannon.transform.LookAt(target.transform);
+            var cannon = Instantiate(disableShotPrefab, retaliateCannon.position, Quaternion.identity);
+            cannon.transform.SetParent(retaliateCannon);
             cannon.gameObject.tag = tag;
             cannon.layer = 9;
             cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, enemyShip);
@@ -98,6 +134,7 @@ public class PlayerShip : BasicShip
                 tensionEmotion = new Emotion(EmotionDirection.decrease, EmotionStrength.weak);
             }
             else
+
             {
                 StartCoroutine(FireBroadside(enemyShip, turretPosition.fore, foreShots));
             }
@@ -111,7 +148,15 @@ public class PlayerShip : BasicShip
     {
         if (shieldButton.canActivate())
         {
-            shieldButton.sendToButton(skillCooldown);
+            shieldButton.sendToButton(shieldCooldown);
+        }
+    }
+
+    public void HealButton()
+    {
+        if (healButton.canActivate())
+        {
+            healButton.sendToButton(healCooldown);
         }
     }
 
@@ -121,11 +166,13 @@ public class PlayerShip : BasicShip
     public override void Heal()
     {
         base.Heal();
-
-        var healValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
-        var healTension = new Emotion(EmotionDirection.decrease, EmotionStrength.weak);
-        affect.CreatePastEvent(healValence, null, healTension, 10.0f);
-        StartCoroutine(FireBroadside(enemyShip, turretPosition.aft, aftShots));
+        if (healing)
+        {
+            var healValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+            var healTension = new Emotion(EmotionDirection.decrease, EmotionStrength.weak);
+            affect.CreatePastEvent(healValence, null, healTension, 10.0f);
+            StartCoroutine(FireBroadside(enemyShip, turretPosition.aft, 1));
+        }
     }
 
     /// <summary>
@@ -146,24 +193,41 @@ public class PlayerShip : BasicShip
     }
 
     /// <summary>
-    /// Refreshes all cooldowns and fires 5 shots from each cannon
+    /// Repairs all systems
+    /// Fires laser for large damage
+    /// If interrupting heal, fires full broadside
     /// </summary>
     public void Ultimate()
     {
         buttonManager.refreshAllCooldowns();
-        StartCoroutine(FireBroadside(enemyShip, turretPosition.fore, healPunishShots));
-        StartCoroutine(FireBroadside(enemyShip, turretPosition.aft, healPunishShots));
+        if (enemyShip.healing) { FullBroadside(enemyShip, 4); }
+        LaserFire();
+    }
+
+    /// <summary>
+    /// Fires big ol' laser
+    /// </summary>
+    public void LaserFire()
+    {
+        var emitter = laserEmitter.position;
+        var damage = laserDamage;
+
+        SpawnLaser(emitter, enemyShipObj.transform.position);
+        enemyShip.TakeDamage(damage);
+        enemyShip.DisableShot(disableDuration);
     }
 
     /// <summary>
     /// For now, disables a random part between cannon or heal (creates 30 second cooldown)
+    /// Also, resets combo
     /// </summary>
     public override void DisableShot(float duration)
     {
+        combo = 0;
         var whichPart = Random.value > 0.5f;
         if (whichPart)
         {
-            cannonButton.StartCooldown(duration, Color.red);
+            attackButton.StartCooldown(duration, Color.red);
         }
         else { healButton.StartCooldown(duration, Color.red); }
     }
@@ -215,6 +279,7 @@ public class PlayerShip : BasicShip
     {
         if (retaliate)
         {
+            enemyShip.InterruptLaser();
             Retaliate();
         }
         retaliate = false;
@@ -246,12 +311,18 @@ public class PlayerShip : BasicShip
     /// </summary>
     public void Retaliate()
     {
-        var emitter = laserEmitter.position;
-        var damage = laserDamage;
-
-        SpawnLaser(emitter, enemyShipObj.transform.position);
-        enemyShip.TakeDamage(damage);
-        enemyShip.DisableShot(disableDuration);
+        var targetObj = enemyShipObj;
+        var target = targetObj.GetComponent<EnemyShip>();
+        var damage = retaliateDamage;
+        if (target.alive)
+        {
+            retaliateCannon.transform.LookAt(target.transform);
+            var cannon = Instantiate(disableShotPrefab, retaliateCannon.position, Quaternion.identity);
+            cannon.transform.SetParent(retaliateCannon);
+            cannon.gameObject.tag = tag;
+            cannon.layer = 9;
+            cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, enemyShip);
+        }
     }
 
     #endregion Laser Barrage

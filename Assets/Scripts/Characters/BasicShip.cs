@@ -19,7 +19,7 @@ public class BasicShip : MonoBehaviour
     protected float turretDamage;
     protected int foreShots, aftShots;
 
-    protected float fusionCannonDamage;
+    protected float retaliateDamage;
     protected int healPunishShots;
     protected float shieldDuration;
     protected float laserDamage;
@@ -50,8 +50,10 @@ public class BasicShip : MonoBehaviour
     public GameObject warningFlare;
 
     public GameObject healEffect;
+    private GameObject warningFlareRuntimeObject;
 
     public GameObject explosion;
+    public GameObject fire;
     public AudioClip SFX_Explosion;
     protected AudioSource SFX;
 
@@ -59,6 +61,8 @@ public class BasicShip : MonoBehaviour
     public GameObject beamStartPrefab;
 
     public GameObject beamEndPrefab, beamPrefab;
+
+    private GameObject laserRuntimeObject;
 
     [Header("Laser Presentation Variables")]
     public float beamEndOffset = 1f; //How far from the raycast hit point the end effect is positioned
@@ -135,7 +139,7 @@ public class BasicShip : MonoBehaviour
     {
         healDelay = attr.healDelay(level);
         laserDamage = attr.laserDamage(level);
-        fusionCannonDamage = attr.fusionCannonDamage(level);
+        retaliateDamage = attr.fusionCannonDamage(level);
         healPercent = attr.healPercent(level);
     }
 
@@ -156,6 +160,13 @@ public class BasicShip : MonoBehaviour
     {
         if (alive)
         {
+            //If we're healing, the shot deals double damage and interrupts the heal
+            if (healing)
+            {
+                HealInterrupt();
+                _damage *= 2f;
+            }
+            //Take damage
             var damage = _damage * armour;
             var intDamage = Mathf.RoundToInt(damage);
             var percent = damage / health;
@@ -169,6 +180,13 @@ public class BasicShip : MonoBehaviour
     }
 
     public virtual void DisableShot(float duration)
+    {
+    }
+
+    /// <summary>
+    /// Callback called after firing broadside
+    /// </summary>
+    protected virtual void FinishFiring()
     {
     }
 
@@ -212,6 +230,7 @@ public class BasicShip : MonoBehaviour
 
             yield return new WaitForSeconds(0.23075f); //Waits 1 eighth note at 130 bpm
         }
+        FinishFiring();
     }
 
     /// <summary>
@@ -221,9 +240,9 @@ public class BasicShip : MonoBehaviour
     /// <param name="duration">Time that it should take</param>
     public void SpecialIndicator(Color col, float duration)
     {
-        var beamWarning = Instantiate(warningFlare, transform.position, Quaternion.identity, this.transform);
-        beamWarning.transform.position = flareLoc.position;
-        var flare = beamWarning.GetComponent<ParticleSystem>();
+        warningFlareRuntimeObject = Instantiate(warningFlare, transform.position, Quaternion.identity, this.transform);
+        warningFlareRuntimeObject.transform.position = flareLoc.position;
+        var flare = warningFlareRuntimeObject.GetComponent<ParticleSystem>();
         var main = flare.main;
         main.duration = duration;
         main.startLifetime = duration;
@@ -240,6 +259,17 @@ public class BasicShip : MonoBehaviour
         target.healing = false;
         StartCoroutine(FireBroadside(target, turretPosition.fore, healPunishShots));
         StartCoroutine(FireBroadside(target, turretPosition.aft, healPunishShots));
+    }
+
+    /// <summary>
+    /// Fires both cannons shots times
+    /// </summary>
+    /// <param name="target">ship to fire at</param>
+    /// <param name="shots">Number of sh ots to fire from both cannons</param>
+    protected void FullBroadside(BasicShip target, int shots)
+    {
+        StartCoroutine(FireBroadside(target, turretPosition.fore, shots));
+        StartCoroutine(FireBroadside(target, turretPosition.aft, shots));
     }
 
     /// <summary>
@@ -261,6 +291,18 @@ public class BasicShip : MonoBehaviour
             yield return null;
         }
         Heal();
+    }
+
+    /// <summary>
+    /// Interrupts heal and creates fire explosion thing.
+    /// </summary>
+    public void HealInterrupt()
+    {
+        healing = false;
+        Destroy(warningFlareRuntimeObject);
+        var healFire = Instantiate(fire, flareLoc.position, Quaternion.identity, this.transform);
+        //Debug.Log("Interrupted heal");
+        //StartCoroutine(HealInterruptBurn(2f));
     }
 
     /// <summary>
@@ -317,8 +359,11 @@ public class BasicShip : MonoBehaviour
 
     #region Laser Fire
 
+    private bool firing = false;
+
     protected void SpawnLaser(Vector3 startLoc, Vector3 endLoc)
     {
+        firing = true;
         var beamStart = Instantiate(beamStartPrefab, Vector3.zero, Quaternion.identity);
         var beamEnd = Instantiate(beamEndPrefab, Vector3.zero, Quaternion.identity);
         var beam = Instantiate(beamPrefab, Vector3.zero, Quaternion.identity);
@@ -329,8 +374,7 @@ public class BasicShip : MonoBehaviour
 
     private void AlignLaser(Vector3 start, Vector3 target, GameObject beamStart, GameObject beamEnd, GameObject beam, LineRenderer line)
     {
-        RaycastHit hit;
-        if (Physics.Linecast(start, target, out hit))
+        if (Physics.Linecast(start, target, out RaycastHit hit))
         {
             beamEnd.transform.position = hit.point;
         }
@@ -355,8 +399,21 @@ public class BasicShip : MonoBehaviour
 
     private IEnumerator laserLifetime(GameObject start, GameObject end, GameObject beam)
     {
-        yield return new WaitForSeconds(2.5f);
+        var timer = 2.5f;
+        while (firing && timer > 0.0f)
+        {
+            timer -= Time.deltaTime;
+            yield return null;
+        }
+        Debug.Log("Calling destroy laser");
         DestroyLaser(start, end, beam);
+        firing = false;
+    }
+
+    public void InterruptLaser()
+    {
+        Debug.Log("Interrupting laser");
+        firing = false;
     }
 
     private void DestroyLaser(GameObject start, GameObject end, GameObject _beam)

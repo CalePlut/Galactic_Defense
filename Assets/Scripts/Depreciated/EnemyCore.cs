@@ -11,97 +11,97 @@ using UnityEngine;
 /// </summary>
 public class EnemyCore : MonoBehaviour
 {
-    #region Attributes
+    //#region Attributes
 
-    public float attackSpeed = 1.5f;
-    public enemyAttributes attr;
+    //public float attackSpeed = 1.5f;
+    //public enemyAttributes attr;
 
-    #endregion Attributes
+    //#endregion Attributes
 
-    #region References
+    //#region References
 
-    private AffectManager affect;
-    private CombatAI combatAI;
-    private PlayerShip player;
-    private EnemyShip enemy;
+    //private AffectManager affect;
+    //private CombatAI combatAI;
+    //private PlayerShip player;
+    //private EnemyShip enemy;
 
-    #endregion References
+    //#endregion References
 
-    #region Mechanics
+    //#region Mechanics
 
-    private bool alive = true;
-    private bool usedSpecial = false;
-    public bool healing { get; private set; } = false;
-    private float jam;
+    //private bool alive = true;
+    //private bool usedSpecial = false;
+    //public bool healing { get; private set; } = false;
+    //private float jam;
 
-    #endregion Mechanics
+    //#endregion Mechanics
 
-    #region Setup
+    //#region Setup
 
-    /// <summary>
-    /// Performs initial reference setting and attribute setting.
-    /// </summary>
-    /// <param name="_stage"></param>
-    /// <param name="managerObj"></param>
-    public void SetupWave(int _stage, GameObject managerObj)
-    {
-        //attackSpeed = mainEnemy.getAttackSpeed();
-        //combatAI = new CombatAI(this, affect, attr);
-        affect = managerObj.GetComponent<AffectManager>();
+    ///// <summary>
+    ///// Performs initial reference setting and attribute setting.
+    ///// </summary>
+    ///// <param name="_stage"></param>
+    ///// <param name="managerObj"></param>
+    //public void SetupWave(int _stage, GameObject managerObj)
+    //{
+    //    //attackSpeed = mainEnemy.getAttackSpeed();
+    //    //combatAI = new CombatAI(this, affect, attr);
+    //    affect = managerObj.GetComponent<AffectManager>();
 
-        StartCoroutine(flyIn());
-    }
+    //    StartCoroutine(flyIn());
+    //}
 
-    #endregion Setup
+    //#endregion Setup
 
-    #region Special Effects and Animations
+    //#region Special Effects and Animations
 
-    /// <summary>
-    /// Animates the opening of the warp gate and the flying in, starts setup block.
-    /// </summary>
-    /// <returns></returns>
-    protected IEnumerator flyIn()
-    {
-        //randomTimeSetup();
-        var targetPos = transform.position;
-        var prewarpPos = transform.position;
-        prewarpPos.z += 500;
-        transform.localScale = new Vector3(1, 1, 10);
-        transform.position = prewarpPos;
-        while (Vector3.Distance(transform.position, targetPos) > 75f)
-        {
-            var newPosition = Vector3.MoveTowards(transform.position, targetPos, 1000.0f * Time.deltaTime);
-            transform.position = newPosition;
-            yield return null;
-        }
-        while (transform.localScale.z < 1.0f)
-        {
-            var newPosition = Vector3.MoveTowards(transform.position, targetPos, 40.0f * Time.deltaTime);
-            transform.position = newPosition;
-            var z = transform.localScale.z;
-            z -= 40.0f * Time.deltaTime;
-            transform.localScale = new Vector3(1, 1, z);
-            yield return null;
-        }
-        transform.position = targetPos;
-        transform.localScale = new Vector3(1, 1, 1);
+    ///// <summary>
+    ///// Animates the opening of the warp gate and the flying in, starts setup block.
+    ///// </summary>
+    ///// <returns></returns>
+    //protected IEnumerator flyIn()
+    //{
+    //    //randomTimeSetup();
+    //    var targetPos = transform.position;
+    //    var prewarpPos = transform.position;
+    //    prewarpPos.z += 500;
+    //    transform.localScale = new Vector3(1, 1, 10);
+    //    transform.position = prewarpPos;
+    //    while (Vector3.Distance(transform.position, targetPos) > 75f)
+    //    {
+    //        var newPosition = Vector3.MoveTowards(transform.position, targetPos, 1000.0f * Time.deltaTime);
+    //        transform.position = newPosition;
+    //        yield return null;
+    //    }
+    //    while (transform.localScale.z < 1.0f)
+    //    {
+    //        var newPosition = Vector3.MoveTowards(transform.position, targetPos, 40.0f * Time.deltaTime);
+    //        transform.position = newPosition;
+    //        var z = transform.localScale.z;
+    //        z -= 40.0f * Time.deltaTime;
+    //        transform.localScale = new Vector3(1, 1, z);
+    //        yield return null;
+    //    }
+    //    transform.position = targetPos;
+    //    transform.localScale = new Vector3(1, 1, 1);
 
-        //readyForCombat(); //triggers beginning of combat stuff
-        //StartCoroutine(RunCombatAI());
-    }
+    //    //readyForCombat(); //triggers beginning of combat stuff
+    //    //StartCoroutine(RunCombatAI());
+    //}
 
-    #endregion Special Effects and Animations
+    //#endregion Special Effects and Animations
 
-    #region Attacks and Targetting
+    //#region Attacks and Targetting
 
-    /// <summary>
-    /// Creates flare and sets logic for Heal, countered by Fusion Cannon
-    /// </summary>
-    public void SetHealFrame()
-    {
-        //   mainEnemy.specialIndicator(Color.green, attr.healDelay);
-        healing = true;
-    }
+    ///// <summary>
+    ///// Creates flare and sets logic for Heal, countered by Fusion Cannon
+    ///// </summary>
+    //public void SetHealFrame()
+    //{
+    //    //   mainEnemy.specialIndicator(Color.green, attr.healDelay);
+    //    healing = true;
+    //}
 
-    #endregion Attacks and Targetting
+    //#endregion Attacks and Targetting
 }

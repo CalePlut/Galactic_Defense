@@ -17,22 +17,22 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/TurnBased.unity
     guid: 95130a4ad452d774a83eb4299ca75328
-  - enabled: 0
+  - enabled: 1
     path: Assets/Archanor/Sci-Fi Arsenal/InteractiveDemo/Demo Scenes/scifi_beams.unity
     guid: 1bc06855e47252c408f8109de572436c
-  - enabled: 0
+  - enabled: 1
     path: Assets/Archanor/Sci-Fi Arsenal/InteractiveDemo/Demo Scenes/scifi_beamup.unity
     guid: fbb453c8b305faf47aae7d95e365309e
-  - enabled: 0
+  - enabled: 1
     path: Assets/Archanor/Sci-Fi Arsenal/InteractiveDemo/Demo Scenes/scifi_buff.unity
     guid: fce79edd9eef4c94ca9f6638722a8986
-  - enabled: 0
+  - enabled: 1
     path: Assets/Archanor/Sci-Fi Arsenal/InteractiveDemo/Demo Scenes/scifi_fire.unity
     guid: d0b1ce86df0ffb745bbb0d569dfe6fbc
-  - enabled: 0
+  - enabled: 1
     path: Assets/Archanor/Sci-Fi Arsenal/InteractiveDemo/Demo Scenes/scifi_flamethrowers.unity
     guid: 53dd487a6304ec044b7ba70b8e362c88
-  - enabled: 0
+  - enabled: 1
     path: Assets/Archanor/Sci-Fi Arsenal/InteractiveDemo/Demo Scenes/scifi_hexagonzone.unity
     guid: 6a2fd3ca2f0c2064c847abddbb443400
   - enabled: 1
@@ -50,43 +50,43 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Archanor/Sci-Fi Arsenal/InteractiveDemo/Demo Scenes/scifi_portals.unity
     guid: 6ce306c11e79a4e4ea6526983713fb4b
-  - enabled: 0
+  - enabled: 1
     path: Assets/Archanor/Sci-Fi Arsenal/InteractiveDemo/Demo Scenes/scifi_projectiles.unity
     guid: 9dadf4cae946dab4bbe29c05a1d9c71c
-  - enabled: 0
+  - enabled: 1
     path: Assets/Archanor/Sci-Fi Arsenal/InteractiveDemo/Demo Scenes/scifi_regenerate.unity
     guid: e2232645df341314b84c9c94b8e35141
-  - enabled: 0
+  - enabled: 1
     path: Assets/Archanor/Sci-Fi Arsenal/InteractiveDemo/Demo Scenes/scifi_shields.unity
     guid: 40ee0cb037f6c9f478e2ce8c18d8d820
-  - enabled: 0
+  - enabled: 1
     path: Assets/Archanor/Sci-Fi Arsenal/InteractiveDemo/Demo Scenes/scifi_swirlyaura.unity
     guid: e916f1c6c8252f644804228fb9fbb378
-  - enabled: 0
+  - enabled: 1
     path: Assets/Archanor/Sci-Fi Arsenal/InteractiveDemo/Demo Scenes/scifi_ultimatenova.unity
     guid: 52e0d2aa27264234691b012efee06c22
-  - enabled: 0
+  - enabled: 1
     path: Assets/Archanor/Sci-Fi Arsenal/InteractiveDemo/Demo Scenes/scifi_warpgates.unity
     guid: 5c5d2b5ecbaa2db4fb3777ad58f42c12
-  - enabled: 0
+  - enabled: 1
     path: Assets/Archanor/Sci-Fi Arsenal/InteractiveDemo/Demo Scenes/update_scifi_6.unity
     guid: 9ea3f0cc8a835a34b9a256d50511390a
-  - enabled: 0
+  - enabled: 1
     path: Assets/Archanor/Sci-Fi Arsenal/InteractiveDemo/Demo Scenes/update_scifi_7.unity
     guid: 35482eaf1a8318042bedc8700e9020b8
-  - enabled: 0
+  - enabled: 1
     path: Assets/Archanor/Sci-Fi Arsenal/InteractiveDemo/Demo Scenes/update_scifi_8.unity
     guid: 4b35c6fb11830f04a9d0880112629841
-  - enabled: 0
+  - enabled: 1
     path: Assets/Archanor/Sci-Fi Arsenal/InteractiveDemo/Demo Scenes/update_scifi_9.unity
     guid: d20e4ffc76c953741a766390a5ded31a
-  - enabled: 0
+  - enabled: 1
     path: Assets/Archanor/Sci-Fi Arsenal/InteractiveDemo/Demo Scenes/update_scifi_10.unity
     guid: 4c808dc7c6b459a4c8df268e5315fb2f
-  - enabled: 0
+  - enabled: 1
     path: Assets/Archanor/Sci-Fi Arsenal/InteractiveDemo/Demo Scenes/update_scifi_11.unity
     guid: 3c52a1d9c6039cf42b1bc1e8672c63fd
-  - enabled: 0
+  - enabled: 1
     path: Assets/Archanor/Sci-Fi Arsenal/InteractiveDemo/Demo Scenes/update_scifi_12.unity
     guid: 2c3b04aba2ec66047ac67d02d129fec2
   m_configObjects:

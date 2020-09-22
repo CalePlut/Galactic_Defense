@@ -253,7 +253,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Upgrades basic attack damage and speed
     /// </summary>
-    public void upgradeAttack()
+    public void UpgradeAttack()
     {
         Player.UpgradeAttack();
         // AdjustShipStats();
@@ -263,7 +263,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Upgrades health and reduces incoming damage
     /// </summary>
-    public void upgradeDefense()
+    public void UpgradeDefense()
     {
         Player.UpgradeDefense();
         // AdjustShipStats();
@@ -271,9 +271,9 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Probably overpowered right now - upgrades skills/abilities
+    /// Upgrades abilities
     /// </summary>
-    public void upgradeSkills()
+    public void UpgradeSkills()
     {
         Player.UpgradeSpecial();
         //AdjustShipStats();
@@ -446,7 +446,7 @@ public class GameManager : MonoBehaviour
         {
             stageManager.setWaveLength(1);
             stageManager.setText("1-1");
-            SpawnEnemy(enemyType.miniboss, false);
+            SpawnEnemy(enemyType.main, false);
         }
         else if (stage == 2)
         {

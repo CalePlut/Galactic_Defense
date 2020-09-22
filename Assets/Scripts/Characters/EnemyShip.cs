@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Profiling;
 using UnityEngine;
 
 /// <summary>
@@ -9,18 +10,26 @@ public enum AttackType { foreTurret, aftTurret, specialAttack, heal, delay }
 
 public class EnemyShip : BasicShip
 {
-    public float attackLength;
-    public float delayLength;
+    public float globalCooldown;
+    //public float delayLength;
 
     public float specialAttackFrameLength;
 
-    public float firstAttackMinimum, firstAttackMaximum;
+    public float comboStartDelayMinimum, comboStartDelayMaximum;
 
     private GameObject playerShipObj;
     private PlayerShip playerShip;
     public GameObject warpEffect;
 
-    private CombatAI CombatAI;
+    #region Combat AI variables
+
+    private int comboMax = 2;
+    private int currentCombo = 1;
+    private bool comboHeal;
+
+    //private CombatAI CombatAI;
+
+    #endregion Combat AI variables
 
     private float jam = 0.0f;
 
@@ -32,30 +41,31 @@ public class EnemyShip : BasicShip
     public override void ShipSetup()
     {
         base.ShipSetup();
-        CombatAI = new CombatAI(this, affect);
+        //CombatAI = new CombatAI(this, affect);
         SetReferences();
-        StartCoroutine(RunCombatAI());
+        ComboSetup();
+        //  StartCoroutine(RunCombatAI());
     }
 
-    /// <summary>
-    /// Tracks disabled status and advances Combat AI Clock
-    /// </summary>
-    /// <returns></returns>
-    private IEnumerator RunCombatAI()
-    {
-        while (alive)
-        {
-            if (jam > 0.0f) //if we're jammed, reduce jam.
-            {
-                jam -= Time.deltaTime;
-            }
-            else //Otherwise, advance the combat ai
-            {
-                CombatAI.Advance(Time.deltaTime);
-            }
-            yield return null;
-        }
-    }
+    ///// <summary>
+    ///// Tracks disabled status and advances Combat AI Clock
+    ///// </summary>
+    ///// <returns></returns>
+    //private IEnumerator RunCombatAI()
+    //{
+    //    while (alive)
+    //    {
+    //        if (jam > 0.0f) //if we're jammed, reduce jam.
+    //        {
+    //            jam -= Time.deltaTime;
+    //        }
+    //        else //Otherwise, advance the combat ai
+    //        {
+    //            CombatAI.Advance(Time.deltaTime);
+    //        }
+    //        yield return null;
+    //    }
+    //}
 
     /// <summary>
     /// Creates warp window, plays particle system, waits for duration, and destroys window
@@ -208,6 +218,106 @@ public class EnemyShip : BasicShip
         base.DisableShot(duration);
     }
 
+    #region Combat AI
+
+    /// <summary>
+    /// Sets initial combo values
+    /// Begins wait before first AdvanceCombo
+    /// </summary>
+    private void ComboSetup()
+    {
+        comboMax = Random.Range(2, 5); //Combos can be 2, 3, or 4 in length
+        currentCombo = 1; //We always start on 1
+
+        var healthPercent = health / maxHealth; //Chance of triggering healing increases as health decreases
+        comboHeal = Random.value > healthPercent;
+        if (alive)
+        {
+            StartCoroutine(ComboCooldown(Random.Range(comboStartDelayMaximum, comboStartDelayMaximum)));
+        }
+    }
+
+    /// <summary>
+    /// Fires weapons based on combo count and type
+    /// </summary>
+    private void ComboFire()
+    {
+        var whichTurret = turretPosition.fore;
+        if (healing) { whichTurret = turretPosition.aft; }
+        if (alive)
+        {
+            StartCoroutine(FireBroadside(playerShip, whichTurret, currentCombo));
+        }
+    }
+
+    /// <summary>
+    /// Implements combo action and then advances combo (if applicable)
+    /// </summary>
+    private void ComboLogic()
+    {
+        if (currentCombo > comboMax) //If this would take us beyond the combo, do the finishing move.  The finishing move is turning the combo up to 11.
+        {
+            if (comboHeal)
+            {
+                HealTrigger();
+            }
+            else
+            {
+                SpecialAttackTrigger();
+            }
+
+            //Once we've implemented, setup for next combo.
+            if (alive)
+            {
+                ComboSetup();
+            }
+        }
+        else //Otherwise, combofire and add to combo
+        {
+            if (currentCombo == 4) //Combo 4 fires from both turrets, just to add some tension
+            {
+                FullBroadside(playerShip, 4);
+            }
+            else
+            {
+                ComboFire();
+            }
+
+            //Once we've implemented, begin the next step
+            currentCombo++;
+            if (alive)
+            {
+                StartCoroutine(ComboCooldown(globalCooldown));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Used both within combo and to start - waits a given amount of time and then advances
+    /// </summary>
+    /// <param name="time"></param>
+    /// <returns></returns>
+    private IEnumerator ComboCooldown(float time)
+    {
+        var timer = time;
+        while (timer > 0.0f)
+        {
+            if (jam > 0.0f)
+            {
+                jam -= Time.deltaTime;
+                yield return null;
+            }
+            else
+            {
+                timer -= Time.deltaTime;
+                yield return null;
+            }
+        }
+        ComboLogic();
+    }
+
+    #endregion Combat AI
+
     // Start is called before the first frame update
     private void Start()
     {
@@ -219,196 +329,193 @@ public class EnemyShip : BasicShip
     }
 }
 
-/// <summary>
-/// Manages enemy actions via "CombatAI.Advance, and sends unified enemy Tension value to affect manager"
-///
-/// </summary>
-public class CombatAI
-{
-    private EnemyShip ship;
-    private AffectManager affect;
-    private ShipAttributes attr;
-    private List<EnemyAttack> enemyAttacks;
+///// <summary>
+///// Manages enemy actions via "CombatAI.Advance, and sends unified enemy Tension value to affect manager"
+/////
+///// </summary>
+//public class CombatAI
+//{
+//    private EnemyShip ship;
+//    private AffectManager affect;
+//    private ShipAttributes attr;
+//    private List<EnemyAttack> enemyAttacks;
 
-    public CombatAI(EnemyShip _core, AffectManager _affect)
-    {
-        ship = _core;
-        affect = _affect;
-        enemyAttacks = new List<EnemyAttack>();
-    }
+//    public CombatAI(EnemyShip _core, AffectManager _affect)
+//    {
+//        ship = _core;
+//        affect = _affect;
+//        enemyAttacks = new List<EnemyAttack>();
+//    }
 
-    /// <summary>
-    /// Advances clock on all enemyActions, calculates tension value and sends to Affect Manager.
-    /// </summary>
-    /// <param name="deltaTime">Unity's Time.deltaTime</param>
-    /// <param name="jammed">Are we jammed or not</param>
-    public void Advance(float deltaTime)
-    {
-        if (enemyAttacks.Count == 0) //If we don't have a pattern, create one.
-        {
-            CreatePattern();
-        }
-        else
-        {
-            //Faux garbage collection - list to be removed from list after enumeration
-            var toCull = new List<EnemyAttack>();
+//    private int ComboLength()
+//    {
+//        return Random.Range(0, 4);
+//    }
 
-            foreach (EnemyAttack attack in enemyAttacks)
-            {
-                //Advance attack clocks - stand in for Update()
-                attack.Advance(deltaTime);
+//    ///// <summary>
+//    ///// Advances clock on all enemyActions, calculates tension value and sends to Affect Manager.
+//    ///// </summary>
+//    ///// <param name="deltaTime">Unity's Time.deltaTime</param>
+//    ///// <param name="jammed">Are we jammed or not</param>
+//    //public void Advance(float deltaTime)
+//    //{
+//    //    if (enemyAttacks.Count == 0) //If we don't have a pattern, create one.
+//    //    {
+//    //        CreatePattern();
+//    //    }
+//    //    else
+//    //    {
+//    //        //Faux garbage collection - list to be removed from list after enumeration
+//    //        var toCull = new List<EnemyAttack>();
 
-                //Faux garbage collection - add to list
-                if (attack.toCull)
-                {
-                    toCull.Add(attack);
-                }
-            }
+//    //        foreach (EnemyAttack attack in enemyAttacks)
+//    //        {
+//    //            //Advance attack clocks - stand in for Update()
+//    //            attack.Advance(deltaTime);
 
-            //Faux garbage collection - remove expired attacks
-            foreach (EnemyAttack toRemove in toCull)
-            {
-                enemyAttacks.Remove(toRemove);
-            }
-        }
-    }
+//    //            //Faux garbage collection - add to list
+//    //            if (attack.toCull)
+//    //            {
+//    //                toCull.Add(attack);
+//    //            }
+//    //        }
 
-    /// <summary>
-    /// Sends heal (Fusion cannon counter) callback to EnemyCore
-    /// </summary>
-    public void SetHealFrame()
-    {
-        ship.HealTrigger();
-    }
+//    //        //Faux garbage collection - remove expired attacks
+//    //        foreach (EnemyAttack toRemove in toCull)
+//    //        {
+//    //            enemyAttacks.Remove(toRemove);
+//    //        }
+//    //    }
+//    //}
 
-    /// <summary>
-    /// Callback for Enemy Attacks - Fires attack based on type via callback to EnemyCore and removes attack from list. If this clear list, creates next pattern.
-    /// </summary>
-    /// <param name="attack">This is the attack object that is firing</param>
-    public void completeAction(EnemyAttack attack)
-    {
-        ship.AttackImplement(attack.type);
-    }
+//    /// <summary>
+//    /// Callback for Enemy Attacks - Fires attack based on type via callback to EnemyCore and removes attack from list. If this clear list, creates next pattern.
+//    /// </summary>
+//    /// <param name="attack">This is the attack object that is firing</param>
+//    public void completeAction(EnemyAttack attack)
+//    {
+//        ship.AttackImplement(attack.type);
+//    }
 
-    /// <summary>
-    /// Creates random pattern of EnemyAttacks and stores them to list, with timing lined up for combo.
-    /// </summary>
-    /// <param name="pattern">List of all attacks to create</param>
-    private void CreatePattern()
-    {
-        enemyAttacks = new List<EnemyAttack>();
-        var timer = Random.Range(ship.firstAttackMinimum, ship.firstAttackMaximum); //This will be some random initial delay
-        var pattern = PatternSelect(Random.Range(0, 5));
-        foreach (AttackType attackType in pattern)
-        {
-            timer += ship.attackLength; //Add delay before attack to timer, to use to line up the attacks in time
+//    ///// <summary>
+//    ///// Creates random pattern of EnemyAttacks and stores them to list, with timing lined up for combo.
+//    ///// </summary>
+//    ///// <param name="pattern">List of all attacks to create</param>
+//    //private void CreatePattern()
+//    //{
+//    //    enemyAttacks = new List<EnemyAttack>();
+//    //    var timer = Random.Range(ship.firstAttackMinimum, ship.firstAttackMaximum); //This will be some random initial delay
+//    //    var pattern = PatternSelect(Random.Range(0, 5));
+//    //    foreach (AttackType attackType in pattern)
+//    //    {
+//    //        timer += ship.globalCooldown; //Add delay before attack to timer, to use to line up the attacks in time
 
-            if (attackType == AttackType.delay) { timer += ship.delayLength; }
-            else
-            {
-                var newAttack = new EnemyAttack(this, attackType, timer);
-                enemyAttacks.Add(newAttack);
-            }
-        }
-    }
+//    //        if (attackType == AttackType.delay) { timer += ship.delayLength; }
+//    //        else
+//    //        {
+//    //            var newAttack = new EnemyAttack(this, attackType, timer);
+//    //            enemyAttacks.Add(newAttack);
+//    //        }
+//    //    }
+//    //}
 
-    private EmotionStrength tensionByAttack(AttackType type)
-    {
-        switch (type)
-        {
-            case AttackType.foreTurret:
-            case AttackType.aftTurret:
-                return EmotionStrength.weak;
+//    private EmotionStrength tensionByAttack(AttackType type)
+//    {
+//        switch (type)
+//        {
+//            case AttackType.foreTurret:
+//            case AttackType.aftTurret:
+//                return EmotionStrength.weak;
 
-            case AttackType.specialAttack:
-                return EmotionStrength.strong;
+//            case AttackType.specialAttack:
+//                return EmotionStrength.strong;
 
-            case AttackType.heal:
-                return EmotionStrength.moderate;
+//            case AttackType.heal:
+//                return EmotionStrength.moderate;
 
-            default:
-                return 0.0f; //This is the bad place!
-        }
-    }
+//            default:
+//                return 0.0f; //This is the bad place!
+//        }
+//    }
 
-    /// <summary>
-    /// Converts int into attack pattern
-    /// </summary>
-    /// <param name="pattern">Max 4. Integer coreresponding to pattern</param>
-    /// <returns>List of attacks to be run through as attack pattern</returns>
-    public List<AttackType> PatternSelect(int pattern)
-    {
-        switch (pattern)
-        {
-            case 0:
-                return new List<AttackType>() { AttackType.foreTurret, AttackType.delay, AttackType.foreTurret, AttackType.specialAttack };
+//    /// <summary>
+//    /// Converts int into attack pattern
+//    /// </summary>
+//    /// <param name="pattern">Max 4. Integer coreresponding to pattern</param>
+//    /// <returns>List of attacks to be run through as attack pattern</returns>
+//    public List<AttackType> PatternSelect(int pattern)
+//    {
+//        switch (pattern)
+//        {
+//            case 0:
+//                return new List<AttackType>() { AttackType.foreTurret, AttackType.delay, AttackType.foreTurret, AttackType.specialAttack };
 
-            case 1:
-                return new List<AttackType>() { AttackType.aftTurret, AttackType.delay, AttackType.aftTurret, AttackType.heal };
+//            case 1:
+//                return new List<AttackType>() { AttackType.aftTurret, AttackType.delay, AttackType.aftTurret, AttackType.heal };
 
-            case 2:
-                return new List<AttackType>() { AttackType.foreTurret, AttackType.foreTurret, AttackType.specialAttack };
+//            case 2:
+//                return new List<AttackType>() { AttackType.foreTurret, AttackType.foreTurret, AttackType.specialAttack };
 
-            case 3:
-                return new List<AttackType>() { AttackType.aftTurret, AttackType.aftTurret, AttackType.heal };
+//            case 3:
+//                return new List<AttackType>() { AttackType.aftTurret, AttackType.aftTurret, AttackType.heal };
 
-            case 4:
+//            case 4:
 
-                return new List<AttackType>() { AttackType.foreTurret, AttackType.foreTurret, AttackType.specialAttack, AttackType.aftTurret, AttackType.heal };
+//                return new List<AttackType>() { AttackType.foreTurret, AttackType.foreTurret, AttackType.specialAttack, AttackType.aftTurret, AttackType.heal };
 
-            default:
-                return new List<AttackType>() { AttackType.aftTurret, AttackType.foreTurret, AttackType.foreTurret, AttackType.specialAttack };
-        }
-    }
-}
+//            default:
+//                return new List<AttackType>() { AttackType.aftTurret, AttackType.foreTurret, AttackType.foreTurret, AttackType.specialAttack };
+//        }
+//    }
+//}
 
-/// <summary>
-/// Automatically counts down, executes
-/// Created during attack pattern creation
-/// </summary>
-public class EnemyAttack
-{
-    #region Mechanics
+///// <summary>
+///// Automatically counts down, executes
+///// Created during attack pattern creation
+///// </summary>
+//public class EnemyAttack
+//{
+//    #region Mechanics
 
-    public AttackType type { get; private set; }
-    private float timing;
+//    public AttackType type { get; private set; }
+//    private float timing;
 
-    #endregion Mechanics
+//    #endregion Mechanics
 
-    #region Bookkeeping and References
+//    #region Bookkeeping and References
 
-    public bool toCull { get; private set; } = false;
-    private CombatAI combatAI;
+//    public bool toCull { get; private set; } = false;
+//    private CombatAI combatAI;
 
-    #endregion Bookkeeping and References
+//    #endregion Bookkeeping and References
 
-    public EnemyAttack(CombatAI _AI, AttackType _type, float _time)
-    {
-        combatAI = _AI;
-        type = _type;
-        timing = _time;
-    }
+//    public EnemyAttack(CombatAI _AI, AttackType _type, float _time)
+//    {
+//        combatAI = _AI;
+//        type = _type;
+//        timing = _time;
+//    }
 
-    public EnemyAttack(CombatAI _AI, AttackType _type, float _time, float _triggerTime)
-    {
-        combatAI = _AI;
-        type = _type;
-        timing = _time;
-    }
+//    public EnemyAttack(CombatAI _AI, AttackType _type, float _time, float _triggerTime)
+//    {
+//        combatAI = _AI;
+//        type = _type;
+//        timing = _time;
+//    }
 
-    /// <summary>
-    /// Advances timing towards attack and adjusts tension variable. Fires attack if timing<=0
-    /// </summary>
-    /// <param name="deltaTime">Time.deltaTime passed from CombatAI.Advance</param>
-    public void Advance(float deltaTime)
-    {
-        //Timing counts down until the attack is implemented. Tracks flares, tension, and implementation
-        timing -= deltaTime;
-        if (timing <= 0.0f) //If timing is exhausted, execute action via callback (probably? gotta figure this out)
-        {
-            combatAI.completeAction(this);
-            toCull = true;
-        }
-        //tensionCalculate(timing);
-    }
-}
+//    /// <summary>
+//    /// Advances timing towards attack and adjusts tension variable. Fires attack if timing<=0
+//    /// </summary>
+//    /// <param name="deltaTime">Time.deltaTime passed from CombatAI.Advance</param>
+//    public void Advance(float deltaTime)
+//    {
+//        //Timing counts down until the attack is implemented. Tracks flares, tension, and implementation
+//        timing -= deltaTime;
+//        if (timing <= 0.0f) //If timing is exhausted, execute action via callback (probably? gotta figure this out)
+//        {
+//            combatAI.completeAction(this);
+//            toCull = true;
+//        }
+//        //tensionCalculate(timing);
+//    }
+//}

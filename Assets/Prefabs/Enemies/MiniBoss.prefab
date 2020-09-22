@@ -1366,6 +1366,7 @@ MonoBehaviour:
     type: 3}
   explosion: {fileID: 836951591077622030, guid: 8d8892d5acb4afd4fb2d85bb8fba36f5,
     type: 3}
+  fire: {fileID: 118086, guid: 0b4783e4abed86a40961a2180adca3b0, type: 3}
   SFX_Explosion: {fileID: 8300000, guid: 404e8b68a05205f4f844be45becdcc19, type: 3}
   beamStartPrefab: {fileID: 185238, guid: b80d00a943c44a14181b7df0488d1927, type: 3}
   beamEndPrefab: {fileID: 149788, guid: 5b364370854f7064e9d23e9799fc4297, type: 3}
@@ -1375,11 +1376,10 @@ MonoBehaviour:
   textureLengthScale: 3
   affect: {fileID: 0}
   manager: {fileID: 0}
-  attackLength: 2
-  delayLength: 1
+  globalCooldown: 0
   specialAttackFrameLength: 1.5
-  firstAttackMinimum: 3
-  firstAttackMaximum: 5
+  comboStartDelayMinimum: 2
+  comboStartDelayMaximum: 3
   warpEffect: {fileID: 138802, guid: a8565406c64107841a9c18dc24ba9dc4, type: 3}
 --- !u!95 &2645079919187418856
 Animator:
