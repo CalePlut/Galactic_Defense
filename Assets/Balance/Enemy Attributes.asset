@@ -39,9 +39,9 @@ MonoBehaviour:
   baseLaserDamage: 25
   level2LaserDamage: 35
   level3LaserDamage: 50
-  baseDisableDuration: 10
-  level2DisableDuration: 15
-  level3DisableDuration: 20
+  baseDisableDuration: 2.5
+  level2DisableDuration: 5
+  level3DisableDuration: 10
   baseHealPercent: 0.5
   level2HealPercent: 0.65
   level3HealPercent: 0.8

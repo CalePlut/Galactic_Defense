@@ -5322,7 +5322,7 @@ GameObject:
   - component: {fileID: 4715089}
   - component: {fileID: 4715088}
   m_Layer: 5
-  m_Name: attack
+  m_Name: Attack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5406,13 +5406,13 @@ MonoBehaviour:
   cooldownSlider: {fileID: 463060950}
   otherButtons:
   - {fileID: 1406448387}
-  - {fileID: 0}
+  - {fileID: 1476275547}
   initialCall:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1478765750860414}
         m_TargetAssemblyTypeName: PlayerShip, Assembly-CSharp
-        m_MethodName: attackTrigger
+        m_MethodName: AttackTrigger
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -16592,7 +16592,7 @@ GameObject:
   - component: {fileID: 460374684}
   - component: {fileID: 460374685}
   m_Layer: 5
-  m_Name: shieldStamina
+  m_Name: StaminaBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16684,7 +16684,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxStamina: 2.5
   rechargeSpeed: 0.1
-  recoverySpeed: 0.1
+  depletedRecoverySpeed: 0.01
   display: {fileID: 460374684}
   fill: {fileID: 624207062}
   mainColor: {r: 0, g: 0.3803922, b: 0.43137258, a: 1}
@@ -19633,7 +19633,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 9170967ca53818b49afeb63ea2d8c686, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f3b4d030073ae024c966fc5a3b6c363e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -19663,8 +19663,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0a1aeec52bee2d448fa4bcf6d1fdbdb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  combo1: {fileID: 21300000, guid: 9170967ca53818b49afeb63ea2d8c686, type: 3}
-  combo2: {fileID: 21300000, guid: 738a7648886a6b24fa03be8d247cd643, type: 3}
+  combo1: {fileID: 21300000, guid: f3b4d030073ae024c966fc5a3b6c363e, type: 3}
+  combo2: {fileID: 21300000, guid: 9170967ca53818b49afeb63ea2d8c686, type: 3}
   combo3: {fileID: 21300000, guid: 4e1d1db5168b71c4888f214cf804844b, type: 3}
   combo4: {fileID: 21300000, guid: 648d0480e5c03a049bb1a44c604daf9a, type: 3}
   combo: {fileID: 641168082}
@@ -20265,7 +20265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b00040d53d76b14fbbefb73cd03968a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gcdValue: 1
+  gcdValue: 2.5
   buttons:
   - {fileID: 4715089}
   - {fileID: 2100624339}
@@ -34439,7 +34439,7 @@ GameObject:
   - component: {fileID: 1406448388}
   - component: {fileID: 1406448387}
   m_Layer: 5
-  m_Name: repair
+  m_Name: Heal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35995,7 +35995,7 @@ GameObject:
   - component: {fileID: 1476275547}
   - component: {fileID: 1476275548}
   m_Layer: 5
-  m_Name: ultimate
+  m_Name: Ultimate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -48484,7 +48484,7 @@ GameObject:
   - component: {fileID: 2100624338}
   - component: {fileID: 2100624339}
   m_Layer: 5
-  m_Name: reactiveShield
+  m_Name: Shield
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -49240,26 +49240,27 @@ MonoBehaviour:
   foreTurret: {fileID: 335840927}
   aftTurret: {fileID: 340322861}
   flareLoc: {fileID: 1498762231}
-  basicTurretShot: {fileID: 199764, guid: a722c1f6fea53614a920ed802bff377d, type: 3}
+  basicTurretShot: {fileID: 171462, guid: ee648e9d50d9ac9458d25447f58e5056, type: 3}
   warningFlare: {fileID: 7166164739200910186, guid: 28975ad4756aaf94fb3dc170d0456f10,
+    type: 3}
+  jamFirePrefab: {fileID: 2263616177638505526, guid: 02d2fe05b9ca22548b984332ccb20147,
     type: 3}
   healEffect: {fileID: 1077433979050930671, guid: 34aa31306c70ebb4998f88abfaa20681,
     type: 3}
-  nearDeathFirePrefab: {fileID: 0}
-  nearDeathFire: {fileID: 0}
+  nearDeathFirePrefab: {fileID: 1343497475418638690, guid: 17a7cdde987eeb545a021d46d0cfd42b,
+    type: 3}
   explosion: {fileID: 1000011797152326, guid: acf39d9f4addf294d93fa56fa373961b, type: 3}
-  fire: {fileID: 118086, guid: 0b4783e4abed86a40961a2180adca3b0, type: 3}
   SFX_Explosion: {fileID: 8300000, guid: 80164361c240b3b4abdd3400c9c3fb77, type: 3}
-  beamStartPrefab: {fileID: 108584, guid: 9b0245240330cec41893d8611880df8d, type: 3}
-  beamEndPrefab: {fileID: 131904, guid: 16d8536db6f4c8e469e7c0929758624d, type: 3}
-  beamPrefab: {fileID: 113598, guid: 9bc40fcd7e707f149b47aa3fbb1773df, type: 3}
+  beamStartPrefab: {fileID: 152740, guid: 6f4783baaba4016438fbffe0577577bf, type: 3}
+  beamEndPrefab: {fileID: 169194, guid: 298b8e6fd7fd0234d890294da5b9666a, type: 3}
+  beamPrefab: {fileID: 167884, guid: 4377c1bddf22c3246bc5439cb74d81a9, type: 3}
   beamEndOffset: 1
   textureScrollSpeed: 8
   textureLengthScale: 3
-  affect: {fileID: 1339880058}
   manager: {fileID: 1339880051}
+  affect: {fileID: 1339880058}
   attackCooldown: 1.5
-  shieldCooldown: 0.25
+  shieldCooldown: 0
   healCooldown: 2.5
   ultimateCooldown: 30
   retaliateCannon: {fileID: 468083735}
@@ -50228,6 +50229,12 @@ PrefabInstance:
       propertyPath: affect
       value: 
       objectReference: {fileID: 1339880058}
+    - target: {fileID: 8859636146114452866, guid: a19aafae2e65de5449164541dfcc4b17,
+        type: 3}
+      propertyPath: nearDeathFirePrefab
+      value: 
+      objectReference: {fileID: 1343497475418638690, guid: 17a7cdde987eeb545a021d46d0cfd42b,
+        type: 3}
     - target: {fileID: 8860742753199656253, guid: a19aafae2e65de5449164541dfcc4b17,
         type: 3}
       propertyPath: m_Name

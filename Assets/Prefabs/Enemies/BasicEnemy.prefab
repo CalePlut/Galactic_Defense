@@ -1394,9 +1394,12 @@ MonoBehaviour:
     type: 3}
   healEffect: {fileID: 1077433979050930671, guid: 34aa31306c70ebb4998f88abfaa20681,
     type: 3}
+  nearDeathFirePrefab: {fileID: 1343497475418638690, guid: 17a7cdde987eeb545a021d46d0cfd42b,
+    type: 3}
   explosion: {fileID: 2242469950450934302, guid: 2f0e898b8d0406c4b90420e38bef5359,
     type: 3}
-  fire: {fileID: 118086, guid: 0b4783e4abed86a40961a2180adca3b0, type: 3}
+  jamFirePrefab: {fileID: 119147845428083974, guid: 85971c99144656b46a7d90520d914b49,
+    type: 3}
   SFX_Explosion: {fileID: 8300000, guid: 070fcd8e3c8f963498848bdddf688dca, type: 3}
   beamStartPrefab: {fileID: 185238, guid: b80d00a943c44a14181b7df0488d1927, type: 3}
   beamEndPrefab: {fileID: 149788, guid: 5b364370854f7064e9d23e9799fc4297, type: 3}

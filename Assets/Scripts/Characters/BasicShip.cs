@@ -9,7 +9,9 @@ public enum turretPosition { fore, aft };
 
 public class BasicShip : MonoBehaviour
 {
-    [Header("Attributes")]
+    #region Health and Damage varaibles
+
+    [Header("Attributes - Health and Damage")]
     public ShipAttributes attr;
 
     protected float maxHealth, health;
@@ -17,24 +19,37 @@ public class BasicShip : MonoBehaviour
     protected float armour;
 
     protected float turretDamage;
-    protected int foreShots, aftShots;
 
     protected float retaliateDamage;
-    protected int healPunishShots;
-    protected float shieldDuration;
     protected float laserDamage;
-    protected float disableDuration;
-    public bool shielded { get; protected set; } = false;
+    public bool alive { get; private set; } = true;
 
+    #endregion Health and Damage varaibles
+
+    #region Ability values and mechanic varaibles
+
+    protected float shieldDuration;
+    protected float jamDuration;
+    protected float jamTimer;
     protected float healPercent, healDelay;
 
     public bool healing { get; private set; } = false;
+    public bool shielded { get; protected set; } = false;
+
     public int level = 1;
+
+    #endregion Ability values and mechanic varaibles
+
+    #region UI references
 
     [Header("UI")]
     public damageText damageText;
 
     public healthBarAnimator healthBar;
+
+    #endregion UI references
+
+    #region Weapon spawn locations and prefab
 
     [Header("Weapons - Base")]
     public Transform laserEmitter;
@@ -46,25 +61,36 @@ public class BasicShip : MonoBehaviour
 
     public GameObject basicTurretShot;
 
+    #endregion Weapon spawn locations and prefab
+
+    #region Effect variables
+
     [Header("Effects - Base")]
     public GameObject warningFlare;
 
-    public GameObject healEffect;
     private GameObject warningFlareRuntimeObject;
 
-    public GameObject nearDeathFirePrefab, nearDeathFire;
+    public GameObject jamFirePrefab;
+    private GameObject jamEffect;
+
+    public GameObject healEffect;
+
+    public GameObject nearDeathFirePrefab;
+    private GameObject nearDeathFire;
 
     public GameObject explosion;
-    public GameObject fire;
+
     public AudioClip SFX_Explosion;
     protected AudioSource SFX;
+
+    #endregion Effect variables
+
+    #region Laser variables
 
     [Header("Laser objects")]
     public GameObject beamStartPrefab;
 
     public GameObject beamEndPrefab, beamPrefab;
-
-    private GameObject laserRuntimeObject;
 
     [Header("Laser Presentation Variables")]
     public float beamEndOffset = 1f; //How far from the raycast hit point the end effect is positioned
@@ -72,40 +98,49 @@ public class BasicShip : MonoBehaviour
     public float textureScrollSpeed = 8f; //How fast the texture scrolls along the beam
     public float textureLengthScale = 3; //Length of the beam texture
 
-    [Header("Other")]
-    public AffectManager affect;
+    #endregion Laser variables
 
+    #region Manager references
+
+    [Header("Other")]
     public GameManager manager;
 
-    public bool alive { get; private set; } = true;
+    public AffectManager affect;
+
+    #endregion Manager references
+
+    #region Setup and Bookkeeping
 
     /// <summary>
     /// Sets up ship and finds references as needed
     /// </summary>
     public virtual void ShipSetup()
     {
+        //Finds and assigns references
         SFX = GetComponent<AudioSource>();
-        var cameraObj = GameObject.Find("Main Camera");
-        affect = cameraObj.GetComponent<AffectManager>();
-        manager = cameraObj.GetComponent<GameManager>();
 
+        var managerObj = GameObject.Find("Main Camera");
+        affect = managerObj.GetComponent<AffectManager>();
+        manager = managerObj.GetComponent<GameManager>();
+
+        //Sets attributes and sets up health bar, and sets alive to true
         SetAttributes(level);
-        healthBar.Refresh(maxHealth, health);
-        alive = true;
-    }
 
-    /// <summary>
-    /// Sets all attributes based on level
-    /// Used in initial setups and spawning enemies
-    /// Also fully heals ship
-    /// </summary>
-    /// <param name="level"></param>
-    public void SetAttributes(int level)
-    {
-        SetAttack(level);
-        SetDefense(level);
-        SetSpecial(level);
-        FullHeal();
+        alive = true;
+
+        //Begins coroutines for updating statuses and health
+        StartCoroutine(JamEvaluate());
+        StartCoroutine(HealthEvaluate());
+
+        //Sets attributes
+        void SetAttributes(int level)
+        {
+            SetAttack(level);
+            SetDefense(level);
+            SetSpecial(level);
+            FullHeal();
+            healthBar.Refresh(maxHealth, health);
+        }
     }
 
     /// <summary>
@@ -116,9 +151,6 @@ public class BasicShip : MonoBehaviour
     public virtual void SetAttack(int level)
     {
         turretDamage = attr.turretDamage(level);
-        foreShots = attr.foreShots(level);
-        aftShots = attr.aftShots(level);
-        healPunishShots = attr.healPunishShots(level);
     }
 
     /// <summary>
@@ -128,7 +160,7 @@ public class BasicShip : MonoBehaviour
     public virtual void SetDefense(int level)
     {
         maxHealth = attr.health(level);
-        disableDuration = attr.disableDuration(level);
+        jamDuration = attr.disableDuration(level);
         armour = attr.armour(level);
         shieldDuration = attr.shieldDuration(level);
     }
@@ -154,50 +186,16 @@ public class BasicShip : MonoBehaviour
         healthBar.addValue((int)maxHealth);
     }
 
-    /// <summary>
-    /// This takes damage from any source
-    /// </summary>
-    /// <param name="_damage"></param>
-    public void TakeDamage(float _damage)
-    {
-        if (alive)
-        {
-            //If we're healing, the shot deals double damage and interrupts the heal
-            if (healing)
-            {
-                HealInterrupt();
-                _damage *= 2f;
-            }
-            //Take damage
-            var damage = _damage * armour;
-            var intDamage = Mathf.RoundToInt(damage);
-            var percent = damage / health;
+    #endregion Setup and Bookkeeping
 
-            health -= damage; //Actually adjust health...
-            damageText.TakeDamage(intDamage, percent);
-            healthBar.TakeDamage(intDamage);
-
-            if (health <= 0.0f) { die(); } //If we're dead, we're dead
-        }
-    }
-
-    public virtual void DisableShot(float duration)
-    {
-    }
-
-    /// <summary>
-    /// Callback called after firing broadside
-    /// </summary>
-    protected virtual void FinishFiring()
-    {
-    }
+    #region Mechanics
 
     /// <summary>
     /// Fires cannons "shots" number of times,
     /// </summary>
     /// <param name="target">Target</param>
     /// <param name="position">Fore (aggressive) or Aft (defensive)</param>
-    /// <param name="shots"># of shots. Yes, this seems redundant, but it turns out healPunish needs this. Whoops</param>
+    /// <param name="shots">Number of shots to fire</param>
     /// <returns></returns>
     protected IEnumerator FireBroadside(BasicShip target, turretPosition position, int shots)
     {
@@ -236,6 +234,133 @@ public class BasicShip : MonoBehaviour
     }
 
     /// <summary>
+    /// Callback called after firing full broadside
+    /// </summary>
+    protected virtual void FinishFiring()
+    {
+    }
+
+    /// <summary>
+    /// Fires both cannons shots times
+    /// </summary>
+    /// <param name="target">ship to fire at</param>
+    /// <param name="shots">Number of sh ots to fire from both cannons</param>
+    protected void FullBroadside(BasicShip target, int shots)
+    {
+        StartCoroutine(FireBroadside(target, turretPosition.fore, shots));
+        StartCoroutine(FireBroadside(target, turretPosition.aft, shots));
+    }
+
+    /// <summary>
+    /// This takes damage from any source
+    /// If healing, damage is doubled and healing is interrupted
+    /// </summary>
+    /// <param name="_damage">Damage to take, modified by armour </param>
+    public void TakeDamage(float _damage)
+    {
+        if (alive)
+        {
+            //If we're healing, the shot deals double damage and interrupts the heal
+            if (healing)
+            {
+                HealInterrupt();
+                _damage *= 2f;
+            }
+
+            //Take damage
+            var damage = _damage * armour;
+            health -= damage;
+
+            //Calculate int and percent damage for UI effects, and pass damage to UI
+            var intDamage = Mathf.RoundToInt(damage);
+            var percent = damage / health;
+            damageText.TakeDamage(intDamage, percent);
+            healthBar.TakeDamage(intDamage);
+        }
+    }
+
+    /// <summary>
+    /// Evaluates health for effects and mechanics
+    /// If low, catch fire
+    /// If high and on fire, put out fire
+    /// If dead, die
+    /// </summary>
+    private IEnumerator HealthEvaluate()
+    {
+        while (alive)
+        {
+            if (LowHealth())
+            {
+                if (nearDeathFire == null) //If we're not on fire, catch fire
+                {
+                    nearDeathFire = Instantiate(nearDeathFirePrefab, this.transform);
+                }
+            }
+            else
+            {
+                if (nearDeathFire != null) //If health isn't low, we can put out the fire
+                {
+                    Destroy(nearDeathFire);
+                }
+            }
+
+            if (health <= 0.0f) { die(); }
+            yield return null;
+        }
+    }
+
+    /// <summary>
+    /// Evaluates whether ship has low health (<10%)
+    /// </summary>
+    /// <returns></returns>
+    private bool LowHealth()
+    {
+        return health <= (0.1f * maxHealth);
+    }
+
+    /// <summary>
+    /// Evaluates the Jam timer
+    /// Spawns jam effect if we're jammed and it doesn't exist
+    /// Destroys jam effect if we're not jammed and it does
+    /// </summary>
+    private IEnumerator JamEvaluate()
+    {
+        while (alive)
+        {
+            if (jamTimer > 0.0f)
+            {
+                jamTimer -= Time.deltaTime;
+
+                if (jamEffect == null)
+                {
+                    jamEffect = Instantiate(jamFirePrefab, this.transform);
+                }
+            }
+            else
+            {
+                if (jamEffect != null)
+                {
+                    Destroy(jamEffect);
+                }
+            }
+            yield return null;
+        }
+    }
+
+    /// <summary>
+    /// Starts JamFire for duration of jam. Overridden in playerships and enemyships for different effects
+    /// </summary>
+    /// <param name="duration">Duration of Jam</param>
+    public virtual void Jam(float duration)
+    {
+        jamTimer = duration;
+    }
+
+    #endregion Mechanics
+
+    #region Effects and indicators
+
+    /// <summary>
     /// Plays a flare with supplied color
     /// </summary>
     /// <param name="col">Color of flare</param>
@@ -252,27 +377,9 @@ public class BasicShip : MonoBehaviour
         flare.Play();
     }
 
-    /// <summary>
-    /// Called during special attack, if a heal is being interrupted
-    /// </summary>
-    public virtual void HealPunish(BasicShip target)
-    {
-        //Debug.Log("Punishing Heal");
-        target.healing = false;
-        StartCoroutine(FireBroadside(target, turretPosition.fore, healPunishShots));
-        StartCoroutine(FireBroadside(target, turretPosition.aft, healPunishShots));
-    }
+    #endregion Effects and indicators
 
-    /// <summary>
-    /// Fires both cannons shots times
-    /// </summary>
-    /// <param name="target">ship to fire at</param>
-    /// <param name="shots">Number of sh ots to fire from both cannons</param>
-    protected void FullBroadside(BasicShip target, int shots)
-    {
-        StartCoroutine(FireBroadside(target, turretPosition.fore, shots));
-        StartCoroutine(FireBroadside(target, turretPosition.aft, shots));
-    }
+    #region Heal
 
     /// <summary>
     /// Begins healing process
@@ -296,15 +403,12 @@ public class BasicShip : MonoBehaviour
     }
 
     /// <summary>
-    /// Interrupts heal and creates fire explosion thing.
+    /// Interrupts heal, destroys warning flare.
     /// </summary>
     public void HealInterrupt()
     {
         healing = false;
         Destroy(warningFlareRuntimeObject);
-        var healFire = Instantiate(fire, flareLoc.position, Quaternion.identity, this.transform);
-        //Debug.Log("Interrupted heal");
-        //StartCoroutine(HealInterruptBurn(2f));
     }
 
     /// <summary>
@@ -315,11 +419,7 @@ public class BasicShip : MonoBehaviour
         if (healing)
         {
             var missingHealth = maxHealth - health;
-            // Debug.Log("missing " + missingHealth + "health");
             var amount = healPercent * missingHealth;
-            //  Debug.Log("Amount = " + healPercent + "* missing = " + amount);
-
-            // Debug.Log("Healing for " + amount);
             health += amount;
 
             if (health > maxHealth)
@@ -334,6 +434,8 @@ public class BasicShip : MonoBehaviour
             healingEffect.transform.SetParent(this.transform);
         }
     }
+
+    #endregion Heal
 
     #region Death
 
@@ -407,14 +509,14 @@ public class BasicShip : MonoBehaviour
             timer -= Time.deltaTime;
             yield return null;
         }
-        Debug.Log("Calling destroy laser");
+        // Debug.Log("Calling destroy laser");
         DestroyLaser(start, end, beam);
         firing = false;
     }
 
     public void InterruptLaser()
     {
-        Debug.Log("Interrupting laser");
+        //Debug.Log("Interrupting laser");
         firing = false;
     }
 

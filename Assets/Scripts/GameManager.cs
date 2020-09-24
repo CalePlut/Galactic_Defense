@@ -387,12 +387,26 @@ public class GameManager : MonoBehaviour
     {
         if (stage == 1)
         {
+            StageOneLogic();
+        }
+        else if (stage == 2)
+        {
+            StageTwoLogic();
+        }
+        else if (stage == 3)
+        {
+            StageThreeLogic();
+        }
+
+        void StageOneLogic()
+        {
             encounter = 0;
             stage = 2;
             endCombat();
             warpNext = true;
         }
-        else if (stage == 2)
+
+        void StageTwoLogic()
         {
             if (encounter == 0)
             {
@@ -415,7 +429,8 @@ public class GameManager : MonoBehaviour
                 warpNext = true;
             }
         }
-        else if (stage == 3)
+
+        void StageThreeLogic()
         {
             if (encounter == 0)
             {
@@ -424,12 +439,6 @@ public class GameManager : MonoBehaviour
                 advanceToNextWave();
                 warpNext = false;
             }
-            //else if (encounter == 1) //Changing to only one pre-boss encounter
-            //{
-            //    encounter++;
-            //    stageManager.setEncounterProgress(2);
-            //    advanceToNextWave();
-            //}
             else
             {
                 endCombat();
@@ -444,11 +453,30 @@ public class GameManager : MonoBehaviour
     {
         if (stage == 1)
         {
+            StageOneEncounterLogic();
+        }
+        else if (stage == 2)
+        {
+            StageTwoEncounterLogic();
+        }
+        else if (stage == 3)
+        {
+            StageThreeEncounterLogic();
+        }
+        else
+        {
+            SpawnEnemy(enemyType.main, true);
+            Debug.Log("Fell through all cases for spawning, which is probably bad");
+        }
+
+        void StageOneEncounterLogic()
+        {
             stageManager.setWaveLength(1);
             stageManager.setText("1-1");
             SpawnEnemy(enemyType.main, false);
         }
-        else if (stage == 2)
+
+        void StageTwoEncounterLogic()
         {
             if (encounter == 0)
             {
@@ -467,7 +495,8 @@ public class GameManager : MonoBehaviour
                 SpawnEnemy(enemyType.miniboss, true);
             }
         }
-        else if (stage == 3)
+
+        void StageThreeEncounterLogic()
         {
             if (encounter == 0)
             {
@@ -475,21 +504,11 @@ public class GameManager : MonoBehaviour
                 stageManager.setText("3-1");
                 SpawnEnemy(enemyType.main, false);
             }
-            //else if (encounter == 1)
-            //{
-            //    stageManager.setText("3-2");
-            //    spawnEnemies(waveType.miniboss);
-            //}
             else
             {
                 stageManager.setText("3-3");
                 SpawnEnemy(enemyType.boss, true);
             }
-        }
-        else
-        {
-            SpawnEnemy(enemyType.main, true);
-            Debug.Log("Fell through all cases for spawning, which is probably bad");
         }
     }
 

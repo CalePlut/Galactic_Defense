@@ -21,8 +21,6 @@ public class EnemyShip : BasicShip
     private PlayerShip playerShip;
     public GameObject warpEffect;
 
-    public GameObject jamFirePrefab, jamFire;
-
     #region Combat AI variables
 
     private int comboMax = 2;
@@ -33,8 +31,6 @@ public class EnemyShip : BasicShip
 
     #endregion Combat AI variables
 
-    private float jam = 0.0f;
-
     #region Setup and Bookeeping
 
     /// <summary>
@@ -43,31 +39,9 @@ public class EnemyShip : BasicShip
     public override void ShipSetup()
     {
         base.ShipSetup();
-        //CombatAI = new CombatAI(this, affect);
         SetReferences();
         ComboSetup();
-        //  StartCoroutine(RunCombatAI());
     }
-
-    ///// <summary>
-    ///// Tracks disabled status and advances Combat AI Clock
-    ///// </summary>
-    ///// <returns></returns>
-    //private IEnumerator RunCombatAI()
-    //{
-    //    while (alive)
-    //    {
-    //        if (jam > 0.0f) //if we're jammed, reduce jam.
-    //        {
-    //            jam -= Time.deltaTime;
-    //        }
-    //        else //Otherwise, advance the combat ai
-    //        {
-    //            CombatAI.Advance(Time.deltaTime);
-    //        }
-    //        yield return null;
-    //    }
-    //}
 
     /// <summary>
     /// Creates warp window, plays particle system, waits for duration, and destroys window
@@ -133,30 +107,6 @@ public class EnemyShip : BasicShip
 
     #region action implementation
 
-    /// <summary>
-    /// Callback from CombatAI that implements the current attack
-    /// </summary>
-    /// <param name="attack">sets the attack to implement</param>
-    public void AttackImplement(AttackType attack)
-    {
-        if (attack == AttackType.foreTurret)  //Attacks with left turret, falls back to centre if left turret is destroyed
-        {
-            StartCoroutine(FireBroadside(playerShip, turretPosition.fore, foreShots));
-        }
-        else if (attack == AttackType.aftTurret) //Attacks with right turret, falls back to centre if rt is destroyed.
-        {
-            StartCoroutine(FireBroadside(playerShip, turretPosition.aft, aftShots));
-        }
-        else if (attack == AttackType.specialAttack) //If the player isn't shielded, fire normal lasers. Otherwise, fire fake laser and trigger riposte.
-        {
-            SpecialAttackTrigger();
-        }
-        else if (attack == AttackType.heal)
-        {
-            HealTrigger();
-        }
-    }
-
     public void SpecialAttackTrigger()
     {
         StartCoroutine(SpecialAttackFlare());
@@ -190,13 +140,19 @@ public class EnemyShip : BasicShip
         }
         else if (playerShip.healing)
         {
-            HealPunish(playerShip);
+            FullBroadside(playerShip, 4);
         }
         else
         {
             playerShip.TakeDamage(damage);
-            playerShip.DisableShot(disableDuration);
+            playerShip.Jam(jamDuration);
         }
+    }
+
+    public override void Heal()
+    {
+        base.Heal();
+        Jam(jamDuration);
     }
 
     #endregion action implementation
@@ -212,12 +168,6 @@ public class EnemyShip : BasicShip
         base.doneDeath();
         manager.EnemyDie();
         Destroy(this.gameObject);
-    }
-
-    public override void DisableShot(float duration)
-    {
-        jam = duration;
-        base.DisableShot(duration);
     }
 
     #region Combat AI
@@ -257,7 +207,27 @@ public class EnemyShip : BasicShip
     /// </summary>
     private void ComboLogic()
     {
-        if (currentCombo > comboMax) //If this would take us beyond the combo, do the finishing move.  The finishing move is turning the combo up to 11.
+        currentCombo++;
+        if (currentCombo <= comboMax) //If we still have combo, fire normal attack
+        {
+            ComboImplement();
+            if (alive) //Wait for next step
+            {
+                StartCoroutine(ComboCooldown(globalCooldown));
+            }
+        }
+        else //If this would take us beyond the combo, do the finishing move.  The finishing move is turning the combo up to 11.
+        {
+            FinisherImplement(); //Evaluates whether finisher is special attack or heal
+
+            //Once we've implemented, setup for next combo.
+            if (alive)
+            {
+                ComboSetup();
+            }
+        }
+
+        void FinisherImplement()
         {
             if (comboHeal)
             {
@@ -267,14 +237,9 @@ public class EnemyShip : BasicShip
             {
                 SpecialAttackTrigger();
             }
-
-            //Once we've implemented, setup for next combo.
-            if (alive)
-            {
-                ComboSetup();
-            }
         }
-        else //Otherwise, combofire and add to combo
+
+        void ComboImplement()
         {
             if (currentCombo == 4) //Combo 4 fires from both turrets, just to add some tension
             {
@@ -283,13 +248,6 @@ public class EnemyShip : BasicShip
             else
             {
                 ComboFire();
-            }
-
-            //Once we've implemented, begin the next step
-            currentCombo++;
-            if (alive)
-            {
-                StartCoroutine(ComboCooldown(globalCooldown));
             }
         }
     }
@@ -304,16 +262,11 @@ public class EnemyShip : BasicShip
         var timer = time;
         while (timer > 0.0f)
         {
-            if (jam > 0.0f)
-            {
-                jam -= Time.deltaTime;
-                yield return null;
-            }
-            else
+            if (jamTimer <= 0.0f) //If we're jammed, we don't advance
             {
                 timer -= Time.deltaTime;
-                yield return null;
             }
+            yield return null;
         }
         ComboLogic();
     }

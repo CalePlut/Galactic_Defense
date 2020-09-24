@@ -14,6 +14,8 @@ public class basicButton : MonoBehaviour
     protected Outline queueIndicator;
     public List<basicButton> otherButtons;
 
+    private bool shieldHeld = false; //Cooldowns don't advance when player shielding.
+
     [Header("Events for Custom behaviour")]
     public UnityEvent initialCall;
 
@@ -54,6 +56,18 @@ public class basicButton : MonoBehaviour
         initialCall.Invoke();
     }
 
+    public void ShieldHold()
+    {
+        shieldHeld = true;
+        cooldownSlider.value = cooldownSlider.maxValue; //Set skill to full, regardless of cooldown, if shield is held.
+    }
+
+    public void ShieldRelease()
+    {
+        shieldHeld = false;
+        cooldownSlider.value = cooldown;
+    }
+
     /// <summary>
     /// Final step in the button --- activates "Ability Activate"
     /// </summary>
@@ -92,31 +106,25 @@ public class basicButton : MonoBehaviour
     /// </summary>
     protected virtual void Behaviour()
     {
-        //This continuously reduces the cooldown
-        if (cooldown > 0.0f)
+        if (!shieldHeld) //If shield held, no behaviour in general.
         {
-            cooldown -= Time.deltaTime * haste;
-            cooldownSlider.value = cooldown;
-        }
-        else //If the cooldown is expired and the ability is queued, fire the ability.
-        {
-            fill.color = baseColor;
-            if (queued)
+            //This continuously reduces the cooldown
+            if (cooldown > 0.0f)
             {
-                clearQueue();
-                triggerAbility();
-                StartCooldown(myCD);
+                cooldown -= Time.deltaTime * haste;
+                cooldownSlider.value = cooldown;
+            }
+            else //If the cooldown is expired and the ability is queued, fire the ability.
+            {
+                fill.color = baseColor;
+                if (queued)
+                {
+                    clearQueue();
+                    triggerAbility();
+                    StartCooldown(myCD);
+                }
             }
         }
-    }
-
-    //implemented by targetted
-    public virtual void targetsUp()
-    {
-    }
-
-    public virtual void clearTargetting()
-    {
     }
 
     #endregion Activation and Behaviour
@@ -161,7 +169,7 @@ public class basicButton : MonoBehaviour
         fill.color = baseColor;
     }
 
-    public bool canActivate()
+    public bool CanActivate()
     {
         if (cooldown > 1.0f) { return false; }
         else { return true; }

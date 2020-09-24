@@ -22,11 +22,7 @@ public class buttonManager : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        ultimate.gameObject.SetActive(false);
-        //foreach(basicButton button in ultimateAbilities)
-        //{
-        //    button.gameObject.SetActive(false);
-        //}
+        //  ultimate.gameObject.SetActive(false);
     }
 
     public void globalCooldown() //Starts global cooldowns and begins clock for internal cooldown.
@@ -57,13 +53,30 @@ public class buttonManager : MonoBehaviour
         StartCoroutine(ActionUsed());
     }
 
+    public void ShieldHold()
+    {
+        foreach (basicButton button in buttons)
+        {
+            button.ShieldHold();
+        }
+    }
+
+    public void ShieldRelease()
+    {
+        foreach (basicButton button in buttons)
+        {
+            button.ShieldRelease();
+        }
+    }
+
     public void unlockUltimate()
     {
         ultimate.gameObject.SetActive(true);
     }
 
-    public void refreshAllCooldowns()
+    public void RefreshAllCooldowns()
     {
+        Debug.Log("Clearing Cooldowns");
         foreach (basicButton button in buttons)
         {
             button.ClearCooldown();
@@ -77,8 +90,6 @@ public class buttonManager : MonoBehaviour
         {
             totalCooldown += button.cooldown / button.myCD;
         }
-        var avgCooldown = totalCooldown / buttons.Count;
-        //affect.updateCooldowns(avgCooldown);
 
         postCooldown += Time.deltaTime;
     }

@@ -1,29 +1,67 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
 
-public class shieldStamina : MonoBehaviour
+public class ShieldStamina : MonoBehaviour
 {
+    #region Attribute variables
+
     public float maxStamina;
+
     public float stamina { get; private set; }
 
-    public float rechargeSpeed, recoverySpeed;
+    public float rechargeSpeed, depletedRecoverySpeed;
+
+    #endregion Attribute variables
+
+    #region Mechanic variables
 
     public bool shielded { get; private set; }
     public bool recovery { get; private set; }
 
     public bool absorbing { get; private set; }
 
+    private bool staminaTrack = true;
+
+    #endregion Mechanic variables
+
+    #region References
+
     public Slider display;
     public Image fill;
     public Color mainColor, recoveryColor;
 
-    private void Start()
+    #endregion References
+
+    #region setup and bookkeeping
+
+    private void StaminaSetup()
     {
         shielded = false;
         recovery = false;
+        absorbing = false;
 
         fill.color = mainColor;
+
+        StartCoroutine(StaminaEvaluate());
     }
+
+    /// <summary>
+    /// Sets initial stamina
+    /// </summary>
+    /// <param name="_stamina"></param>
+    public void SetStamina(float _stamina)
+    {
+        maxStamina = _stamina;
+        stamina = _stamina;
+
+        display.maxValue = maxStamina;
+        display.value = stamina;
+    }
+
+    #endregion setup and bookkeeping
+
+    #region Calls from Player
 
     public void ShieldsUp()
     {
@@ -42,19 +80,6 @@ public class shieldStamina : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets initial stamina
-    /// </summary>
-    /// <param name="_stamina"></param>
-    public void SetStamina(float _stamina)
-    {
-        maxStamina = _stamina;
-        stamina = _stamina;
-
-        display.maxValue = maxStamina;
-        display.value = stamina;
-    }
-
-    /// <summary>
     /// Chunks down the stamina by an amount
     /// </summary>
     /// <param name="_toChunk"></param>
@@ -63,50 +88,87 @@ public class shieldStamina : MonoBehaviour
         stamina -= _toChunk;
     }
 
-    // Update is called once per frame
-    private void Update()
+    #endregion Calls from Player
+
+    private void UpdateUI()
     {
-        if (!recovery) //If we're not recovering, we fill and drain as usual
+        display.value = stamina;
+    }
+
+    private void OnEnable()
+    {
+        StaminaSetup();
+    }
+
+    private IEnumerator StaminaEvaluate()
+    {
+        //Main loop, tracks and decides on stamina use.
+        while (staminaTrack)
         {
-            if (shielded) //While we're shielded, we lose stamina at a default rate
+            if (!recovery) //If we're not recovering, we fill and drain as usual
             {
-                if (absorbing)
+                if (shielded) //While we're shielded, we lose stamina at a default rate
                 {
-                    stamina += Time.deltaTime * 2.0f;
-                    if (stamina >= maxStamina) { absorbing = false; }
+                    ShieldUpkeep(); //Drains stamina if we're not absorbing an attack, fills if we are
                 }
-                else
+                else //If we're not shielded and didn't run out of stamina, we recover at a quick rate
                 {
-                    stamina -= Time.deltaTime;
-                }
-                display.value = stamina;
-                if (stamina <= 0)
-                {
-                    shielded = false;
-                    recovery = true;
-                    fill.color = recoveryColor;
+                    FillStamina(Time.deltaTime, rechargeSpeed);
                 }
             }
-            else //If we're not shielded and didn't run out of stamina, we recover at a quick rate
+            else //If we recover, it refills slowly before we're ready again.
             {
-                if (stamina < maxStamina)
-                {
-                    stamina += Time.deltaTime * rechargeSpeed;
-                    display.value = stamina;
-                }
+                FillStamina(Time.deltaTime, depletedRecoverySpeed);
+            }
+            //Update display value each frame
+            UpdateUI();
+
+            yield return null;
+        }
+
+        //Local functions
+        //Evaluates whether we're filling or draining
+        void ShieldUpkeep()
+        {
+            if (!absorbing) //Normal operation is to simply drain
+            {
+                DrainStamina(Time.deltaTime);
+            }
+            else  //If we're absorbing an enemy attack, we fill instead of drain
+            {
+                FillStamina(Time.deltaTime, 0.1f);
             }
         }
-        else //If we recover, it refills slowly before we're ready again.
+
+        //Drains stamina by amount
+        //Also checks if we're out
+        void DrainStamina(float amount)
+        {
+            stamina -= amount;
+            if (stamina <= 0)
+            {
+                stamina = 0; //Just in case we but out and get like -50 stamina somehow
+                shielded = false;
+                recovery = true;
+                fill.color = recoveryColor;
+            }
+        }
+
+        //Fills stamina by amount * multiplier
+        //Also checks for changing recovery if we need it
+        void FillStamina(float amount, float multiplier)
         {
             if (stamina < maxStamina)
             {
-                stamina += Time.deltaTime * recoverySpeed;
-                display.value = stamina;
-            }
-            else
-            {
-                recovery = false;
-                fill.color = mainColor;
+                var newStamina = stamina + (amount * multiplier);
+
+                if (newStamina >= maxStamina && recovery) //If this would take us over full, we don't need to recover anymore
+                {
+                    recovery = false;
+                    fill.color = mainColor; //Also we reset the color in case of disable
+                }
+
+                stamina = Mathf.Max(newStamina, maxStamina);
             }
         }
     }
