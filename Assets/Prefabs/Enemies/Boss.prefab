@@ -1355,13 +1355,14 @@ MonoBehaviour:
   basicTurretShot: {fileID: 126790, guid: 8b41f5320e19912428ff12551caca1e8, type: 3}
   warningFlare: {fileID: 7166164739200910186, guid: 28975ad4756aaf94fb3dc170d0456f10,
     type: 3}
+  warningFlareSize: 80
+  jamFirePrefab: {fileID: 119147845428083974, guid: 85971c99144656b46a7d90520d914b49,
+    type: 3}
   healEffect: {fileID: 1077433979050930671, guid: 34aa31306c70ebb4998f88abfaa20681,
     type: 3}
   nearDeathFirePrefab: {fileID: 1343497475418638690, guid: 17a7cdde987eeb545a021d46d0cfd42b,
     type: 3}
   explosion: {fileID: 3719004749702151878, guid: 196cd4f584177904ca612be527b98c11,
-    type: 3}
-  jamFirePrefab: {fileID: 119147845428083974, guid: 85971c99144656b46a7d90520d914b49,
     type: 3}
   SFX_Explosion: {fileID: 8300000, guid: b7928435d4a46354b891d219399ab511, type: 3}
   beamStartPrefab: {fileID: 185238, guid: b80d00a943c44a14181b7df0488d1927, type: 3}
@@ -1370,8 +1371,8 @@ MonoBehaviour:
   beamEndOffset: 1
   textureScrollSpeed: 8
   textureLengthScale: 3
-  affect: {fileID: 0}
   manager: {fileID: 0}
+  affect: {fileID: 0}
   globalCooldown: 1.5
   specialAttackFrameLength: 0.5
   comboStartDelayMinimum: 1

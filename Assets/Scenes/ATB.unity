@@ -5440,6 +5440,7 @@ MonoBehaviour:
   fill: {fileID: 1958389526}
   myCD: 1.5
   haste: 1
+  shieldRecover: 0.231
 --- !u!114 &4715090
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16809,6 +16810,36 @@ Transform:
   m_Father: {fileID: 1427477679}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!1 &480324820
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 480324821}
+  m_Layer: 0
+  m_Name: BulletParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &480324821
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 480324820}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &512225719
 GameObject:
   m_ObjectHideFlags: 0
@@ -20265,13 +20296,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b00040d53d76b14fbbefb73cd03968a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gcdValue: 2.5
+  gcdValue: 1.848
   buttons:
   - {fileID: 4715089}
   - {fileID: 2100624339}
   - {fileID: 1406448387}
   ultimate: {fileID: 1476275547}
   affect: {fileID: 1339880058}
+  ultimateFromStart: 1
 --- !u!114 &671322363
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27685,7 +27717,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1021624608}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 50}
+  m_LocalPosition: {x: 0, y: 0, z: 200}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4101210903892968}
@@ -32542,7 +32574,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 50
   orthographic: 0
   orthographic size: 5
   m_Depth: 1
@@ -32567,13 +32599,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1339880046}
-  m_LocalRotation: {x: 0.088731, y: -0.35504416, z: 0.0338742, w: 0.9300124}
-  m_LocalPosition: {x: 15.73, y: 4.21, z: -8.26}
+  m_LocalRotation: {x: 0.08255973, y: -0.31922823, z: 0.027928865, w: 0.94366163}
+  m_LocalPosition: {x: 10.3, y: 1.6, z: -7.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 10.9, y: -41.79, z: 0}
+  m_LocalEulerAnglesHint: {x: 10, y: -37.38, z: 0}
 --- !u!114 &1339880050
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34540,6 +34572,7 @@ MonoBehaviour:
   fill: {fileID: 554287287}
   myCD: 2.5
   haste: 1
+  shieldRecover: 0.231
 --- !u!114 &1406448388
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36080,6 +36113,7 @@ MonoBehaviour:
   fill: {fileID: 1824085115}
   myCD: 45
   haste: 1
+  shieldRecover: 0.231
 --- !u!114 &1476275548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -42705,7 +42739,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1806520871}
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 4}
+  m_LocalPosition: {x: 0, y: 0, z: 2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1280044414}
@@ -42715,7 +42749,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 5, y: 2.5}
+  m_SizeDelta: {x: 2.5, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1806520873
 MonoBehaviour:
@@ -48599,6 +48633,7 @@ MonoBehaviour:
   fill: {fileID: 145216106}
   myCD: 1.5
   haste: 1
+  shieldRecover: 0.231
   ship: {fileID: 1478765750860414}
   release:
     m_Name: Release
@@ -48624,6 +48659,21 @@ MonoBehaviour:
       m_Groups: 
       m_Action: Release
       m_Flags: 0
+  releaseEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1478765750860414}
+        m_TargetAssemblyTypeName: PlayerShip, Assembly-CSharp
+        m_MethodName: ShieldsDown
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2100624340
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -49243,6 +49293,7 @@ MonoBehaviour:
   basicTurretShot: {fileID: 171462, guid: ee648e9d50d9ac9458d25447f58e5056, type: 3}
   warningFlare: {fileID: 7166164739200910186, guid: 28975ad4756aaf94fb3dc170d0456f10,
     type: 3}
+  warningFlareSize: 5
   jamFirePrefab: {fileID: 2263616177638505526, guid: 02d2fe05b9ca22548b984332ccb20147,
     type: 3}
   healEffect: {fileID: 1077433979050930671, guid: 34aa31306c70ebb4998f88abfaa20681,
@@ -49259,7 +49310,7 @@ MonoBehaviour:
   textureLengthScale: 3
   manager: {fileID: 1339880051}
   affect: {fileID: 1339880058}
-  attackCooldown: 1.5
+  attackCooldown: 0.924
   shieldCooldown: 0
   healCooldown: 2.5
   ultimateCooldown: 30
@@ -49276,6 +49327,7 @@ MonoBehaviour:
   healButton: {fileID: 1406448387}
   ultimateButton: {fileID: 1476275547}
   buttonManager: {fileID: 671322362}
+  godMode: 0
 --- !u!82 &1478765750860415
 AudioSource:
   m_ObjectHideFlags: 0

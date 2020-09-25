@@ -59,6 +59,8 @@ public class BasicShip : MonoBehaviour
 
     public Transform flareLoc;
 
+    private Transform bulletParent;
+
     public GameObject basicTurretShot;
 
     #endregion Weapon spawn locations and prefab
@@ -69,6 +71,7 @@ public class BasicShip : MonoBehaviour
     public GameObject warningFlare;
 
     private GameObject warningFlareRuntimeObject;
+    public float warningFlareSize = 10.0f;
 
     public GameObject jamFirePrefab;
     private GameObject jamEffect;
@@ -122,6 +125,8 @@ public class BasicShip : MonoBehaviour
         var managerObj = GameObject.Find("Main Camera");
         affect = managerObj.GetComponent<AffectManager>();
         manager = managerObj.GetComponent<GameManager>();
+
+        bulletParent = GameObject.Find("BulletParent").transform;
 
         //Sets attributes and sets up health bar, and sets alive to true
         SetAttributes(level);
@@ -216,8 +221,7 @@ public class BasicShip : MonoBehaviour
                 pos.z += Random.Range(-5, 5);
 
                 //Fires cannon from position
-                var cannon = Instantiate(basicTurretShot, pos, Quaternion.identity);
-                cannon.transform.SetParent(this.transform);
+                var cannon = Instantiate(basicTurretShot, pos, Quaternion.identity, bulletParent);
                 cannon.gameObject.tag = tag;
                 cannon.layer = 9;
                 cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, target);
@@ -374,6 +378,7 @@ public class BasicShip : MonoBehaviour
         main.duration = duration;
         main.startLifetime = duration;
         main.startColor = col;
+        main.startSize = warningFlareSize;
         flare.Play();
     }
 

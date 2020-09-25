@@ -69,11 +69,20 @@ public class PlayerShip : BasicShip
 
     #region Mechanic and Attribute variables
 
+    public bool godMode = false;
+
     private bool retaliate = false; //Variables for shield mechanics
 
     private int attackLevel = 1, defenseLevel = 1, specialLevel = 1;
 
     #endregion Mechanic and Attribute variables
+
+    #region Prospective event variables
+
+    private ProspectiveEvent playerDeath;
+    private ProspectiveEvent nextCombo;
+
+    #endregion Prospective event variables
 
     #region Setup and bookkeeping
 
@@ -95,6 +104,16 @@ public class PlayerShip : BasicShip
     {
         base.SetDefense(level);
         shieldStamina.SetStamina(shieldDuration);
+
+        if (godMode) //Here's where all the godmode code is because I'm lazy
+        {
+            laserDamage = 100.0f;
+            turretDamage = 100.0f;
+            maxHealth = 10000000.0f;
+            health = maxHealth;
+            healthBar.Refresh(maxHealth, health);
+            healPercent = 100.0f;
+        }
     }
 
     public void UpgradeAttack()

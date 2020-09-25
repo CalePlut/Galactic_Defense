@@ -136,7 +136,7 @@ public class ShieldStamina : MonoBehaviour
             }
             else  //If we're absorbing an enemy attack, we fill instead of drain
             {
-                FillStamina(Time.deltaTime, 0.1f);
+                FillStamina(Time.deltaTime, 1f);
             }
         }
 
@@ -158,17 +158,12 @@ public class ShieldStamina : MonoBehaviour
         //Also checks for changing recovery if we need it
         void FillStamina(float amount, float multiplier)
         {
-            if (stamina < maxStamina)
+            stamina += amount * multiplier;
+            if (stamina >= maxStamina)
             {
-                var newStamina = stamina + (amount * multiplier);
-
-                if (newStamina >= maxStamina && recovery) //If this would take us over full, we don't need to recover anymore
-                {
-                    recovery = false;
-                    fill.color = mainColor; //Also we reset the color in case of disable
-                }
-
-                stamina = Mathf.Max(newStamina, maxStamina);
+                stamina = maxStamina;
+                recovery = false;
+                fill.color = mainColor;
             }
         }
     }

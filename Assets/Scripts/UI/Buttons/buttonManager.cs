@@ -11,6 +11,8 @@ public class buttonManager : MonoBehaviour
 
     public AffectManager affect;
 
+    public bool ultimateFromStart = false;
+
     //public List<basicButton> standardAbilities;
     //public List<basicButton> ultimateAbilities;
 
@@ -22,7 +24,10 @@ public class buttonManager : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        //  ultimate.gameObject.SetActive(false);
+        if (!ultimateFromStart) //Debug code
+        {
+            ultimate.gameObject.SetActive(false);
+        }
     }
 
     public void globalCooldown() //Starts global cooldowns and begins clock for internal cooldown.

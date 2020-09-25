@@ -1,9 +1,11 @@
-﻿using UnityEngine.InputSystem;
+﻿using UnityEngine.Events;
+using UnityEngine.InputSystem;
 
 public class holdButton : basicButton
 {
     public PlayerShip ship;
     public InputAction release;
+    public UnityEvent releaseEvent;
 
     protected override void Behaviour()
     {
@@ -15,8 +17,7 @@ public class holdButton : basicButton
         }
         if (release.triggered)
         {
-            ship.ShieldsDown();
-            //StartCooldown(myCD);
+            releaseEvent.Invoke();
         }
 
         base.Behaviour();

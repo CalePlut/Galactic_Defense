@@ -30,6 +30,7 @@ public class basicButton : MonoBehaviour
     public float cooldown { get; protected set; } = 0.0f;
     public float myCD;
     public float haste = 1.0f;
+    public float shieldRecover = 0.231f;
     public bool queued { get; protected set; } = false;
     public bool targetted { get; protected set; } = false;
 
@@ -56,16 +57,20 @@ public class basicButton : MonoBehaviour
         initialCall.Invoke();
     }
 
+    /// <summary>
+    /// Sends message that shield is up - sets boolean to not display cooldown
+    /// </summary>
     public void ShieldHold()
     {
         shieldHeld = true;
-        cooldownSlider.value = cooldownSlider.maxValue; //Set skill to full, regardless of cooldown, if shield is held.
     }
 
+    /// <summary>
+    /// Releases shield and resumes normal behaviour
+    /// </summary>
     public void ShieldRelease()
     {
         shieldHeld = false;
-        cooldownSlider.value = cooldown;
     }
 
     /// <summary>
@@ -106,23 +111,27 @@ public class basicButton : MonoBehaviour
     /// </summary>
     protected virtual void Behaviour()
     {
-        if (!shieldHeld) //If shield held, no behaviour in general.
+        //This continuously reduces the cooldown
+        if (cooldown > 0.0f)
         {
-            //This continuously reduces the cooldown
-            if (cooldown > 0.0f)
+            cooldown -= Time.deltaTime * haste;
+            if (!shieldHeld)
             {
-                cooldown -= Time.deltaTime * haste;
-                cooldownSlider.value = cooldown;
+                cooldownSlider.value = cooldown; //If not shielded, we just display the actual cooldown.
             }
-            else //If the cooldown is expired and the ability is queued, fire the ability.
+            else
             {
-                fill.color = baseColor;
-                if (queued)
-                {
-                    clearQueue();
-                    triggerAbility();
-                    StartCooldown(myCD);
-                }
+                cooldownSlider.value = cooldownSlider.maxValue; //Set skill to full, regardless of cooldown, if shield is held.
+            }
+        }
+        else //If the cooldown is expired and the ability is queued, fire the ability.
+        {
+            fill.color = baseColor;
+            if (queued)
+            {
+                clearQueue();
+                triggerAbility();
+                StartCooldown(myCD);
             }
         }
     }
