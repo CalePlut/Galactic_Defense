@@ -112,6 +112,13 @@ public class BasicShip : MonoBehaviour
 
     #endregion Manager references
 
+    #region Affect references
+
+    private LinkedList<Event> attackQueue;
+    private LinkedListNode<Event> nextAttack;
+
+    #endregion Affect references
+
     #region Setup and Bookkeeping
 
     /// <summary>
@@ -191,7 +198,83 @@ public class BasicShip : MonoBehaviour
         healthBar.addValue((int)maxHealth);
     }
 
+    public float healthPercent()
+    {
+        return health / maxHealth;
+    }
+
     #endregion Setup and Bookkeeping
+
+    #region Affect
+
+    /// <summary>
+    /// Hacky interface
+    ///Creates an event that predicts a weapon firing - called as soon as shot is decided upon
+    ///When called by player, this is called at the same time as firing, when called by enemy, this is called when AI decides on event
+    /// </summary>
+    protected virtual void PredictAttacks()
+    { }
+
+    /// <summary>
+    /// Adds event to queue - called once event is created
+    /// </summary>
+    /// <param name="event"></param>
+    protected void AddEventToQueue(Event @event)
+    {
+        //If there's not a current queue, create one on the first event call
+        if (attackQueue == null)
+        {
+            attackQueue = new LinkedList<Event>();
+        }
+
+        var node = new LinkedListNode<Event>(@event);
+        attackQueue.AddLast(node);
+    }
+
+    /// <summary>
+    /// Gets next attack and removes it from queue
+    /// </summary>
+    /// <returns></returns>
+    protected Event NextAttack()
+    {
+        //If we don't have an attack loaded, first see if the attack queue has one
+        if (nextAttack == null)
+        {
+            if (attackQueue == null) //If attack queue doesn't exist yet, we can't attach the event
+            {
+                return new Event(null, null, null, 0.0f, affect);
+            }
+            if (attackQueue.Count > 0)
+            {
+                nextAttack = attackQueue.First;
+            }
+            else
+            {
+                //Debug.Log("NextAttack called without any attacks in queue");
+                return new Event(null, null, null, 0.0f, affect);
+            }
+        }
+        var nextEvent = nextAttack.Value;
+        nextAttack = nextAttack.Next;
+        attackQueue.RemoveFirst();
+
+        return nextEvent;
+    }
+
+    /// <summary>
+    /// Removes toRemove events from front of queue, and sets next attack to the next attack
+    /// </summary>
+    /// <param name="ToRemove">number of events to remove</param>
+    protected void RemoveEvents(int toRemove)
+    {
+        for (int i = 0; i < toRemove; i++)
+        {
+            attackQueue.RemoveFirst();
+        }
+        nextAttack = attackQueue.First;
+    }
+
+    #endregion Affect
 
     #region Mechanics
 
@@ -224,7 +307,7 @@ public class BasicShip : MonoBehaviour
                 var cannon = Instantiate(basicTurretShot, pos, Quaternion.identity, bulletParent);
                 cannon.gameObject.tag = tag;
                 cannon.layer = 9;
-                cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, target);
+                cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, target, NextAttack(), affect);
                 cannon.transform.LookAt(target.transform);
                 cannon.GetComponent<Rigidbody>().AddForce(foreTurret.transform.forward * 2500);
 

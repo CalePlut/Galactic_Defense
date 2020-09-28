@@ -79,6 +79,8 @@ public class PlayerShip : BasicShip
 
     #region Prospective event variables
 
+    private Event retaliateEvent;
+
     private ProspectiveEvent playerDeath;
     private ProspectiveEvent nextCombo;
 
@@ -142,6 +144,53 @@ public class PlayerShip : BasicShip
 
     #endregion Setup and bookkeeping
 
+    #region Affect
+
+    /// <summary>
+    /// Predicts future attacks from the player - we assume that the player will continue to attack, as this is how they progress the game.
+    /// This is where the math is done to determine affective levels
+    /// </summary>
+    protected override void PredictAttacks()
+    {
+        base.PredictAttacks();
+
+        //Set up basic emotion changes for normal shot
+        var valenceChange = new Emotion(EmotionDirection.increase, EmotionStrength.weak); //Each shot from player increases valence slightly
+        var arousalChange = new Emotion(EmotionDirection.increase, EmotionStrength.weak); //Also, each shot from player increases arousal
+        var tensionChange = new Emotion(EmotionDirection.none, EmotionStrength.none); //Tension with a normal shot doesn't change
+        var nextCombo = combo + 1;
+
+        //Consider special cases when healths are low
+        EvaluateHealthAffect(ref valenceChange, ref tensionChange);
+
+        //Finally, load the correct number of events into the queue and to the affect manager
+        for (int i = 0; i < nextCombo; i++)
+        {
+            var newEvent = new ProspectiveEvent(valenceChange, arousalChange, tensionChange, 5.0f, false, affect);
+            affect.AddEvent(newEvent);
+            AddEventToQueue(newEvent);
+        }
+
+        void EvaluateHealthAffect(ref Emotion valenceChange, ref Emotion tensionChange)
+        {
+            //Special cases change the emotion strengths
+            var lowHealth = healthPercent() < 0.25f;
+            var enemyLowHealth = enemyShip.healthPercent() < 0.25f;
+            if (enemyLowHealth)  //If this may be the shot that finishes the battle, increase valence strength and add tension
+            {
+                valenceChange = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+
+                if (lowHealth) //If we are also low health, our shot is even more tense ("Can we pull it off?!"
+                {
+                    tensionChange = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+                }
+                else { tensionChange = new Emotion(EmotionDirection.increase, EmotionStrength.weak); }
+            }
+        }
+    }
+
+    #endregion Affect
+
     #region Attack and Abilities
 
     /// <summary>
@@ -167,7 +216,7 @@ public class PlayerShip : BasicShip
         switch (combo)
         {
             case 1:
-                StartCoroutine(FireBroadside(enemyShip, turretPosition.aft, attackLevel));
+                StartCoroutine(FireBroadside(enemyShip, turretPosition.aft, 1));
                 break;
 
             case 2:
@@ -180,11 +229,13 @@ public class PlayerShip : BasicShip
 
             case 4:
                 FullBroadside(enemyShip, attackLevel + 4);
-                LaserFire();
+                //LaserFire();
+                enemyShip.Jam(jamDuration * 2.0f); //No laser, but still a jam on full combo
                 combo = 0;
                 break;
         }
         comboTracker.SetCombo(combo + 1);
+        PredictAttacks(); //Predict next series of attacks from player
     }
 
     /// <summary>
@@ -347,6 +398,14 @@ public class PlayerShip : BasicShip
             enemyShip.InterruptLaser();
             Retaliate();
         }
+        else
+        {
+            if (retaliateEvent != null) //If we bring down shields without retaliating and we have a retaliate event, destroy it
+            {
+                affect.CullEvent(retaliateEvent);
+                retaliateEvent = null;
+            }
+        }
         retaliate = false;
 
         shieldStamina.ShieldDown();
@@ -386,7 +445,8 @@ public class PlayerShip : BasicShip
             cannon.transform.SetParent(retaliateCannon);
             cannon.gameObject.tag = tag;
             cannon.layer = 9;
-            cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, enemyShip);
+            cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, enemyShip, retaliateEvent, affect);
+            retaliateEvent = null; //After firing, we clear our retaliateEvent
 
             target.Jam(jamDuration);
         }

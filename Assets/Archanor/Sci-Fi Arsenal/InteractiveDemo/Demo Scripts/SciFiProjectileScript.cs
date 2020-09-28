@@ -19,6 +19,8 @@ namespace SciFiArsenal
 
         private float damage;
         private BasicShip target;
+        private Event myEvent;
+        private AffectManager affect;
 
         #endregion Cale added
 
@@ -34,10 +36,12 @@ namespace SciFiArsenal
             }
         }
 
-        public void CannonSetup(float _damage, BasicShip _target)
+        public void CannonSetup(float _damage, BasicShip _target, Event @event, AffectManager affectManager)
         {
             damage = _damage;
             target = _target;
+            myEvent = @event;
+            affect = affectManager;
             //GetComponent<Collider>().enabled = false;
             StartCoroutine(cannonDelay());
         }
@@ -63,6 +67,7 @@ namespace SciFiArsenal
                     {
                         hasCollided = true;
                         impactParticle = Instantiate(impactParticle, transform.position, Quaternion.FromToRotation(Vector3.up, impactNormal)) as GameObject;
+                        affect.CullEvent(myEvent); //This is where the bullet culls its own event
 
                         if (!(hit.gameObject.name == "Shield"))
                         {
@@ -73,21 +78,6 @@ namespace SciFiArsenal
                             var player = GameObject.Find("Player Ship");
                             player.GetComponent<PlayerShip>().ShieldHit(damage);
                         }
-
-                        ////Here we compare to enemy base and deal damage ON HIT, not on spawn.
-                        //if (!(hit.gameObject.name == "Shield")) //Don't deal damage if we hit the shield.
-                        //{
-                        //    if (hit.gameObject.GetComponent<BasicShip>())
-                        //    {
-                        //        var enemy = hit.gameObject.GetComponent<BasicShip>();
-                        //        enemy.receiveDamage(damage);
-                        //    }
-                        //    if (hit.gameObject.GetComponentInParent<BasicShip>())
-                        //    {
-                        //        var enemy = hit.gameObject.GetComponentInParent<BasicShip>();
-                        //        enemy.receiveDamage(damage);
-                        //    }
-                        //}
 
                         if (hit.gameObject.tag == "Destructible") // Projectile will destroy objects tagged as Destructible
                         {

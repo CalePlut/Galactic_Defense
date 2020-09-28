@@ -31,6 +31,12 @@ public class EnemyShip : BasicShip
 
     #endregion Combat AI variables
 
+    #region Affect variables
+
+    public bool upcomingSpecial { get; private set; } = false;
+
+    #endregion Affect variables
+
     #region Setup and Bookeeping
 
     /// <summary>
@@ -105,6 +111,42 @@ public class EnemyShip : BasicShip
 
     #endregion Setup and Bookeeping
 
+    #region Affect
+
+    /// <summary>
+    /// Enemy predicts attacks when setting up combo length.
+    /// Because the AI selects early, we can predict the entire attack chain
+    /// </summary>
+    protected override void PredictAttacks()
+    {
+        base.PredictAttacks();
+
+        var simulateTimer = comboStartDelayMaximum; //To begin the combo, we assume maximum (there's also travel time)
+        for (int comboSimulate = 0; comboSimulate < comboMax; comboSimulate++)
+        {
+            //Set up basic emotion changes for normal shot
+            var valenceChange = new Emotion(EmotionDirection.decrease, EmotionStrength.weak); //Sucks getting hit
+            var tensionChange = new Emotion(EmotionDirection.none, EmotionStrength.none); //Tension with a normal shot doesn't change
+
+            //If player ship is low on health, lots of tension! Not pleasant!
+            if (playerShip.healthPercent() < 0.25f)
+            {
+                valenceChange = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
+                tensionChange = new Emotion(EmotionDirection.increase, EmotionStrength.strong);
+            }
+
+            //Finally, load the correct number of events into the queue and to the affect manager
+            for (int i = 0; i < comboSimulate; i++)
+            {
+                var newEvent = new ProspectiveEvent(valenceChange, null, tensionChange, 5.0f, false, affect);
+                affect.AddEvent(newEvent);
+                AddEventToQueue(newEvent);
+            }
+        }
+    }
+
+    #endregion Affect
+
     #region action implementation
 
     public void SpecialAttackTrigger()
@@ -147,6 +189,7 @@ public class EnemyShip : BasicShip
             playerShip.TakeDamage(damage);
             playerShip.Jam(jamDuration);
         }
+        upcomingSpecial = false;
     }
 
     public override void Heal()
@@ -180,13 +223,22 @@ public class EnemyShip : BasicShip
     {
         comboMax = Random.Range(2, 5); //Combos can be 2, 3, or 4 in length
         currentCombo = 1; //We always start on 1
+        PredictAttacks(); //Once we have a combo length, we
 
         var healthPercent = health / maxHealth; //Chance of triggering healing increases as health decreases
         comboHeal = Random.value > healthPercent;
+
         if (alive)
         {
             StartCoroutine(ComboCooldown(Random.Range(comboStartDelayMaximum, comboStartDelayMaximum)));
         }
+    }
+
+    /// <summary>
+    /// Creates series of upcoming affect events.
+    /// </summary>
+    private void ComboAffect()
+    {
     }
 
     /// <summary>
