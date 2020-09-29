@@ -26,6 +26,27 @@ public class ShipAttributes : ScriptableObject
         }
     }
 
+    [Tooltip("Shield health")]
+    public float baseShield;
+
+    public float level2Shield, level3Shield;
+
+    [HideInInspector]
+    public float shield(int level)
+    {
+        switch (level)
+        {
+            default:
+                return baseShield;
+
+            case 2:
+                return level2Shield;
+
+            case 3:
+                return level3Shield;
+        }
+    }
+
     [Range(0, 1)]
     [Tooltip("Armour modifier - percentage of total damage taken")]
     public float baseArmour, level2Armour, level3Armour;

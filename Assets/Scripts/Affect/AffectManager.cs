@@ -13,23 +13,66 @@ public enum OrdinalAffect { low, medium, high }
 
 public class AffectManager : MonoBehaviour
 {
+    #region Mechanical variables
+
     private OrdinalAffect valenceMood = OrdinalAffect.low, arousalMood = OrdinalAffect.low, tensionMood = OrdinalAffect.low; //Underlying mood values that emotions can alter
     private OrdinalAffect valence, arousal, tension; //Full Affect states
-    private List<Event> events; //List of all events, prospective and past
-    private List<Event> toCull; //Faux garbage collection
 
     private bool modelEmotions = true;
-    public AffectVariables affectVars;
+
+    #endregion Mechanical variables
+
+    #region Events
+
+    private List<Event> events; //List of all events, prospective and past
+    private List<Event> toCull; //Faux garbage collection
+    private List<ProspectiveEvent> upcomingPlayerAttackEvents; //List of all upcoming player attacks
+    private List<ProspectiveEvent> upcomingEnemyAttackEvents; //List of all upcoming enemy attacks
+
+    private bool playerLowHealth = false;
+    private bool enemyLowHealth = false;
+
+    #endregion Events
+
+    #region References
 
     public AffectBarText valenceDisplay, arousalDisplay, tensionDisplay;
+    public AffectVariables affectVars;
+
+    #endregion References
+
+    #region Setup and Bookkeeping
 
     private void Start()
     {
         events = new List<Event>();
         toCull = new List<Event>();
 
+        upcomingPlayerAttackEvents = new List<ProspectiveEvent>();
+        upcomingEnemyAttackEvents = new List<ProspectiveEvent>();
+
         StartCoroutine(ProcessEvents()); //Start to process emotions
     }
+
+    public void setMood(OrdinalAffect _valenceMood, OrdinalAffect _arousalMood, OrdinalAffect _tensionMood)
+    {
+        valenceMood = _valenceMood;
+        arousalMood = _arousalMood;
+        tensionMood = _tensionMood;
+    }
+
+    /// <summary>
+    /// Used when wave is cleared. Clear all affective events and replace with single 5-second valence boost (essentially reset emotion)
+    /// </summary>
+    public void ClearWave()
+    {
+        events = new List<Event>();
+        CreatePastEvent(new Emotion(EmotionDirection.increase, EmotionStrength.strong), null, null, 5.0f);
+    }
+
+    #endregion Setup and Bookkeeping
+
+    #region Event creation and curation
 
     /// <summary>
     /// Creates prospective event. Assumes determinate, unless otherwise indicated
@@ -68,6 +111,18 @@ public class AffectManager : MonoBehaviour
         events.Add(toAdd);
     }
 
+    public void AddUpcomingPlayerAttack(ProspectiveEvent toAdd)
+    {
+        AddEvent(toAdd);
+        upcomingPlayerAttackEvents.Add(toAdd);
+    }
+
+    public void AddUpcomingEnemyAttack(ProspectiveEvent toAdd)
+    {
+        AddEvent(toAdd);
+        upcomingEnemyAttackEvents.Add(toAdd);
+    }
+
     /// <summary>
     /// Used for faux garbage collection. Adds event to culling list to be culled when we're done enumerating.
     /// </summary>
@@ -78,13 +133,82 @@ public class AffectManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Used when wave is cleared. Clear all affective events and replace with single 5-second valence boost (essentially reset emotion)
+    /// Checks if player low health is already set, and if not, sets it and changes affect in upcoming enemy attacks
     /// </summary>
-    public void ClearWave()
+    /// <param name="lowHealth"></param>
+    public void SetPlayerLowHealth(bool lowHealth)
     {
-        events = new List<Event>();
-        CreatePastEvent(new Emotion(EmotionDirection.increase, EmotionStrength.strong), null, null, 5.0f);
+        if (playerLowHealth != lowHealth)
+        {
+            playerLowHealth = lowHealth; //set player low health
+            if (playerLowHealth)
+            {
+                foreach (ProspectiveEvent @event in upcomingEnemyAttackEvents)
+                {
+                    @event.setMultiplier(2f);
+                }
+            }
+            else
+            {
+                foreach (ProspectiveEvent @event in upcomingEnemyAttackEvents)
+                {
+                    @event.setMultiplier(1f);
+                }
+            }
+        }
     }
+
+    /// <summary>
+    /// Checks if player low health is already set, and if not, sets it and changes affect in upcoming enemy attacks
+    /// </summary>
+    /// <param name="lowHealth"></param>
+    public void SetEnemyLowHealth(bool lowHealth)
+    {
+        if (enemyLowHealth != lowHealth)
+        {
+            enemyLowHealth = lowHealth; //set player low health
+            if (enemyLowHealth)
+            {
+                foreach (ProspectiveEvent @event in upcomingPlayerAttackEvents)
+                {
+                    @event.setMultiplier(2f);
+                }
+            }
+            else
+            {
+                foreach (ProspectiveEvent @event in upcomingPlayerAttackEvents)
+                {
+                    @event.setMultiplier(1f);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// If player is shielded, reduce enemy attack multipliers by 50%
+    /// </summary>
+    /// <param name="shielded"></param>
+    public void SetPlayerShield(bool shielded)
+    {
+        if (shielded)
+        {
+            foreach (ProspectiveEvent @event in upcomingEnemyAttackEvents)
+            {
+                @event.setMultiplier(0.5f);
+            }
+        }
+        else
+        {
+            foreach (ProspectiveEvent @event in upcomingEnemyAttackEvents)
+            {
+                @event.setMultiplier(1f);
+            }
+        }
+    }
+
+    #endregion Event creation and curation
+
+    #region Event updates and maintenance
 
     /// <summary>
     /// Processes events while emotion model is running
@@ -119,7 +243,16 @@ public class AffectManager : MonoBehaviour
                 {
                     events.Remove(_event);
                 }
+                if (upcomingPlayerAttackEvents.Contains(_event))
+                {
+                    upcomingPlayerAttackEvents.Remove((ProspectiveEvent)_event);
+                }
+                if (upcomingEnemyAttackEvents.Contains(_event))
+                {
+                    upcomingEnemyAttackEvents.Remove((ProspectiveEvent)_event);
+                }
             }
+
             toCull = new List<Event>();
 
             //Debug.Log("Total VAT Values: " + valenceValue + "," + arousalValue + "," + tensionValue);
@@ -254,12 +387,7 @@ public class AffectManager : MonoBehaviour
         else return mood; //Very confusing if this ever happens
     }
 
-    public void setMood(OrdinalAffect _valenceMood, OrdinalAffect _arousalMood, OrdinalAffect _tensionMood)
-    {
-        valenceMood = _valenceMood;
-        arousalMood = _arousalMood;
-        tensionMood = _tensionMood;
-    }
+    #endregion Event updates and maintenance
 }
 
 #region Events
@@ -277,13 +405,14 @@ public class Event
     protected float duration; //Duration of past events, or time to prospective events.
     protected float timer;  //Counts down over time
     protected bool determinate; //Controls over time
+    protected float multiplier;
     protected AffectManager manager;
 
     private float scalar;
 
 #nullable enable
 
-    public Event(Emotion? _valence, Emotion? _arousal, Emotion? _tension, float _duration, AffectManager _manager)
+    public Event(Emotion? _valence, Emotion? _arousal, Emotion? _tension, float _duration, AffectManager _manager, float _multiplier = 1.0f)
     {
         if (_valence != null)
         {
@@ -302,6 +431,7 @@ public class Event
         else { tension = new Emotion(0, 0); }
         duration = _duration;
         manager = _manager;
+        multiplier = _multiplier;
     }
 
 #nullable disable
@@ -322,7 +452,7 @@ public class Event
     public float GetValence()
     {
         var value = valence.GetScaledEmotion(scalar);
-        return value;
+        return value * multiplier;
     }
 
     /// <summary>
@@ -332,7 +462,7 @@ public class Event
     public float GetArousal()
     {
         var value = arousal.GetScaledEmotion(scalar);
-        return value;
+        return value * multiplier;
     }
 
     /// <summary>
@@ -342,7 +472,7 @@ public class Event
     public float GetTension()
     {
         var value = tension.GetScaledEmotion(scalar);
-        return value;
+        return value * multiplier;
     }
 }
 
@@ -420,6 +550,11 @@ public class ProspectiveEvent : Event
                 manager.CullEvent(this);
             }
         }
+    }
+
+    public void setMultiplier(float _multiplier)
+    {
+        multiplier = _multiplier;
     }
 }
 

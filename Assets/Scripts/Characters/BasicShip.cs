@@ -15,6 +15,7 @@ public class BasicShip : MonoBehaviour
     public ShipAttributes attr;
 
     protected float maxHealth, health;
+    protected float maxShield, shieldHealth;
 
     protected float armour;
 
@@ -28,7 +29,6 @@ public class BasicShip : MonoBehaviour
 
     #region Ability values and mechanic varaibles
 
-    protected float shieldDuration;
     protected float jamDuration;
     protected float jamTimer;
     protected float healPercent, healDelay;
@@ -42,10 +42,12 @@ public class BasicShip : MonoBehaviour
 
     #region UI references
 
-    [Header("UI")]
+    [Header("UI and audio")]
     public damageText damageText;
 
     public healthBarAnimator healthBar;
+    public shieldBarAnimator shieldBar;
+    public AudioClip SFX_shieldActivate;
 
     #endregion UI references
 
@@ -80,6 +82,10 @@ public class BasicShip : MonoBehaviour
 
     public GameObject nearDeathFirePrefab;
     private GameObject nearDeathFire;
+
+    public GameObject shieldPrefab;
+    protected GameObject shield;
+    public float shieldSize = 2f;
 
     public GameObject explosion;
 
@@ -137,7 +143,7 @@ public class BasicShip : MonoBehaviour
 
         //Sets attributes and sets up health bar, and sets alive to true
         SetAttributes(level);
-
+        ShieldsUp(); //Raises shields
         alive = true;
 
         //Begins coroutines for updating statuses and health
@@ -152,6 +158,7 @@ public class BasicShip : MonoBehaviour
             SetSpecial(level);
             FullHeal();
             healthBar.Refresh(maxHealth, health);
+            shieldBar.Refresh(maxShield, shieldHealth);
         }
     }
 
@@ -172,9 +179,9 @@ public class BasicShip : MonoBehaviour
     public virtual void SetDefense(int level)
     {
         maxHealth = attr.health(level);
+        maxShield = attr.shield(level);
         jamDuration = attr.disableDuration(level);
         armour = attr.armour(level);
-        shieldDuration = attr.shieldDuration(level);
     }
 
     /// <summary>
@@ -196,6 +203,9 @@ public class BasicShip : MonoBehaviour
     {
         health = maxHealth;
         healthBar.addValue((int)maxHealth);
+
+        shieldHealth = maxShield;
+        shieldBar.addValue((int)maxShield);
     }
 
     public float healthPercent()
@@ -343,26 +353,39 @@ public class BasicShip : MonoBehaviour
     /// If healing, damage is doubled and healing is interrupted
     /// </summary>
     /// <param name="_damage">Damage to take, modified by armour </param>
-    public void TakeDamage(float _damage)
+    public virtual void TakeDamage(float _damage)
     {
         if (alive)
         {
-            //If we're healing, the shot deals double damage and interrupts the heal
-            if (healing)
-            {
-                HealInterrupt();
-                _damage *= 2f;
-            }
-
-            //Take damage
-            var damage = _damage * armour;
-            health -= damage;
-
-            //Calculate int and percent damage for UI effects, and pass damage to UI
+            var damage = _damage;
             var intDamage = Mathf.RoundToInt(damage);
+
+            //If we're shielded, we take damage to our shield
+            if (shielded)
+            {
+                ShieldHit(damage);
+                shieldBar.TakeDamage(intDamage);
+            }
+            else
+            {
+                //If we're healing, the shot deals double damage and interrupts the heal
+                if (healing)
+                {
+                    HealInterrupt();
+                    _damage *= 2f;
+                }
+
+                //Take damage
+                damage = _damage * armour;
+                intDamage = Mathf.RoundToInt(damage);
+
+                health -= damage;
+                //Update health bar
+                healthBar.TakeDamage(intDamage);
+            }
+            //Calculate int and percent damage for UI effects, and pass damage to UI
             var percent = damage / health;
             damageText.TakeDamage(intDamage, percent);
-            healthBar.TakeDamage(intDamage);
         }
     }
 
@@ -376,20 +399,7 @@ public class BasicShip : MonoBehaviour
     {
         while (alive)
         {
-            if (LowHealth())
-            {
-                if (nearDeathFire == null) //If we're not on fire, catch fire
-                {
-                    nearDeathFire = Instantiate(nearDeathFirePrefab, this.transform);
-                }
-            }
-            else
-            {
-                if (nearDeathFire != null) //If health isn't low, we can put out the fire
-                {
-                    Destroy(nearDeathFire);
-                }
-            }
+            LowHealthEvaluate();
 
             if (health <= 0.0f) { die(); }
             yield return null;
@@ -397,12 +407,33 @@ public class BasicShip : MonoBehaviour
     }
 
     /// <summary>
-    /// Evaluates whether ship has low health (<10%)
+    /// Evaluates triggers for low health
+    /// </summary>
+    protected virtual void LowHealthEvaluate()
+    {
+        if (LowHealth())
+        {
+            if (nearDeathFire == null) //If we're not on fire, catch fire
+            {
+                nearDeathFire = Instantiate(nearDeathFirePrefab, this.transform);
+            }
+        }
+        else
+        {
+            if (nearDeathFire != null) //If health isn't low, we can put out the fire
+            {
+                Destroy(nearDeathFire);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Evaluates whether ship has low health (<25%)
     /// </summary>
     /// <returns></returns>
-    private bool LowHealth()
+    public bool LowHealth()
     {
-        return health <= (0.1f * maxHealth);
+        return health <= (0.25f * maxHealth);
     }
 
     /// <summary>
@@ -443,7 +474,124 @@ public class BasicShip : MonoBehaviour
         jamTimer = duration;
     }
 
+    /// <summary>
+    /// Resets combo, overridetn
+    /// </summary>
+    protected virtual void ResetCombo()
+    {
+        Debug.Log("Whoops! Forgot to write ResetCombo");
+    }
+
     #endregion Mechanics
+
+    #region Shield Mechanics
+
+    /// <summary>
+    /// Shields default to up most of the time
+    /// </summary>
+    protected void ShieldsUp()
+    {
+        //Sets mechanics
+        shielded = true;
+
+        //Plays sound, creates object
+        CreateShieldObject();
+
+        void CreateShieldObject()
+        {
+            SFX.PlayOneShot(SFX_shieldActivate);
+            shield = Instantiate(shieldPrefab, transform.position, Quaternion.identity, this.transform);
+            shield.tag = gameObject.tag;
+            shield.name = "Shield";
+            shield.transform.SetParent(this.transform);
+            shield.transform.localScale = new Vector3(shieldSize, shieldSize, shieldSize);
+        }
+    }
+
+    /// <summary>
+    /// Starts shield recharging for delay, - just to avoid problems with forgetting to call startCoroutine
+    /// </summary>
+    /// <param name="delay"></param>
+    protected void ChargeShield(float delay)
+    {
+        StartCoroutine(ShieldWait(delay));
+    }
+
+    /// <summary>
+    /// Waits the given time and reactivates shield (if shield is down)
+    /// </summary>
+    /// <param name="_time"></param>
+    /// <returns></returns>
+    protected IEnumerator ShieldWait(float _time)
+    {
+        var timer = _time;
+        while (timer > 0.0f)
+        {
+            timer -= Time.deltaTime;
+            yield return null;
+        }
+        if (!shielded)
+        {
+            ShieldsUp();
+        }
+    }
+
+    /// <summary>
+    /// If the shield is up, we take shield damage
+    /// </summary>
+    /// <param name="damage"></param>
+    public void ShieldHit(float _damage)
+    {
+        shieldHealth -= _damage;
+        shieldBar.TakeDamage(Mathf.RoundToInt(_damage));
+
+        if (shieldHealth <= 0.0f)
+        {
+            ShieldBreak();
+        }
+    }
+
+    /// <summary>
+    /// If we run out of shield, it goes down for a long time and
+    /// </summary>
+    public void ShieldBreak()
+    {
+        Jam(2.5f);
+        ShieldsDown();
+        shieldBar.ShieldBreak();
+        ChargeShield(30.0f);
+        StartCoroutine(ShieldRecharge(30.0f));
+    }
+
+    /// <summary>
+    /// Scales shield amount to timer
+    /// </summary>
+    /// <param name="time"></param>
+    /// <returns></returns>
+    protected IEnumerator ShieldRecharge(float time)
+    {
+        var timer = 0.0f;
+        while (timer < time)
+        {
+            timer += Time.deltaTime;
+            var timerPercent = timer / time;
+            shieldHealth = timerPercent * maxShield;
+            yield return null;
+        }
+        shieldHealth = maxShield;
+        shieldBar.ShieldRestore();
+    }
+
+    /// <summary>
+    /// Turns off shield
+    /// </summary>
+    protected void ShieldsDown()
+    {
+        shielded = false;
+        Destroy(shield);
+    }
+
+    #endregion Shield Mechanics
 
     #region Effects and indicators
 
@@ -500,21 +648,21 @@ public class BasicShip : MonoBehaviour
     }
 
     /// <summary>
-    /// Heals self for % of missing health, determined by healPercent modifier attribute
+    /// Heals shield for % of missing health, determined by healPercent modifier attribute
     /// </summary>
     public virtual void Heal()
     {
         if (healing)
         {
-            var missingHealth = maxHealth - health;
+            var missingHealth = maxShield - shieldHealth;
             var amount = healPercent * missingHealth;
-            health += amount;
+            shieldHealth += amount;
 
-            if (health > maxHealth)
+            if (shieldHealth > maxHealth)
             {
-                health = maxHealth;
+                shieldHealth = maxHealth;
             }
-            healthBar.addValue(Mathf.RoundToInt(amount));
+            shieldBar.addValue(Mathf.RoundToInt(amount));
 
             healing = false;
 

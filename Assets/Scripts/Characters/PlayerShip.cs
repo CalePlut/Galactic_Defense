@@ -38,17 +38,10 @@ public class PlayerShip : BasicShip
     [Header("Effects and Weapons")]
     public GameObject disableShotPrefab;
 
-    public GameObject shieldPrefab;
-    private GameObject shield;
-
-    public ShieldStamina shieldStamina;
-
     private int combo = 0;
     public comboTracker comboTracker;
 
     [Header("Ship-specific Audio")]
-    public AudioClip SFX_shieldActivate;
-
     public AudioClip SFX_absorbAttack;//, SFX_retaliate;
 
     public AudioClip SFX_Heal;
@@ -70,6 +63,8 @@ public class PlayerShip : BasicShip
     #region Mechanic and Attribute variables
 
     public bool godMode = false;
+
+    public bool absorbing { get; private set; } = false;
 
     private bool retaliate = false; //Variables for shield mechanics
 
@@ -105,7 +100,7 @@ public class PlayerShip : BasicShip
     public override void SetDefense(int level)
     {
         base.SetDefense(level);
-        shieldStamina.SetStamina(shieldDuration);
+        //shieldStamina.SetStamina(shieldDuration);
 
         if (godMode) //Here's where all the godmode code is because I'm lazy
         {
@@ -167,26 +162,48 @@ public class PlayerShip : BasicShip
         for (int i = 0; i < nextCombo; i++)
         {
             var newEvent = new ProspectiveEvent(valenceChange, arousalChange, tensionChange, 5.0f, false, affect);
-            affect.AddEvent(newEvent);
+            affect.AddUpcomingPlayerAttack(newEvent);
             AddEventToQueue(newEvent);
         }
 
         void EvaluateHealthAffect(ref Emotion valenceChange, ref Emotion tensionChange)
         {
             //Special cases change the emotion strengths
-            var lowHealth = healthPercent() < 0.25f;
-            var enemyLowHealth = enemyShip.healthPercent() < 0.25f;
-            if (enemyLowHealth)  //If this may be the shot that finishes the battle, increase valence strength and add tension
+
+            if (enemyShip.LowHealth())  //If this may be the shot that finishes the battle, increase valence strength and add tension
             {
                 valenceChange = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
 
-                if (lowHealth) //If we are also low health, our shot is even more tense ("Can we pull it off?!"
+                if (LowHealth()) //If we are also low health, our shot is even more tense ("Can we pull it off?!"
                 {
                     tensionChange = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
                 }
                 else { tensionChange = new Emotion(EmotionDirection.increase, EmotionStrength.weak); }
             }
         }
+    }
+
+    /// <summary>
+    /// Player overrides TakeDamage to add affect
+    /// </summary>
+    /// <param name="_damage"></param>
+    public override void TakeDamage(float _damage)
+    {
+        base.TakeDamage(_damage);
+        var damageValence = new Emotion(EmotionDirection.decrease, EmotionStrength.weak);
+        var damageTension = new Emotion(EmotionDirection.none, EmotionStrength.none);
+        if (LowHealth())
+        {
+            damageValence = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
+            damageTension = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
+        }
+        affect.CreatePastEvent(damageValence, null, damageTension, 2.5f);
+    }
+
+    protected override void LowHealthEvaluate()
+    {
+        base.LowHealthEvaluate();
+        affect.SetPlayerLowHealth(LowHealth());
     }
 
     #endregion Affect
@@ -212,6 +229,8 @@ public class PlayerShip : BasicShip
     public void Attack()
     {
         TriggerGlobalCooldown();
+        ShieldsDown();
+        ChargeShield(shieldCooldown);
         combo++;
         switch (combo)
         {
@@ -257,6 +276,7 @@ public class PlayerShip : BasicShip
     public override void Heal()
     {
         base.Heal();
+
         if (healing)
         {
             var healValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
@@ -272,6 +292,8 @@ public class PlayerShip : BasicShip
     public override void HealTrigger()
     {
         base.HealTrigger();
+        ShieldsDown();
+        ChargeShield(shieldCooldown);
         TriggerGlobalCooldown();
     }
 
@@ -342,56 +364,31 @@ public class PlayerShip : BasicShip
     #region Shields
 
     /// <summary>
-    /// Sets mechanics, creates shield object, sends shield message to various references
+    /// Button mechanics for shield
+    /// Triggers and implementation are used to allow for queueing actions
     /// </summary>
-    public void ShieldsUp()
+    public void ShieldTrigger()
     {
-        //Sets mechanics
-        shielded = true;
-        retaliate = false;
-
-        //Plays sound, creates object
-        SFX.PlayOneShot(SFX_shieldActivate);
-        shield = Instantiate(shieldPrefab, transform.position, Quaternion.identity, this.transform);
-        shield.tag = "Player";
-        shield.name = "Shield";
-        shield.transform.SetParent(this.transform);
-        shield.transform.localScale = new Vector3(4, 4, 4);
-
-        //Sustains shield and disables other buttons
-        StartCoroutine(ShieldSustain());
-        buttonManager.ShieldHold();
-    }
-
-    /// <summary>
-    /// Keeps shield up as long as key is held down
-    /// </summary>
-    /// <returns></returns>
-    private IEnumerator ShieldSustain()  //Keeps shield up for duration, and removes afterwards
-    {
-        shieldStamina.ShieldsUp(); //Passes shields up message to shieldsustain bar
-
-        while (shieldStamina.shielded)
+        if (shieldButton.CanActivate())
         {
-            yield return null;
+            shieldButton.sendToButton(shieldCooldown);
         }
-
-        //As soon as we're not shielded in stamina bar, remove shield. Back and forth is required for stamina to run out OR disable on release
-        ShieldsDown();
     }
 
     /// <summary>
-    /// If shield is hit by a cannon shot, drain a small amount of stamina
+    /// Brings shields down, gets ready to absorb attack
     /// </summary>
-    public void ShieldHit(float _damage)
+    public void BeginAbsorb()
     {
-        shieldStamina.StaminaChunk(_damage * 0.25f);
+        ShieldsDown();
+        absorbing = true;
+        buttonManager.ShieldHold();
     }
 
     /// <summary>
     /// Disables shields - if retaliate is triggered, do so
     /// </summary>
-    public void ShieldsDown()
+    public void AbsorbEnd()
     {
         if (retaliate)
         {
@@ -408,10 +405,10 @@ public class PlayerShip : BasicShip
         }
         retaliate = false;
 
-        shieldStamina.ShieldDown();
-        shielded = false;
-        Destroy(shield);
+        //affect.SetPlayerShield(true);
+
         buttonManager.ShieldRelease();
+        ShieldsUp();
     }
 
     /// <summary>
@@ -422,7 +419,7 @@ public class PlayerShip : BasicShip
         SFX.PlayOneShot(SFX_absorbAttack);
         retaliate = true;
 
-        shieldStamina.AbsorbAttack();
+        //shieldStamina.AbsorbAttack();
 
         var parryValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
         var parryArousal = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
@@ -453,18 +450,6 @@ public class PlayerShip : BasicShip
     }
 
     #endregion Shields
-
-    /// <summary>
-    /// Button mechanics for shield
-    /// Triggers and implementation are used to allow for queueing actions
-    /// </summary>
-    public void ShieldTrigger()
-    {
-        if (shieldButton.CanActivate())
-        {
-            shieldButton.sendToButton(shieldCooldown);
-        }
-    }
 
     // Start is called before the first frame update
     private void Start()

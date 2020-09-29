@@ -12,9 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba4d499d2b74c934fb549b6cc19ed65c, type: 3}
   m_Name: Enemy Attributes
   m_EditorClassIdentifier: 
-  baseHealth: 75
-  level2Health: 100
-  level3Health: 250
+  baseHealth: 10
+  level2Health: 15
+  level3Health: 20
+  baseShield: 50
+  level2Shield: 75
+  level3Shield: 100
   baseArmour: 1
   level2Armour: 0.9
   level3Armour: 0.75

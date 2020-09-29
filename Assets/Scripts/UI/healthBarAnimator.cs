@@ -30,7 +30,7 @@ public class healthBarAnimator : MonoBehaviour
         healthBar.value = _value;
 
         setHealthText(health);
-        setHealthColor(_value);
+        SetHealthColor(_value);
     }
 
     public void Refresh(float _max, float _value)
@@ -41,7 +41,7 @@ public class healthBarAnimator : MonoBehaviour
         healthBar.value = _value;
 
         setHealthText(health);
-        setHealthColor(health);
+        SetHealthColor(health);
     }
 
     public void deActivate()
@@ -53,10 +53,10 @@ public class healthBarAnimator : MonoBehaviour
     {
         healthBar.value = _value;
         setHealthText(_value);
-        setHealthColor(_value);
+        SetHealthColor(_value);
     }
 
-    private void setHealthColor(int _value)
+    protected void SetHealthColor(int _value)
     {
         var healthPercentage = (float)_value / (float)max;
         var r = 1.0f - healthPercentage;
@@ -67,6 +67,15 @@ public class healthBarAnimator : MonoBehaviour
 
         fillCol = new Color(r, g, fillCol.b);
         fill.color = fillCol;
+    }
+
+    /// <summary>
+    /// Called by shield bar to override the color of the shield with red while recharging
+    /// </summary>
+    /// <param name="col"></param>
+    protected void OverrideHealthColor(Color col)
+    {
+        fill.color = col;
     }
 
     private void setHealthText(int _value)
@@ -91,6 +100,14 @@ public class healthBarAnimator : MonoBehaviour
 
     private void Update()
     {
+        Evaluate();
+    }
+
+    /// <summary>
+    /// Evaluates health
+    /// </summary>
+    protected virtual void Evaluate()
+    {
         if (health > 0)
         {
             if (!gameObject.activeInHierarchy) { gameObject.SetActive(true); }
@@ -98,13 +115,13 @@ public class healthBarAnimator : MonoBehaviour
             {
                 healthBar.value += adjustSpeed * Time.deltaTime;
                 setHealthText(Mathf.RoundToInt(healthBar.value));
-                setHealthColor(Mathf.RoundToInt(healthBar.value));
+                SetHealthColor(Mathf.RoundToInt(healthBar.value));
             }
             else if (healthBar.value - health > 1)
             {
                 healthBar.value -= adjustSpeed * Time.deltaTime;
                 setHealthText(Mathf.RoundToInt(healthBar.value));
-                setHealthColor(Mathf.RoundToInt(healthBar.value));
+                SetHealthColor(Mathf.RoundToInt(healthBar.value));
             }
             else { }
         }
@@ -114,7 +131,7 @@ public class healthBarAnimator : MonoBehaviour
             {
                 healthBar.value -= adjustSpeed * 10.0f * Time.deltaTime;
                 setHealthText(Mathf.RoundToInt(healthBar.value));
-                setHealthColor(Mathf.RoundToInt(healthBar.value));
+                SetHealthColor(Mathf.RoundToInt(healthBar.value));
             }
         }
     }

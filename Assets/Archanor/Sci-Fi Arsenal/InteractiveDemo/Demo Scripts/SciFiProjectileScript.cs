@@ -68,18 +68,10 @@ namespace SciFiArsenal
                         hasCollided = true;
                         impactParticle = Instantiate(impactParticle, transform.position, Quaternion.FromToRotation(Vector3.up, impactNormal)) as GameObject;
                         affect.CullEvent(myEvent); //This is where the bullet culls its own event
+                        target.TakeDamage(damage); //Target takes damage
 
-                        if (!(hit.gameObject.name == "Shield"))
-                        {
-                            target.TakeDamage(damage);
-                        }
-                        else
-                        {
-                            var player = GameObject.Find("Player Ship");
-                            player.GetComponent<PlayerShip>().ShieldHit(damage);
-                        }
-
-                        if (hit.gameObject.tag == "Destructible") // Projectile will destroy objects tagged as Destructible
+                        //This is all back to stock stuff
+                        if (hit.gameObject.CompareTag("Destructible")) // Projectile will destroy objects tagged as Destructible
                         {
                             Destroy(hit.gameObject);
                         }

@@ -122,27 +122,55 @@ public class EnemyShip : BasicShip
         base.PredictAttacks();
 
         var simulateTimer = comboStartDelayMaximum; //To begin the combo, we assume maximum (there's also travel time)
-        for (int comboSimulate = 0; comboSimulate < comboMax; comboSimulate++)
+        for (int comboSimulate = 0; comboSimulate < comboMax; comboSimulate++) //We then set up
         {
             //Set up basic emotion changes for normal shot
             var valenceChange = new Emotion(EmotionDirection.decrease, EmotionStrength.weak); //Sucks getting hit
             var tensionChange = new Emotion(EmotionDirection.none, EmotionStrength.none); //Tension with a normal shot doesn't change
 
-            //If player ship is low on health, lots of tension! Not pleasant!
-            if (playerShip.healthPercent() < 0.25f)
+            //If player ship is low on health for normal shot, add some tension
+            if (playerShip.LowHealth())
             {
-                valenceChange = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
-                tensionChange = new Emotion(EmotionDirection.increase, EmotionStrength.strong);
+                tensionChange = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
             }
 
             //Finally, load the correct number of events into the queue and to the affect manager
             for (int i = 0; i < comboSimulate; i++)
             {
-                var newEvent = new ProspectiveEvent(valenceChange, null, tensionChange, 5.0f, false, affect);
-                affect.AddEvent(newEvent);
+                var newEvent = new ProspectiveEvent(valenceChange, null, tensionChange, simulateTimer + 2.0f, false, affect);
+                affect.AddUpcomingEnemyAttack(newEvent);
                 AddEventToQueue(newEvent);
             }
+
+            simulateTimer += globalCooldown; //Advance simulateTimer after each attack
         }
+
+        //Once we've completed the basic combo, add an event for the special attack/heal (Same emotion - neg valence pos tension)
+        var specialValenceChange = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate); //Specials are one level stronger by default
+        var specialTensionChange = new Emotion(EmotionDirection.increase, EmotionStrength.moderate); //Specials also have tension
+
+        var specialEvent = new ProspectiveEvent(specialValenceChange, null, specialTensionChange, simulateTimer + 2.0f, false, affect);
+        affect.AddEvent(specialEvent);
+        AddEventToQueue(specialEvent);
+    }
+
+    public override void TakeDamage(float _damage)
+    {
+        base.TakeDamage(_damage);
+        var damageValence = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
+        var damageTension = new Emotion(EmotionDirection.none, EmotionStrength.none);
+        if (healthPercent() < 0.25f)
+        {
+            damageValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+            damageTension = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
+        }
+        affect.CreatePastEvent(damageValence, null, damageTension, 2.5f);
+    }
+
+    protected override void LowHealthEvaluate()
+    {
+        base.LowHealthEvaluate();
+        affect.SetEnemyLowHealth(LowHealth());
     }
 
     #endregion Affect
@@ -176,26 +204,28 @@ public class EnemyShip : BasicShip
 
         SpawnLaser(emitter, playerShipObj.transform.position);
 
-        if (playerShip.shielded)
+        if (playerShip.absorbing)
         {
             playerShip.SetRetaliate();
-        }
-        else if (playerShip.healing)
-        {
-            FullBroadside(playerShip, 4);
         }
         else
         {
             playerShip.TakeDamage(damage);
-            playerShip.Jam(jamDuration);
+            if (!playerShip.shielded)
+            {
+                playerShip.Jam(jamDuration);
+            }
         }
         upcomingSpecial = false;
+
+        ChargeShield(globalCooldown);
     }
 
     public override void Heal()
     {
         base.Heal();
         Jam(jamDuration);
+        ChargeShield(globalCooldown);
     }
 
     #endregion action implementation
@@ -230,15 +260,9 @@ public class EnemyShip : BasicShip
 
         if (alive)
         {
-            StartCoroutine(ComboCooldown(Random.Range(comboStartDelayMaximum, comboStartDelayMaximum)));
+            var toWait = Random.Range(comboStartDelayMaximum, comboStartDelayMaximum);
+            StartCoroutine(ComboCooldown(toWait));
         }
-    }
-
-    /// <summary>
-    /// Creates series of upcoming affect events.
-    /// </summary>
-    private void ComboAffect()
-    {
     }
 
     /// <summary>
@@ -320,6 +344,7 @@ public class EnemyShip : BasicShip
             }
             yield return null;
         }
+        ShieldsDown(); //When enemy begins combo, it brings its shields down
         ComboLogic();
     }
 
