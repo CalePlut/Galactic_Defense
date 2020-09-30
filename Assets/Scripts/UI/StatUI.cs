@@ -73,16 +73,6 @@ public class StatUI : MonoBehaviour
         sensorText.text = sensors + "/" + sensorHealth.maxValue;
     }
 
-    public void passDamage(int damage)
-    {
-        shields.TakeDamage(damage);
-    }
-
-    public void rechargeShield(int toAdd)
-    {
-        shields.addValue(toAdd);
-    }
-
     //public void addProgress(float amt) {
     //    progress.value += amt;
 

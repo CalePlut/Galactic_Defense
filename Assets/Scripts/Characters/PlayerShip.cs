@@ -12,7 +12,6 @@ public class PlayerShip : BasicShip
     [Header("Cooldowns")]
     public float attackCooldown = 1.5f;
 
-    public float shieldCooldown = 0.5f;
     public float healCooldown = 2.5f;
 
     public float ultimateCooldown = 30.0f;
@@ -36,9 +35,13 @@ public class PlayerShip : BasicShip
     #region Effect  and weapon references
 
     [Header("Effects and Weapons")]
+    public GameObject absorbObject;
+
+    private float parryFrame;
+
     public GameObject disableShotPrefab;
 
-    private int combo = 0;
+    private int shots = 0;
     public comboTracker comboTracker;
 
     [Header("Ship-specific Audio")]
@@ -53,7 +56,7 @@ public class PlayerShip : BasicShip
     [Header("Hotbar Buttons")]
     public basicButton attackButton;
 
-    public basicButton shieldButton;
+    public basicButton absorbButton;
     public basicButton healButton;
     public basicButton ultimateButton;
     public buttonManager buttonManager;
@@ -63,8 +66,6 @@ public class PlayerShip : BasicShip
     #region Mechanic and Attribute variables
 
     public bool godMode = false;
-
-    public bool absorbing { get; private set; } = false;
 
     private bool retaliate = false; //Variables for shield mechanics
 
@@ -100,6 +101,8 @@ public class PlayerShip : BasicShip
     public override void SetDefense(int level)
     {
         base.SetDefense(level);
+        parryFrame = attr.parryFrame(level);
+
         //shieldStamina.SetStamina(shieldDuration);
 
         if (godMode) //Here's where all the godmode code is because I'm lazy
@@ -153,7 +156,7 @@ public class PlayerShip : BasicShip
         var valenceChange = new Emotion(EmotionDirection.increase, EmotionStrength.weak); //Each shot from player increases valence slightly
         var arousalChange = new Emotion(EmotionDirection.increase, EmotionStrength.weak); //Also, each shot from player increases arousal
         var tensionChange = new Emotion(EmotionDirection.none, EmotionStrength.none); //Tension with a normal shot doesn't change
-        var nextCombo = combo + 1;
+        var nextCombo = shots + 1;
 
         //Consider special cases when healths are low
         EvaluateHealthAffect(ref valenceChange, ref tensionChange);
@@ -210,6 +213,8 @@ public class PlayerShip : BasicShip
 
     #region Attack and Abilities
 
+    #region Attack
+
     /// <summary>
     /// Button mechanics for attack
     /// Triggers and implementation are used to allow for queueing actions
@@ -223,155 +228,52 @@ public class PlayerShip : BasicShip
     }
 
     /// <summary>
-    /// Basic player attack - increases combo by one and fires shots equal to combo.
-    /// At 4, fires from both turrets and resets combo.
+    /// Basic player attack toggle
+    /// If not currently firing, begins firing
     /// </summary>
-    public void Attack()
+    public override void AttackToggle()
     {
-        TriggerGlobalCooldown();
-        ShieldsDown();
-        ChargeShield(shieldCooldown);
-        combo++;
-        switch (combo)
+        if (!attacking)
         {
-            case 1:
-                StartCoroutine(FireBroadside(enemyShip, turretPosition.aft, 1));
-                break;
-
-            case 2:
-                StartCoroutine(FireBroadside(enemyShip, turretPosition.fore, attackLevel));
-                break;
-
-            case 3:
-                StartCoroutine(FireBroadside(enemyShip, turretPosition.fore, 2 + (attackLevel * 2)));
-                break;
-
-            case 4:
-                FullBroadside(enemyShip, attackLevel + 4);
-                //LaserFire();
-                enemyShip.Jam(jamDuration * 2.0f); //No laser, but still a jam on full combo
-                combo = 0;
-                break;
+            //Debug.Log("Starting Attack");
+            ShieldsDown();
+            StartCoroutine(AutoAttack(enemyShip, warmupShots, doubleShots, comboMax));
+            attackButton.HoldButton();
         }
-        comboTracker.SetCombo(combo + 1);
-        PredictAttacks(); //Predict next series of attacks from player
-    }
-
-    /// <summary>
-    /// Button mechanics for attack
-    /// Triggers and implementation are used to allow for queueing actions
-    /// Naming isn't consistent because HealTrigger() is used for the mechanical heal
-    /// </summary>
-    public void HealButton()
-    {
-        if (healButton.CanActivate())
+        else
         {
-            healButton.sendToButton(healCooldown);
+            //TriggerGlobalCooldown();
+            FinishFiring();
         }
     }
 
-    /// <summary>
-    /// Overrides heal with affect and fires two shots from aft cannon
-    /// </summary>
-    public override void Heal()
+    protected override void FinishFiring()
     {
-        base.Heal();
-
-        if (healing)
-        {
-            var healValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
-            var healTension = new Emotion(EmotionDirection.decrease, EmotionStrength.weak);
-            affect.CreatePastEvent(healValence, null, healTension, 10.0f);
-            StartCoroutine(FireBroadside(enemyShip, turretPosition.aft, 2));
-        }
-    }
-
-    /// <summary>
-    /// Overrides heal trigger and starts cooldown
-    /// </summary>
-    public override void HealTrigger()
-    {
-        base.HealTrigger();
-        ShieldsDown();
-        ChargeShield(shieldCooldown);
+        base.FinishFiring();
+        //Debug.Log("Player finishing firing, trying to release attack button");
+        attackButton.ReleaseButton();
         TriggerGlobalCooldown();
     }
 
-    /// <summary>
-    /// Button mechanics for Ultimate
-    /// Triggers and implementation are used to allow for queueing actions
-    /// </summary>
-    public void UltimateTrigger()
+    protected override void InterruptFiring()
     {
-        if (ultimateButton.CanActivate())
-        {
-            ultimateButton.sendToButton(ultimateCooldown);
-        }
+        base.InterruptFiring();
+        attackButton.ReleaseButton();
     }
 
-    /// <summary>
-    /// Repairs all systems
-    /// Fires laser for large damage
-    /// If interrupting heal, fires full broadside
-    /// </summary>
-    public void Ultimate()
-    {
-        buttonManager.RefreshAllCooldowns();
-        if (enemyShip.healing)
-        {
-            FullBroadside(enemyShip, 10);
-        }
-        LaserFire();
-    }
+    #endregion Attack
 
-    /// <summary>
-    /// Fires big ol' laser
-    /// Deals big damage and jams enemy (allows for heal!)
-    /// </summary>
-    public void LaserFire()
-    {
-        var emitter = laserEmitter.position;
-        var damage = laserDamage;
-
-        SpawnLaser(emitter, enemyShipObj.transform.position);
-
-        enemyShip.TakeDamage(damage);
-        enemyShip.Jam(jamDuration);
-    }
-
-    /// <summary>
-    /// Override of Jam
-    /// Re-sets combo, and disables all parts for duration
-    /// </summary>
-    /// <param name="duration"></param>
-    public override void Jam(float duration)
-    {
-        base.Jam(duration);
-
-        combo = 0;
-        attackButton.StartCooldown(duration, Color.red);
-        shieldButton.StartCooldown(duration, Color.red);
-        healButton.StartCooldown(duration, Color.red);
-    }
-
-    private void TriggerGlobalCooldown()
-    {
-        buttonManager.globalCooldown();
-    }
-
-    #endregion Attack and Abilities
-
-    #region Shields
+    #region Absorb (Parry Riposte)
 
     /// <summary>
     /// Button mechanics for shield
     /// Triggers and implementation are used to allow for queueing actions
     /// </summary>
-    public void ShieldTrigger()
+    public void AbsorbTrigger()
     {
-        if (shieldButton.CanActivate())
+        if (absorbButton.CanActivate())
         {
-            shieldButton.sendToButton(shieldCooldown);
+            absorbButton.sendToButton(shieldCooldown);
         }
     }
 
@@ -380,16 +282,38 @@ public class PlayerShip : BasicShip
     /// </summary>
     public void BeginAbsorb()
     {
-        ShieldsDown();
+        if (attacking) //If we interrupt an attack, interupt it
+        {
+            InterruptFiring();
+        }
+        else
+        {
+            ShieldsDown();
+        }
+        TriggerGlobalCooldown();
         absorbing = true;
-        buttonManager.ShieldHold();
+        retaliate = false;
+        var absorbEffect = Instantiate(absorbObject, this.transform);
+        StartCoroutine(AbsorbFrame(parryFrame, absorbEffect));
+    }
+
+    private IEnumerator AbsorbFrame(float duration, GameObject absorbEffect)
+    {
+        var timer = duration;
+        while (timer > 0.0f & !retaliate)
+        {
+            timer -= Time.deltaTime;
+            yield return null;
+        }
+        AbsorbEnd(absorbEffect);
     }
 
     /// <summary>
     /// Disables shields - if retaliate is triggered, do so
     /// </summary>
-    public void AbsorbEnd()
+    public void AbsorbEnd(GameObject absorbEffect)
     {
+        Destroy(absorbEffect);
         if (retaliate)
         {
             enemyShip.InterruptLaser();
@@ -404,11 +328,7 @@ public class PlayerShip : BasicShip
             }
         }
         retaliate = false;
-
-        //affect.SetPlayerShield(true);
-
-        buttonManager.ShieldRelease();
-        ShieldsUp();
+        ChargeShield(shieldCooldown);
     }
 
     /// <summary>
@@ -438,18 +358,131 @@ public class PlayerShip : BasicShip
         if (target.alive)
         {
             retaliateCannon.transform.LookAt(target.transform);
-            var cannon = Instantiate(disableShotPrefab, retaliateCannon.position, Quaternion.identity);
+            var cannon = Instantiate(disableShotPrefab, retaliateCannon.position, Quaternion.identity, bulletParent);
             cannon.transform.SetParent(retaliateCannon);
             cannon.gameObject.tag = tag;
             cannon.layer = 9;
             cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, enemyShip, retaliateEvent, affect);
             retaliateEvent = null; //After firing, we clear our retaliateEvent
-
-            target.Jam(jamDuration);
         }
     }
 
-    #endregion Shields
+    #endregion Absorb (Parry Riposte)
+
+    #region Heal
+
+    /// <summary>
+    /// Button mechanics for attack
+    /// Triggers and implementation are used to allow for queueing actions
+    /// Naming isn't consistent because HealTrigger() is used for the mechanical heal
+    /// </summary>
+    public void HealButton()
+    {
+        if (healButton.CanActivate())
+        {
+            healButton.sendToButton(healCooldown);
+        }
+    }
+
+    /// <summary>
+    /// Overrides heal with affect and fires two shots from aft cannon
+    /// </summary>
+    public override void Heal()
+    {
+        base.Heal();
+
+        if (healing)
+        {
+            var healValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+            var healTension = new Emotion(EmotionDirection.decrease, EmotionStrength.weak);
+            affect.CreatePastEvent(healValence, null, healTension, 10.0f);
+        }
+
+        ChargeShield(shieldCooldown);
+    }
+
+    /// <summary>
+    /// Overrides heal trigger and starts cooldown
+    /// </summary>
+    public override void HealTrigger()
+    {
+        base.HealTrigger();
+        if (attacking)
+        {
+            InterruptFiring();
+        }
+        else
+        {
+            ShieldsDown();
+        }
+        //ChargeShield(shieldCooldown);
+        TriggerGlobalCooldown();
+    }
+
+    #endregion Heal
+
+    #region Ultimate
+
+    /// <summary>
+    /// Button mechanics for Ultimate
+    /// Triggers and implementation are used to allow for queueing actions
+    /// </summary>
+    public void UltimateTrigger()
+    {
+        if (ultimateButton.CanActivate())
+        {
+            ultimateButton.sendToButton(ultimateCooldown);
+        }
+    }
+
+    /// <summary>
+    /// Repairs all systems
+    /// Fires laser for large damage
+    /// If interrupting heal, fires full broadside
+    /// </summary>
+    public void Ultimate()
+    {
+        buttonManager.RefreshAllCooldowns();
+        LaserFire();
+    }
+
+    /// <summary>
+    /// Fires big ol' laser
+    /// Deals big damage and jams enemy (allows for heal!)
+    /// </summary>
+    public void LaserFire()
+    {
+        var emitter = laserEmitter.position;
+        var damage = laserDamage;
+
+        SpawnLaser(emitter, enemyShipObj.transform.position);
+
+        enemyShip.TakeDamage(damage);
+        enemyShip.Jam(jamDuration);
+    }
+
+    #endregion Ultimate
+
+    /// <summary>
+    /// Override of Jam
+    /// Re-sets combo, and disables all parts for duration
+    /// </summary>
+    /// <param name="duration"></param>
+    public override void Jam(float duration)
+    {
+        base.Jam(duration);
+        buttonManager.globalCooldown(duration);
+        attackButton.StartCooldown(duration, Color.red);
+        absorbButton.StartCooldown(duration, Color.red);
+        healButton.StartCooldown(duration, Color.red);
+    }
+
+    private void TriggerGlobalCooldown()
+    {
+        buttonManager.globalCooldown();
+    }
+
+    #endregion Attack and Abilities
 
     // Start is called before the first frame update
     private void Start()

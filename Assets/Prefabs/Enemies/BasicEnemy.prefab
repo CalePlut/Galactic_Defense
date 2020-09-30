@@ -238,7 +238,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 3.5}
-  m_SizeDelta: {x: 10, y: 2}
+  m_SizeDelta: {x: 20, y: 2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &436317426674035386
 Canvas:
@@ -1233,7 +1233,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.3964934, g: 0.5461312, b: 0.8490566, a: 1}
+  m_Color: {r: 1, g: 0, b: 0.020209312, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2245,7 +2245,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 3}
-  m_SizeDelta: {x: 10, y: 2.75}
+  m_SizeDelta: {x: 20, y: 2.75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &8859636145995464468
 Canvas:
@@ -2528,6 +2528,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attr: {fileID: 11400000, guid: 5beabbb60e8bf5a4c9cfbeac9bbc2a80, type: 2}
+  shieldCooldown: 0.5
   level: 1
   damageText: {fileID: 8859636144759769707}
   healthBar: {fileID: 8859636145741285789}
@@ -2562,8 +2563,8 @@ MonoBehaviour:
   affect: {fileID: 0}
   globalCooldown: 2.5
   specialAttackFrameLength: 1.5
-  comboStartDelayMinimum: 5
-  comboStartDelayMaximum: 7
+  comboStartDelayMinimum: 2
+  comboStartDelayMaximum: 10
   warpEffect: {fileID: 138802, guid: a8565406c64107841a9c18dc24ba9dc4, type: 3}
 --- !u!95 &58084015755489275
 Animator:

@@ -58,19 +58,19 @@ public class buttonManager : MonoBehaviour
         StartCoroutine(ActionUsed());
     }
 
-    public void ShieldHold()
+    public void ActionHappening()
     {
         foreach (basicButton button in buttons)
         {
-            button.ShieldHold();
+            button.HoldButton();
         }
     }
 
-    public void ShieldRelease()
+    public void ReleaseAction()
     {
         foreach (basicButton button in buttons)
         {
-            button.ShieldRelease();
+            button.ReleaseButton();
         }
     }
 

@@ -14,7 +14,7 @@ public class basicButton : MonoBehaviour
     protected Outline queueIndicator;
     public List<basicButton> otherButtons;
 
-    private bool shieldHeld = false; //Cooldowns don't advance when player shielding.
+    private bool buttonHeld = false; //Cooldowns don't advance when player shielding.
 
     [Header("Events for Custom behaviour")]
     public UnityEvent initialCall;
@@ -60,17 +60,18 @@ public class basicButton : MonoBehaviour
     /// <summary>
     /// Sends message that shield is up - sets boolean to not display cooldown
     /// </summary>
-    public void ShieldHold()
+    public void HoldButton()
     {
-        shieldHeld = true;
+        buttonHeld = true;
     }
 
     /// <summary>
     /// Releases shield and resumes normal behaviour
     /// </summary>
-    public void ShieldRelease()
+    public void ReleaseButton()
     {
-        shieldHeld = false;
+        buttonHeld = false;
+        //Debug.Log("Released button");
     }
 
     /// <summary>
@@ -115,14 +116,6 @@ public class basicButton : MonoBehaviour
         if (cooldown > 0.0f)
         {
             cooldown -= Time.deltaTime * haste;
-            if (!shieldHeld)
-            {
-                cooldownSlider.value = cooldown; //If not shielded, we just display the actual cooldown.
-            }
-            else
-            {
-                cooldownSlider.value = cooldownSlider.maxValue; //Set skill to full, regardless of cooldown, if shield is held.
-            }
         }
         else //If the cooldown is expired and the ability is queued, fire the ability.
         {
@@ -133,6 +126,16 @@ public class basicButton : MonoBehaviour
                 triggerAbility();
                 StartCooldown(myCD);
             }
+        }
+
+        if (buttonHeld) //Regardless of logic, determine what to display
+        {
+            //    Debug.Log("Button held, not displaying cooldown");
+            cooldownSlider.value = cooldownSlider.maxValue; //Set skill to full, regardless of cooldown, if shield is held.
+        }
+        else
+        {
+            cooldownSlider.value = cooldown;
         }
     }
 

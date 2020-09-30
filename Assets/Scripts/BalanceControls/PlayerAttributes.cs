@@ -12,11 +12,8 @@ public class PlayerAttributes : ScriptableObject
     [Tooltip("Auto-attack damage")]
     public float baseDamage, level2Damage, level3Damage;
 
-    [Tooltip("Shots from fore cannon when offensive action taken")]
-    public float baseForeShots, level2ForeShots, level3ForeShots;
-
-    [Tooltip("Shots from aft cannon when defensive action taken")]
-    public float baseAftShots, level2AftShots, level3AftShots;
+    [Tooltip("Shots required until both cannons begin firing")]
+    public float baseWarmupShots, level2WarmupShots, level3WarmupShots;
 
     public float baseArmour, level2Armour, level3Armour;
 
@@ -25,10 +22,8 @@ public class PlayerAttributes : ScriptableObject
 
     public float level2FusionCannonDamage, level3FusionCannonDamage;
 
-    [Tooltip("Shots fired when punishing heal frame - fired from both cannons")]
-    public int baseHealPunishShots, level2HealPunishShots, level3HealPunishShots;
-
-    public float baseShieldDuration, level2ShieldDuration, level3ShieldDuration;
+    [Header("Parry frame duration")]
+    public float baseParryDuration, level2ParryDuration, level3ParryDuration;
 
     public int baseRetaliateDamage, level2RetaliateDamage, level3RetaliateDamage;
 

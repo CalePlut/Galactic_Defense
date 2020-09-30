@@ -15,7 +15,7 @@ public class EnemyShip : BasicShip
 
     public float specialAttackFrameLength;
 
-    public float comboStartDelayMinimum, comboStartDelayMaximum;
+    public float comboStartDelayMinimum = 3f, comboStartDelayMaximum = 5f;
 
     private GameObject playerShipObj;
     private PlayerShip playerShip;
@@ -23,8 +23,6 @@ public class EnemyShip : BasicShip
 
     #region Combat AI variables
 
-    private int comboMax = 2;
-    private int currentCombo = 1;
     private bool comboHeal;
 
     //private CombatAI CombatAI;
@@ -251,89 +249,24 @@ public class EnemyShip : BasicShip
     /// </summary>
     private void ComboSetup()
     {
-        comboMax = Random.Range(2, 5); //Combos can be 2, 3, or 4 in length
-        currentCombo = 1; //We always start on 1
-        PredictAttacks(); //Once we have a combo length, we
+        //PredictAttacks(); //Once we have a combo length, we
 
-        var healthPercent = health / maxHealth; //Chance of triggering healing increases as health decreases
-        comboHeal = Random.value > healthPercent;
+        var shieldPercent = shieldHealth / maxShield; //Chance of triggering healing increases as health decreases
+        comboHeal = Random.value > shieldPercent;
 
         if (alive)
         {
             var toWait = Random.Range(comboStartDelayMaximum, comboStartDelayMaximum);
-            StartCoroutine(ComboCooldown(toWait));
+            StartCoroutine(ComboInitialWait(toWait));
         }
     }
 
     /// <summary>
-    /// Fires weapons based on combo count and type
-    /// </summary>
-    private void ComboFire()
-    {
-        var whichTurret = turretPosition.fore;
-        if (healing) { whichTurret = turretPosition.aft; }
-        if (alive)
-        {
-            StartCoroutine(FireBroadside(playerShip, whichTurret, currentCombo));
-        }
-    }
-
-    /// <summary>
-    /// Implements combo action and then advances combo (if applicable)
-    /// </summary>
-    private void ComboLogic()
-    {
-        currentCombo++;
-        if (currentCombo <= comboMax) //If we still have combo, fire normal attack
-        {
-            ComboImplement();
-            if (alive) //Wait for next step
-            {
-                StartCoroutine(ComboCooldown(globalCooldown));
-            }
-        }
-        else //If this would take us beyond the combo, do the finishing move.  The finishing move is turning the combo up to 11.
-        {
-            FinisherImplement(); //Evaluates whether finisher is special attack or heal
-
-            //Once we've implemented, setup for next combo.
-            if (alive)
-            {
-                ComboSetup();
-            }
-        }
-
-        void FinisherImplement()
-        {
-            if (comboHeal)
-            {
-                HealTrigger();
-            }
-            else
-            {
-                SpecialAttackTrigger();
-            }
-        }
-
-        void ComboImplement()
-        {
-            if (currentCombo == 4) //Combo 4 fires from both turrets, just to add some tension
-            {
-                FullBroadside(playerShip, 4);
-            }
-            else
-            {
-                ComboFire();
-            }
-        }
-    }
-
-    /// <summary>
-    /// Used both within combo and to start - waits a given amount of time and then advances
+    /// Used before starting to attack
     /// </summary>
     /// <param name="time"></param>
     /// <returns></returns>
-    private IEnumerator ComboCooldown(float time)
+    private IEnumerator ComboInitialWait(float time)
     {
         var timer = time;
         while (timer > 0.0f)
@@ -344,8 +277,45 @@ public class EnemyShip : BasicShip
             }
             yield return null;
         }
-        ShieldsDown(); //When enemy begins combo, it brings its shields down
-        ComboLogic();
+        AttackToggle(); //Begins attack after waiting
+    }
+
+    /// <summary>
+    /// Toggles attack on or off
+    /// </summary>
+    public override void AttackToggle()
+    {
+        if (alive)
+        {
+            if (!attacking)
+            {
+                Debug.Log("Starting Attack:" + warmupShots + " warmup, " + doubleShots + "double, " + comboMax + "total");
+                ShieldsDown();
+                StartCoroutine(AutoAttack(playerShip, warmupShots, doubleShots, comboMax));
+            }
+            else
+            {
+                InterruptFiring();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Keeps track of how many shots have been fired, to properly end combo.
+    /// </summary>
+    protected override void FinishFiring()
+    {
+        base.FinishFiring();
+        // Debug.Log("Finished firing");
+        if (comboHeal)
+        {
+            HealTrigger();
+        }
+        else
+        {
+            SpecialAttackTrigger();
+        }
+        StartCoroutine(ComboInitialWait(Random.Range(comboStartDelayMinimum, comboStartDelayMaximum)));
     }
 
     #endregion Combat AI

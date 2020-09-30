@@ -49,11 +49,10 @@ public class healthBarAnimator : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    private void setValue(int _value)
+    public void SetValue(float _value)
     {
-        healthBar.value = _value;
-        setHealthText(_value);
-        SetHealthColor(_value);
+        var value = Mathf.RoundToInt(_value);
+        health = value;
     }
 
     protected void SetHealthColor(int _value)

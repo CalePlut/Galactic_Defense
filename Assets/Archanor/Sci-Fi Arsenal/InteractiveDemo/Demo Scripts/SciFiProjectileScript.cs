@@ -21,6 +21,7 @@ namespace SciFiArsenal
         private BasicShip target;
         private Event myEvent;
         private AffectManager affect;
+        private Vector3 targetPos;
 
         #endregion Cale added
 
@@ -40,6 +41,7 @@ namespace SciFiArsenal
         {
             damage = _damage;
             target = _target;
+            targetPos = target.transform.position;
             myEvent = @event;
             affect = affectManager;
             //GetComponent<Collider>().enabled = false;
@@ -52,7 +54,7 @@ namespace SciFiArsenal
             // GetComponent<Collider>().enabled = true;
             while (target != null)
             {
-                transform.position = Vector3.MoveTowards(transform.position, target.transform.position, 100.0f * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(transform.position, targetPos, 100.0f * Time.deltaTime);
                 yield return null;
             }
         }

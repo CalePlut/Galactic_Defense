@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.Video;
 using SciFiArsenal;
+using System.CodeDom;
 
 public enum turretPosition { fore, aft };
 
@@ -16,6 +17,7 @@ public class BasicShip : MonoBehaviour
 
     protected float maxHealth, health;
     protected float maxShield, shieldHealth;
+    protected bool shieldBroken;
 
     protected float armour;
 
@@ -32,10 +34,14 @@ public class BasicShip : MonoBehaviour
     protected float jamDuration;
     protected float jamTimer;
     protected float healPercent, healDelay;
+    public float shieldCooldown = 0.5f;
 
+    public bool attacking { get; protected set; } = false;
+    protected int warmupShots, doubleShots, comboMax;
     public bool healing { get; private set; } = false;
     public bool shielded { get; protected set; } = false;
 
+    public bool absorbing { get; protected set; } = false;
     public int level = 1;
 
     #endregion Ability values and mechanic varaibles
@@ -61,7 +67,7 @@ public class BasicShip : MonoBehaviour
 
     public Transform flareLoc;
 
-    private Transform bulletParent;
+    protected Transform bulletParent;
 
     public GameObject basicTurretShot;
 
@@ -170,6 +176,9 @@ public class BasicShip : MonoBehaviour
     public virtual void SetAttack(int level)
     {
         turretDamage = attr.turretDamage(level);
+        warmupShots = attr.warmupShots(level);
+        doubleShots = attr.DoubleShots(level);
+        comboMax = attr.MaxShots(level);
     }
 
     /// <summary>
@@ -202,10 +211,12 @@ public class BasicShip : MonoBehaviour
     public void FullHeal()
     {
         health = maxHealth;
-        healthBar.addValue((int)maxHealth);
+        healthBar.Refresh(maxHealth, maxHealth);
+        healthBar.SetValue(maxHealth);
 
         shieldHealth = maxShield;
-        shieldBar.addValue((int)maxShield);
+        shieldBar.Refresh(maxShield, maxShield);
+        shieldBar.SetValue(maxShield);
     }
 
     public float healthPercent()
@@ -289,45 +300,102 @@ public class BasicShip : MonoBehaviour
     #region Mechanics
 
     /// <summary>
-    /// Fires cannons "shots" number of times,
+    /// Overridden for targetting, but starts or ends attack
+    /// </summary>
+    public virtual void AttackToggle()
+    {
+    }
+
+    /// <summary>
+    /// Fires single cannon w. delay until warmed up, then fire both cannons quickly
+    /// Think minigun
     /// </summary>
     /// <param name="target">Target</param>
-    /// <param name="position">Fore (aggressive) or Aft (defensive)</param>
-    /// <param name="shots">Number of shots to fire</param>
+    /// <param name="_warmupShots">Shots until starting to fire both cannons</param>
+
     /// <returns></returns>
-    protected IEnumerator FireBroadside(BasicShip target, turretPosition position, int shots)
+    protected IEnumerator AutoAttack(BasicShip target, int _warmupShots, int _doubleShots, int _totalShots)
     {
+        attacking = true;
         //Debug.Log("Firing " + shots + " shots from " + position);
-        var remainingShots = shots;
+        var takenShots = 0;
+        var turret = turretPosition.fore;
 
-        while (remainingShots > 0)
+        while (attacking)
         {
-            var damage = turretDamage;
-            if (target.alive)
+            if (jamTimer <= 0.0f)
             {
-                //Sets somewhat random position based on cannon position
-                var pos = foreTurret.position;
-                if (position == turretPosition.aft)
+                //Debug.Log("Not Jammed");
+                var damage = turretDamage;
+                var firingDelay = 0.234075f;
+                if (target.alive)
                 {
-                    pos = aftTurret.position;
+                    //  Debug.Log("Target alive");
+                    if (takenShots < _warmupShots) //If we're warming up our shots, take single alternating shot
+                    {
+                        //   Debug.Log("Taking shot");
+                        //Debug.Log("Taken shots = " + takenShots + "_warmupShots = " + _warmupShots);
+                        //First, some timing math based on the number of shots until full
+                        var remainingShots = _warmupShots - takenShots;
+                        firingDelay *= ((float)remainingShots / 2.0f); //Just a guess for now
+
+                        Vector3 pos = AlternatePosition(ref turret);
+                        FireTurret(target, damage, pos);
+                        //Adds shot
+                        takenShots++;
+                    }
+                    else if (takenShots < _doubleShots) //When we've reached the max warmup shots, we still attack from one until we hit double
+                    {
+                        Vector3 pos = AlternatePosition(ref turret);
+                        FireTurret(target, damage, pos);
+                        takenShots++;
+                    }
+                    else if (takenShots < _totalShots) //Once we've hit our double target, we take shots until the end of the combo
+                    {
+                        FireTurret(target, damage, foreTurret.position);
+                        FireTurret(target, damage, aftTurret.position);
+                        takenShots++;
+                    }
+                    else if (takenShots >= _totalShots) { FinishFiring(); } //If we complete all shots, finish firing.
                 }
-                pos.z += Random.Range(-5, 5);
-
-                //Fires cannon from position
-                var cannon = Instantiate(basicTurretShot, pos, Quaternion.identity, bulletParent);
-                cannon.gameObject.tag = tag;
-                cannon.layer = 9;
-                cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, target, NextAttack(), affect);
-                cannon.transform.LookAt(target.transform);
-                cannon.GetComponent<Rigidbody>().AddForce(foreTurret.transform.forward * 2500);
-
-                //Removes shot from remaining
-                remainingShots--;
+                yield return new WaitForSeconds(firingDelay); //Waits 1 eighth note at 130 bpm
+            }
+            else { yield return null; }
+        }
+        Vector3 AlternatePosition(ref turretPosition turret)
+        {
+            Vector3 pos;
+            if (turret == turretPosition.fore)
+            {
+                pos = foreTurret.position;
+                turret = turretPosition.aft;
+            }
+            else
+            {
+                pos = aftTurret.position;
+                turret = turretPosition.fore;
             }
 
-            yield return new WaitForSeconds(0.23075f); //Waits 1 eighth note at 130 bpm
+            return pos;
         }
-        FinishFiring();
+    }
+
+    /// <summary>
+    /// Overridden for enemy
+    /// </summary>
+    protected virtual void WarmupFinish()
+    {
+    }
+
+    private void FireTurret(BasicShip target, float damage, Vector3 pos)
+    {
+        //Fires cannon from position
+        var cannon = Instantiate(basicTurretShot, pos, Quaternion.identity, bulletParent);
+        cannon.gameObject.tag = tag;
+        cannon.layer = 9;
+        cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, target, NextAttack(), affect);
+        cannon.transform.LookAt(target.transform);
+        cannon.GetComponent<Rigidbody>().AddForce(foreTurret.transform.forward * 2500);
     }
 
     /// <summary>
@@ -335,17 +403,16 @@ public class BasicShip : MonoBehaviour
     /// </summary>
     protected virtual void FinishFiring()
     {
+        attacking = false;
+        ChargeShield(shieldCooldown);
     }
 
     /// <summary>
-    /// Fires both cannons shots times
+    /// Called to interrupt firing midway
     /// </summary>
-    /// <param name="target">ship to fire at</param>
-    /// <param name="shots">Number of sh ots to fire from both cannons</param>
-    protected void FullBroadside(BasicShip target, int shots)
+    protected virtual void InterruptFiring()
     {
-        StartCoroutine(FireBroadside(target, turretPosition.fore, shots));
-        StartCoroutine(FireBroadside(target, turretPosition.aft, shots));
+        attacking = false;
     }
 
     /// <summary>
@@ -364,7 +431,7 @@ public class BasicShip : MonoBehaviour
             if (shielded)
             {
                 ShieldHit(damage);
-                shieldBar.TakeDamage(intDamage);
+                shieldBar.SetValue(shieldHealth);
             }
             else
             {
@@ -381,8 +448,10 @@ public class BasicShip : MonoBehaviour
 
                 health -= damage;
                 //Update health bar
-                healthBar.TakeDamage(intDamage);
+                healthBar.SetValue(health);
+                Jam(0.5f); //Getting hit without shields adds half second delay
             }
+
             //Calculate int and percent damage for UI effects, and pass damage to UI
             var percent = damage / health;
             damageText.TakeDamage(intDamage, percent);
@@ -471,7 +540,9 @@ public class BasicShip : MonoBehaviour
     /// <param name="duration">Duration of Jam</param>
     public virtual void Jam(float duration)
     {
+        ShieldsDown();
         jamTimer = duration;
+        ChargeShield(duration);
     }
 
     /// <summary>
@@ -491,20 +562,23 @@ public class BasicShip : MonoBehaviour
     /// </summary>
     protected void ShieldsUp()
     {
-        //Sets mechanics
-        shielded = true;
-
-        //Plays sound, creates object
-        CreateShieldObject();
-
-        void CreateShieldObject()
+        if (!shieldBroken && !attacking && !healing && !absorbing)
         {
-            SFX.PlayOneShot(SFX_shieldActivate);
-            shield = Instantiate(shieldPrefab, transform.position, Quaternion.identity, this.transform);
-            shield.tag = gameObject.tag;
-            shield.name = "Shield";
-            shield.transform.SetParent(this.transform);
-            shield.transform.localScale = new Vector3(shieldSize, shieldSize, shieldSize);
+            //Sets mechanics
+            shielded = true;
+
+            //Plays sound, creates object
+            CreateShieldObject();
+
+            void CreateShieldObject()
+            {
+                SFX.PlayOneShot(SFX_shieldActivate);
+                shield = Instantiate(shieldPrefab, transform.position, Quaternion.identity, this.transform);
+                shield.tag = gameObject.tag;
+                shield.name = "Shield";
+                shield.transform.SetParent(this.transform);
+                shield.transform.localScale = new Vector3(shieldSize, shieldSize, shieldSize);
+            }
         }
     }
 
@@ -543,7 +617,7 @@ public class BasicShip : MonoBehaviour
     public void ShieldHit(float _damage)
     {
         shieldHealth -= _damage;
-        shieldBar.TakeDamage(Mathf.RoundToInt(_damage));
+        shieldBar.SetValue(shieldHealth);
 
         if (shieldHealth <= 0.0f)
         {
@@ -556,6 +630,7 @@ public class BasicShip : MonoBehaviour
     /// </summary>
     public void ShieldBreak()
     {
+        shieldBroken = true;
         Jam(2.5f);
         ShieldsDown();
         shieldBar.ShieldBreak();
@@ -580,6 +655,7 @@ public class BasicShip : MonoBehaviour
         }
         shieldHealth = maxShield;
         shieldBar.ShieldRestore();
+        shieldBroken = false;
     }
 
     /// <summary>
@@ -662,7 +738,7 @@ public class BasicShip : MonoBehaviour
             {
                 shieldHealth = maxHealth;
             }
-            shieldBar.addValue(Mathf.RoundToInt(amount));
+            shieldBar.SetValue(shieldHealth);
 
             healing = false;
 

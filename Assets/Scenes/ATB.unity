@@ -5427,7 +5427,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1478765750860414}
         m_TargetAssemblyTypeName: PlayerShip, Assembly-CSharp
-        m_MethodName: Attack
+        m_MethodName: AttackToggle
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -19204,7 +19204,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.3964934, g: 0.5461312, b: 0.8490566, a: 1}
+  m_Color: {r: 0.6415094, g: 0.48113206, b: 0.49782822, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -19773,10 +19773,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0a1aeec52bee2d448fa4bcf6d1fdbdb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  combo1: {fileID: 21300000, guid: f3b4d030073ae024c966fc5a3b6c363e, type: 3}
-  combo2: {fileID: 21300000, guid: 9170967ca53818b49afeb63ea2d8c686, type: 3}
-  combo3: {fileID: 21300000, guid: 4e1d1db5168b71c4888f214cf804844b, type: 3}
-  combo4: {fileID: 21300000, guid: 648d0480e5c03a049bb1a44c604daf9a, type: 3}
+  basicAttack: {fileID: 0}
+  bothFireAttack: {fileID: 0}
   combo: {fileID: 641168082}
 --- !u!1 &646614597
 GameObject:
@@ -20378,7 +20376,7 @@ MonoBehaviour:
   gcdValue: 1.848
   buttons:
   - {fileID: 4715089}
-  - {fileID: 2100624339}
+  - {fileID: 2100624343}
   - {fileID: 1406448387}
   ultimate: {fileID: 1476275547}
   affect: {fileID: 1339880058}
@@ -49366,7 +49364,7 @@ GameObject:
   - component: {fileID: 2100624341}
   - component: {fileID: 2100624340}
   - component: {fileID: 2100624338}
-  - component: {fileID: 2100624339}
+  - component: {fileID: 2100624343}
   m_Layer: 5
   m_Name: Shield
   m_TagString: Untagged
@@ -49411,118 +49409,6 @@ MonoBehaviour:
   m_EffectColor: {r: 1, g: 0.6868738, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
   m_UseGraphicAlpha: 1
---- !u!114 &2100624339
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2100624336}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80fefb2faeb06d846ba317537b9c2eb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hotKey:
-    m_Name: Hot Key
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: fe38399b-906d-47fd-93af-3f0f1248f1c5
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: d24e4951-4d5b-4609-8ad7-08e7b05b9fe1
-      m_Path: <Keyboard>/w
-      m_Interactions: Press
-      m_Processors: 
-      m_Groups: 
-      m_Action: Hot Key
-      m_Flags: 0
-    - m_Name: 
-      m_Id: 6cd87e88-5a08-499f-8abf-f62b4267c502
-      m_Path: <XInputController>/buttonSouth
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Hot Key
-      m_Flags: 0
-  cooldownSlider: {fileID: 22618506}
-  otherButtons: []
-  initialCall:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1478765750860414}
-        m_TargetAssemblyTypeName: PlayerShip, Assembly-CSharp
-        m_MethodName: ShieldTrigger
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  abilityActivate:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1478765750860414}
-        m_TargetAssemblyTypeName: PlayerShip, Assembly-CSharp
-        m_MethodName: BeginAbsorb
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  fill: {fileID: 145216106}
-  myCD: 1.5
-  haste: 1
-  shieldRecover: 0.231
-  ship: {fileID: 1478765750860414}
-  release:
-    m_Name: Release
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: ac9f3617-d077-4909-9cd1-6ad9f51031e4
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: 80ad010b-3952-4c54-9960-efe1c0d5f10d
-      m_Path: <Keyboard>/w
-      m_Interactions: Press(behavior=1)
-      m_Processors: 
-      m_Groups: 
-      m_Action: Release
-      m_Flags: 0
-    - m_Name: 
-      m_Id: 5b7e3d5d-b6a1-4361-a837-b695d461245b
-      m_Path: <XInputController>/buttonSouth
-      m_Interactions: Press(behavior=1)
-      m_Processors: 
-      m_Groups: 
-      m_Action: Release
-      m_Flags: 0
-  releaseEvent:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1478765750860414}
-        m_TargetAssemblyTypeName: PlayerShip, Assembly-CSharp
-        m_MethodName: AbsorbEnd
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!114 &2100624340
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -49567,7 +49453,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2100624339}
+      - m_Target: {fileID: 2100624343}
         m_TargetAssemblyTypeName: basicButton, Assembly-CSharp
         m_MethodName: activateButton
         m_Mode: 1
@@ -49617,6 +49503,78 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2100624336}
   m_CullTransparentMesh: 0
+--- !u!114 &2100624343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100624336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bccf4dcfdc880d42ab82ee3556e2446, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hotKey:
+    m_Name: Hot Key
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: ec706477-09a6-488d-aac3-05279b4fa550
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 33d2c7fc-b485-45d0-b993-6d9f12b303b4
+      m_Path: <Keyboard>/w
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Hot Key
+      m_Flags: 0
+    - m_Name: 
+      m_Id: db8c0bc1-fd99-45e1-814f-b03d7a08c2e4
+      m_Path: <XInputController>/buttonSouth
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Hot Key
+      m_Flags: 0
+  cooldownSlider: {fileID: 22618506}
+  otherButtons: []
+  initialCall:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1478765750860414}
+        m_TargetAssemblyTypeName: PlayerShip, Assembly-CSharp
+        m_MethodName: AbsorbTrigger
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  abilityActivate:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1478765750860414}
+        m_TargetAssemblyTypeName: PlayerShip, Assembly-CSharp
+        m_MethodName: BeginAbsorb
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  fill: {fileID: 145216106}
+  myCD: 1.5
+  haste: 1
+  shieldRecover: 0.231
 --- !u!1 &2104005941
 GameObject:
   m_ObjectHideFlags: 0
@@ -50132,6 +50090,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attr: {fileID: 11400000, guid: 002c0366a3d4cfb45ab30c6a59d5585a, type: 2}
+  shieldCooldown: 2.5
   level: 1
   damageText: {fileID: 1169183755}
   healthBar: {fileID: 1280044416}
@@ -50164,16 +50123,16 @@ MonoBehaviour:
   manager: {fileID: 1339880051}
   affect: {fileID: 1339880058}
   attackCooldown: 0.924
-  shieldCooldown: 2.5
   healCooldown: 2.5
   ultimateCooldown: 30
   retaliateCannon: {fileID: 468083735}
+  absorbObject: {fileID: 187606, guid: 8e197dcc591031548bff44f581ad784e, type: 3}
   disableShotPrefab: {fileID: 150084, guid: f22db53bc2b4f7f449cf627bdc581f52, type: 3}
   comboTracker: {fileID: 641168084}
   SFX_absorbAttack: {fileID: 8300000, guid: 38445327789f7b74ea8633d5a375c9f2, type: 3}
   SFX_Heal: {fileID: 8300000, guid: 0b4ef63205111fd48a0d2ea733036d7b, type: 3}
   attackButton: {fileID: 4715089}
-  shieldButton: {fileID: 2100624339}
+  absorbButton: {fileID: 2100624343}
   healButton: {fileID: 1406448387}
   ultimateButton: {fileID: 1476275547}
   buttonManager: {fileID: 671322362}
@@ -50959,6 +50918,31 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6908801509097938008, guid: 6bfbf4e5af4112f428e75a10edc63b69,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6908801509097938008, guid: 6bfbf4e5af4112f428e75a10edc63b69,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8431223224847781586, guid: 6bfbf4e5af4112f428e75a10edc63b69,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8431223224847781586, guid: 6bfbf4e5af4112f428e75a10edc63b69,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8431223224847781586, guid: 6bfbf4e5af4112f428e75a10edc63b69,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6bfbf4e5af4112f428e75a10edc63b69, type: 3}
 --- !u!1001 &5438463271893376973
@@ -51073,6 +51057,31 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7129660744704296678, guid: 1239af78e9043f54c9c8cc690496ac2f,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7129660744704296678, guid: 1239af78e9043f54c9c8cc690496ac2f,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8709295421127729782, guid: 1239af78e9043f54c9c8cc690496ac2f,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8709295421127729782, guid: 1239af78e9043f54c9c8cc690496ac2f,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8709295421127729782, guid: 1239af78e9043f54c9c8cc690496ac2f,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1239af78e9043f54c9c8cc690496ac2f, type: 3}
 --- !u!1001 &8859636145237784483
@@ -51082,6 +51091,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1021624609}
     m_Modifications:
+    - target: {fileID: 3705690863058425671, guid: a19aafae2e65de5449164541dfcc4b17,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3705690863058425671, guid: a19aafae2e65de5449164541dfcc4b17,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3705690863058425671, guid: a19aafae2e65de5449164541dfcc4b17,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3742429033128868075, guid: a19aafae2e65de5449164541dfcc4b17,
         type: 3}
       propertyPath: m_AnchorMax.x

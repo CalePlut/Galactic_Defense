@@ -21,24 +21,24 @@ MonoBehaviour:
   baseArmour: 1
   level2Armour: 0.9
   level3Armour: 0.75
-  baseTurretDamage: 2
-  level2TurretDamage: 5
-  level3TurretDamage: 10
-  baseForeShots: 2
-  level2ForeShots: 3
-  level3ForeShots: 5
-  baseAftShots: 1
-  level2AftShots: 2
-  level3AftShots: 4
+  baseTurretDamage: 1
+  level2TurretDamage: 2
+  level3TurretDamage: 3
+  baseWarmupShots: 4
+  level2WarmupShots: 3
+  level3WarmupShots: 2
+  baseDoubleShots: 2
+  level2DoubleShots: 3
+  level3DoubleShots: 4
+  baseMaxShots: 8
+  level2MaxShots: 9
+  level3MaxShots: 10
   baseFusionCannonDamage: 10
   level2FusionCannonDamage: 15
   level3FusionCannonDamage: 20
-  baseHealPunishShots: 5
-  level2HealPunishShots: 10
-  level3HealPunishShots: 15
-  baseShieldDuration: 2.5
-  level2ShieldDuration: 3.5
-  level3ShieldDuration: 5
+  baseParryFrame: 0
+  level2ParryFrame: 0
+  level3ParryFrame: 0
   baseLaserDamage: 25
   level2LaserDamage: 35
   level3LaserDamage: 50

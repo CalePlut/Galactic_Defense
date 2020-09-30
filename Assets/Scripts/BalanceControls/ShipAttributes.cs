@@ -86,41 +86,60 @@ public class ShipAttributes : ScriptableObject
         }
     }
 
-    [Tooltip("Shots from fore cannon when offensive action taken")]
-    public int baseForeShots, level2ForeShots, level3ForeShots;
+    [Tooltip("Shots in combo before beginning to fire continuously")]
+    public int baseWarmupShots, level2WarmupShots, level3WarmupShots;
 
     [HideInInspector]
-    public int foreShots(int level)
+    public int warmupShots(int level)
     {
         switch (level)
         {
             default:
-                return baseForeShots;
+                return baseWarmupShots;
 
             case 2:
-                return level2ForeShots;
+                return level2WarmupShots;
 
             case 3:
-                return level3ForeShots;
+                return level3WarmupShots;
         }
     }
 
-    [Tooltip("Shots from aft cannon when defensive action taken")]
-    public int baseAftShots, level2AftShots, level3AftShots;
+    [Tooltip("Number of shots to fire with both cannons, once warmed up")]
+    public int baseDoubleShots, level2DoubleShots, level3DoubleShots;
 
     [HideInInspector]
-    public int aftShots(int level)
+    public int DoubleShots(int level)
     {
         switch (level)
         {
             default:
-                return baseAftShots;
+                return baseDoubleShots + baseWarmupShots;
 
             case 2:
-                return level2AftShots;
+                return level2DoubleShots + level2WarmupShots;
 
             case 3:
-                return level3AftShots;
+                return level3DoubleShots + level3WarmupShots;
+        }
+    }
+
+    [Tooltip("Total number of shots in combo")]
+    public int baseMaxShots, level2MaxShots, level3MaxShots;
+
+    [HideInInspector]
+    public int MaxShots(int level)
+    {
+        switch (level)
+        {
+            default:
+                return baseMaxShots;
+
+            case 2:
+                return level2MaxShots;
+
+            case 3:
+                return level3MaxShots;
         }
     }
 
@@ -145,41 +164,22 @@ public class ShipAttributes : ScriptableObject
         }
     }
 
-    [Tooltip("Shots fired when punishing heal frame - fired from both cannons")]
-    public int baseHealPunishShots, level2HealPunishShots, level3HealPunishShots;
+    [Tooltip("Parry frame duration (primarily used for player")]
+    public float baseParryFrame, level2ParryFrame, level3ParryFrame;
 
     [HideInInspector]
-    public int healPunishShots(int level)
+    public float parryFrame(int level)
     {
         switch (level)
         {
             default:
-                return baseHealPunishShots;
+                return baseParryFrame;
 
             case 2:
-                return level2HealPunishShots;
+                return level2ParryFrame;
 
             case 3:
-                return level3HealPunishShots;
-        }
-    }
-
-    [Tooltip("Maximum duration of a full shield - max shield stamina")]
-    public float baseShieldDuration, level2ShieldDuration, level3ShieldDuration;
-
-    [HideInInspector]
-    public float shieldDuration(int level)
-    {
-        switch (level)
-        {
-            default:
-                return baseShieldDuration;
-
-            case 2:
-                return level2ShieldDuration;
-
-            case 3:
-                return level3ShieldDuration;
+                return level3ParryFrame;
         }
     }
 
