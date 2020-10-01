@@ -66,6 +66,7 @@ public class GameManager : MonoBehaviour
     private bool paused = false;
     private readonly bool atBoss = false;
     private bool warpNext = false;
+    private bool inCombat;
 
     [Header("Gameplay values")]
     public static bool autoPause = true;
@@ -327,38 +328,51 @@ public class GameManager : MonoBehaviour
 
     public void StartCombat()
     {
-        music.RunActionPreset("Mid-Mid-Mid");
+        inCombat = true;
+        StartCoroutine(CombatAffectUpdate());
+        affect.StartCombat();
+        music.RunActionPreset("StartCombat");
         //affect.musicControl = true;
         if (stage == 1)
         {
-            affect.setMood(OrdinalAffect.low, OrdinalAffect.low, OrdinalAffect.low);
+            affect.SetMood(OrdinalAffect.low, OrdinalAffect.low, OrdinalAffect.low);
         }
         else if (stage == 2)
         {
-            affect.setMood(OrdinalAffect.medium, OrdinalAffect.medium, OrdinalAffect.medium);
+            affect.SetMood(OrdinalAffect.medium, OrdinalAffect.medium, OrdinalAffect.medium);
         }
         else if (stage == 3)
         {
-            affect.setMood(OrdinalAffect.medium, OrdinalAffect.high, OrdinalAffect.medium);
+            affect.SetMood(OrdinalAffect.medium, OrdinalAffect.high, OrdinalAffect.medium);
         }
 
         EnemyCompositionSetup();
     }
 
-    private void CombatAffectUpdate()
+    /// <summary>
+    ///While in combat, evalutes combat for affect
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator CombatAffectUpdate()
     {
-        if (VAT != affect.GetMusicLevel())
+        while (inCombat)
         {
-            VAT = affect.GetMusicLevel();
-            music.RunActionPreset(VAT);
+            if (VAT != affect.GetMusicLevel())
+            {
+                VAT = affect.GetMusicLevel();
+                music.RunActionPreset(VAT);
+            }
+            yield return null;
         }
     }
 
     /// <summary>
     /// Tells players to end combat and begins hyperspace jump
     /// </summary>
-    private void endCombat()
+    private void EndCombat()
     {
+        inCombat = false;
+        affect.EndCombat();
         stageManager.RemoveUI();
 
         StartCoroutine(victoryWarp());
@@ -410,7 +424,7 @@ public class GameManager : MonoBehaviour
             {
                 encounter = 0;
                 stage = 2;
-                endCombat();
+                EndCombat();
                 warpNext = true;
             }
         }
@@ -434,7 +448,7 @@ public class GameManager : MonoBehaviour
             {
                 encounter = 0;
                 stage = 3;
-                endCombat();
+                EndCombat();
                 warpNext = true;
             }
         }
@@ -450,7 +464,7 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                endCombat();
+                EndCombat();
             }
         }
     }
@@ -544,7 +558,7 @@ public class GameManager : MonoBehaviour
         currentEnemy.ShieldsUp();
 
         Player.SetEnemyReference(newEnemy);
-
+        affect.SetEnemy(currentEnemy);
         if (warp)
         {
             StartCoroutine(currentEnemy.FlyIn());
@@ -593,7 +607,6 @@ public class GameManager : MonoBehaviour
         sky = GetComponent<skyboxManager>();
         affect = GetComponent<AffectManager>();
 
-        music.RunActionPreset("Hyperspace");
         EnterHyperspace();
         mapMenu.SetActive(true);
         stage = 1;
@@ -614,7 +627,6 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     private void Update() //non-combat hotkeys
     {
-        CombatAffectUpdate();
         if (screenshot.triggered)
         {
             var now = System.DateTime.Now.ToString("M-dd-H-mm");

@@ -9,8 +9,10 @@ public class damageText : MonoBehaviour
     public float sumTime = 1.0f;
     private textFloat sumText;
 
-    public void TakeDamage(int damage, float damagePercent)
+    public void TakeDamage(int damage, float damagePercent, bool shield)
     {
+        var col = Color.red;
+        if (shield) { col = Color.blue; }
         //If we aren't currently summing, create new text
         if (sumTimer <= 0.0f)
         {
@@ -19,7 +21,7 @@ public class damageText : MonoBehaviour
 
             var floatObject = GameObject.Instantiate(textFloat, Vector3.zero, Quaternion.identity, this.transform);
             sumText = floatObject.GetComponent<textFloat>();
-            sumText.floatText("-", damage, damagePercent, Color.red);
+            sumText.floatText("-", damage, damagePercent, col);
         }
         else
         {

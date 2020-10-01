@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: AffectVariables
   m_EditorClassIdentifier: 
   resetSpeed: 0.05
-  changeThreshold: 1.1
-  strongThreshold: 2.1
+  changeThreshold: 0.3
+  strongThreshold: 0.6
   V11: 35
   A11: 35
   T11: 20

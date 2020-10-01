@@ -187,20 +187,27 @@ public class PlayerShip : BasicShip
     public override void TakeDamage(float _damage)
     {
         base.TakeDamage(_damage);
-        var damageValence = new Emotion(EmotionDirection.decrease, EmotionStrength.weak);
+        //Set base levels - the first few shots aren't actually important to the strength of the emotion
+        var damageValence = new Emotion(EmotionDirection.none, EmotionStrength.none);
         var damageTension = new Emotion(EmotionDirection.none, EmotionStrength.none);
-        if (LowHealth())
+
+        if (shieldPercent() < 0.75f)
         {
-            damageValence = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
+            damageValence = new Emotion(EmotionDirection.decrease, EmotionStrength.weak);
             damageTension = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
         }
-        affect.CreatePastEvent(damageValence, null, damageTension, 10.0f);
-    }
+        if (!shielded)
+        {
+            damageValence = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
+            damageTension = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+            if (LowHealth())
+            {
+                damageValence = new Emotion(EmotionDirection.decrease, EmotionStrength.strong);
+                damageTension = new Emotion(EmotionDirection.increase, EmotionStrength.strong);
+            }
+        }
 
-    protected override void LowHealthEvaluate()
-    {
-        base.LowHealthEvaluate();
-        affect.SetPlayerLowHealth(LowHealth());
+        affect.CreatePastEvent(damageValence, null, damageTension, 45.0f);
     }
 
     #endregion Affect
@@ -359,6 +366,8 @@ public class PlayerShip : BasicShip
             cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, enemyShip, affect);
             retaliateEvent = null; //After firing, we clear our retaliateEvent
         }
+
+        buttonManager.RefreshAllCooldowns();
     }
 
     #endregion Absorb (Parry Riposte)

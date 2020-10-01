@@ -147,21 +147,29 @@ public class EnemyShip : BasicShip
     public override void TakeDamage(float _damage)
     {
         base.TakeDamage(_damage);
-        var damageValence = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
-        var damageArousal = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
+        //Set base levels - the first few shots aren't actually important to the strength of the emotion
+        var damageValence = new Emotion(EmotionDirection.none, EmotionStrength.none);
+        var damageArousal = new Emotion(EmotionDirection.none, EmotionStrength.none);
         var damageTension = new Emotion(EmotionDirection.none, EmotionStrength.none);
-        if (healthPercent() < 0.25f)
+
+        if (shieldPercent() < 0.75f)
+        {
+            damageValence = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
+            damageArousal = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
+            damageTension = new Emotion(EmotionDirection.none, EmotionStrength.none);
+        }
+        if (!shielded)
         {
             damageValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+            damageArousal = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
             damageTension = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
+            if (LowHealth())
+            {
+                damageValence = new Emotion(EmotionDirection.increase, EmotionStrength.strong);
+                damageTension = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+            }
         }
-        affect.CreatePastEvent(damageValence, damageArousal, damageTension, 2.5f);
-    }
-
-    protected override void LowHealthEvaluate()
-    {
-        base.LowHealthEvaluate();
-        affect.SetEnemyLowHealth(LowHealth());
+        affect.CreatePastEvent(damageValence, damageArousal, damageTension, 45.0f);
     }
 
     #endregion Affect
@@ -244,7 +252,7 @@ public class EnemyShip : BasicShip
     {
         //PredictAttacks(); //Once we have a combo length, we
 
-        var shieldPercent = shieldHealth / maxShield; //Chance of triggering healing increases as health decreases
+        var shieldPercent = shield / maxShield; //Chance of triggering healing increases as health decreases
         comboHeal = Random.value > shieldPercent;
 
         if (alive)

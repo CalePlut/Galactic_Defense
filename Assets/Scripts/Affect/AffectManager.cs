@@ -19,6 +19,7 @@ public class AffectManager : MonoBehaviour
     private OrdinalAffect valence, arousal, tension; //Full Affect states
 
     private bool modelEmotions = true;
+    private bool inCombat = true;
 
     #endregion Mechanical variables
 
@@ -38,6 +39,8 @@ public class AffectManager : MonoBehaviour
 
     public AffectBarText valenceDisplay, arousalDisplay, tensionDisplay;
     public AffectVariables affectVars;
+    public PlayerShip Player;
+    public EnemyShip Enemy;
 
     #endregion References
 
@@ -51,10 +54,26 @@ public class AffectManager : MonoBehaviour
         upcomingPlayerAttackEvents = new List<ProspectiveEvent>();
         upcomingEnemyAttackEvents = new List<ProspectiveEvent>();
 
+        Player = GameObject.Find("Player Ship").GetComponent<PlayerShip>();
+
         StartCoroutine(ProcessEvents()); //Start to process emotions
     }
 
-    public void setMood(OrdinalAffect _valenceMood, OrdinalAffect _arousalMood, OrdinalAffect _tensionMood)
+    /// <summary>
+    /// Starts to run the combat monitoring
+    /// </summary>
+    public void StartCombat()
+    {
+        inCombat = true;
+        StartCoroutine(MonitorBattlefield()); //Start to monitor battlefield for emotional changes
+    }
+
+    public void EndCombat()
+    {
+        inCombat = false;
+    }
+
+    public void SetMood(OrdinalAffect _valenceMood, OrdinalAffect _arousalMood, OrdinalAffect _tensionMood)
     {
         valenceMood = _valenceMood;
         arousalMood = _arousalMood;
@@ -68,6 +87,11 @@ public class AffectManager : MonoBehaviour
     {
         events = new List<Event>();
         CreatePastEvent(new Emotion(EmotionDirection.increase, EmotionStrength.strong), null, null, 5.0f);
+    }
+
+    public void SetEnemy(EnemyShip enemy)
+    {
+        Enemy = enemy;
     }
 
     #endregion Setup and Bookkeeping
@@ -132,79 +156,58 @@ public class AffectManager : MonoBehaviour
         toCull.Add(_event);
     }
 
+    #region Multipliers and modifiers
+
     /// <summary>
-    /// Checks if player low health is already set, and if not, sets it and changes affect in upcoming enemy attacks
+    /// Watches player and enemy shield and health levels and modifiers
     /// </summary>
-    /// <param name="lowHealth"></param>
-    public void SetPlayerLowHealth(bool lowHealth)
+    /// <returns></returns>
+    private IEnumerator MonitorBattlefield()
     {
-        if (playerLowHealth != lowHealth)
+        while (inCombat)
         {
-            playerLowHealth = lowHealth; //set player low health
-            if (playerLowHealth)
+            ModifyEnemyAttacks(multiplier(Player));
+
+            if (Enemy != null && Enemy.alive)
             {
-                foreach (ProspectiveEvent @event in upcomingEnemyAttackEvents)
-                {
-                    @event.setMultiplier(2f);
-                }
+                ModifyPlayerAttacks(multiplier(Enemy));
             }
-            else
+            yield return null;
+        }
+
+        float multiplier(BasicShip ship)
+        {
+            var mult = 0.25f;
+            if (ship.shieldPercent() < 0.75f)
             {
-                foreach (ProspectiveEvent @event in upcomingEnemyAttackEvents)
-                {
-                    @event.setMultiplier(1f);
-                }
+                mult = 0.5f;
             }
+            if (!ship.shielded)
+            {
+                mult = 1.0f;
+                if (ship.LowHealth()) { mult = 2.0f; }
+            }
+            return mult;
         }
     }
 
-    /// <summary>
-    /// Checks if player low health is already set, and if not, sets it and changes affect in upcoming enemy attacks
-    /// </summary>
-    /// <param name="lowHealth"></param>
-    public void SetEnemyLowHealth(bool lowHealth)
+    private void ModifyEnemyAttacks(float multiplier)
     {
-        if (enemyLowHealth != lowHealth)
+        foreach (ProspectiveEvent @event in upcomingEnemyAttackEvents)
         {
-            enemyLowHealth = lowHealth; //set player low health
-            if (enemyLowHealth)
-            {
-                foreach (ProspectiveEvent @event in upcomingPlayerAttackEvents)
-                {
-                    @event.setMultiplier(2f);
-                }
-            }
-            else
-            {
-                foreach (ProspectiveEvent @event in upcomingPlayerAttackEvents)
-                {
-                    @event.setMultiplier(1f);
-                }
-            }
+            @event.setMultiplier(multiplier);
         }
     }
 
-    /// <summary>
-    /// If player is shielded, reduce enemy attack multipliers by 50%
-    /// </summary>
-    /// <param name="shielded"></param>
-    public void SetPlayerShield(bool shielded)
+    private void ModifyPlayerAttacks(float multiplier)
     {
-        if (shielded)
+        foreach (ProspectiveEvent @event in upcomingPlayerAttackEvents)
         {
-            foreach (ProspectiveEvent @event in upcomingEnemyAttackEvents)
-            {
-                @event.setMultiplier(0.5f);
-            }
-        }
-        else
-        {
-            foreach (ProspectiveEvent @event in upcomingEnemyAttackEvents)
-            {
-                @event.setMultiplier(1f);
-            }
+            @event.setMultiplier(multiplier);
         }
     }
+
+    #endregion Multipliers and modifiers
 
     #endregion Event creation and curation
 
@@ -232,10 +235,11 @@ public class AffectManager : MonoBehaviour
                 var tensionAdd = _event.GetTension();
                 //Debug.Log("Adding VAT of " + valenceAdd + "," + arousalAdd + "," + tensionAdd);
 
-                valenceValue += valenceAdd; //Retreives VAT values from event
-                arousalValue += arousalAdd;
-                tensionValue += tensionAdd;
+                valenceValue += valenceAdd / events.Count; //Retreives VAT values from event
+                arousalValue += arousalAdd / events.Count;
+                tensionValue += tensionAdd / events.Count;
             }
+
             //Garbage collection - removes toCull and creates new one
             foreach (Event _event in toCull)
             {

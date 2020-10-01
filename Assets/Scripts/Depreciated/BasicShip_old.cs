@@ -68,29 +68,6 @@ public class BasicShip_old : MonoBehaviour
     }
 
     /// <summary>
-    /// This is how things get hit, adjusted by armormod(only used by players)
-    /// </summary>
-    /// <param name="_amount">Amount of damage to receive</param>
-    public void receiveDamage(int _amount)
-    {
-        if (alive)
-        {
-            var amount = (float)_amount;
-            amount *= armorMod;
-            var percent = amount / health;
-
-            passDamageToAffect(amount);
-
-            var intAmount = Mathf.RoundToInt(amount);
-
-            damageText.TakeDamage(intAmount, percent);
-            healthBar.TakeDamage(intAmount);
-
-            health -= intAmount;
-        }
-    }
-
-    /// <summary>
     /// Heals for life stolen from attack
     /// </summary>
     /// <param name="damage">The damage that the attack did</param>

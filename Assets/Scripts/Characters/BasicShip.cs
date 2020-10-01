@@ -16,7 +16,7 @@ public class BasicShip : MonoBehaviour
     public ShipAttributes attr;
 
     protected float maxHealth, health;
-    protected float maxShield, shieldHealth;
+    protected float maxShield, shield;
     protected bool shieldBroken;
 
     protected float armour;
@@ -91,7 +91,7 @@ public class BasicShip : MonoBehaviour
     private GameObject nearDeathFire;
 
     public GameObject shieldPrefab;
-    protected GameObject shield;
+    protected GameObject shieldObject;
     public float shieldSize = 2f;
 
     public GameObject explosion;
@@ -164,7 +164,7 @@ public class BasicShip : MonoBehaviour
             SetSpecial(level);
             FullHeal();
             healthBar.Refresh(maxHealth, health);
-            shieldBar.Refresh(maxShield, shieldHealth);
+            shieldBar.Refresh(maxShield, shield);
         }
     }
 
@@ -213,7 +213,7 @@ public class BasicShip : MonoBehaviour
         healthBar.Refresh(maxHealth, maxHealth);
         healthBar.SetValue(maxHealth);
 
-        shieldHealth = maxShield;
+        shield = maxShield;
         shieldBar.Refresh(maxShield, maxShield);
         shieldBar.SetValue(maxShield);
     }
@@ -221,6 +221,11 @@ public class BasicShip : MonoBehaviour
     public float healthPercent()
     {
         return health / maxHealth;
+    }
+
+    public float shieldPercent()
+    {
+        return shield / maxShield;
     }
 
     #endregion Setup and Bookkeeping
@@ -423,7 +428,7 @@ public class BasicShip : MonoBehaviour
             if (shielded)
             {
                 ShieldHit(damage);
-                shieldBar.SetValue(shieldHealth);
+                shieldBar.SetValue(shield);
             }
             else
             {
@@ -446,7 +451,7 @@ public class BasicShip : MonoBehaviour
 
             //Calculate int and percent damage for UI effects, and pass damage to UI
             var percent = damage / health;
-            damageText.TakeDamage(intDamage, percent);
+            damageText.TakeDamage(intDamage, percent, shielded);
         }
     }
 
@@ -470,7 +475,7 @@ public class BasicShip : MonoBehaviour
     /// <summary>
     /// Evaluates triggers for low health
     /// </summary>
-    protected virtual void LowHealthEvaluate()
+    protected void LowHealthEvaluate()
     {
         if (LowHealth())
         {
@@ -557,11 +562,11 @@ public class BasicShip : MonoBehaviour
             void CreateShieldObject()
             {
                 SFX.PlayOneShot(SFX_shieldActivate);
-                shield = Instantiate(shieldPrefab, transform.position, Quaternion.identity, this.transform);
-                shield.tag = gameObject.tag;
-                shield.name = "Shield";
-                shield.transform.SetParent(this.transform);
-                shield.transform.localScale = new Vector3(shieldSize, shieldSize, shieldSize);
+                shieldObject = Instantiate(shieldPrefab, transform.position, Quaternion.identity, this.transform);
+                shieldObject.tag = gameObject.tag;
+                shieldObject.name = "Shield";
+                shieldObject.transform.SetParent(this.transform);
+                shieldObject.transform.localScale = new Vector3(shieldSize, shieldSize, shieldSize);
             }
         }
     }
@@ -600,10 +605,10 @@ public class BasicShip : MonoBehaviour
     /// <param name="damage"></param>
     public void ShieldHit(float _damage)
     {
-        shieldHealth -= _damage;
-        shieldBar.SetValue(shieldHealth);
+        shield -= _damage;
+        shieldBar.SetValue(shield);
 
-        if (shieldHealth <= 0.0f)
+        if (shield <= 0.0f)
         {
             ShieldBreak();
         }
@@ -634,11 +639,11 @@ public class BasicShip : MonoBehaviour
         {
             timer += Time.deltaTime;
             var timerPercent = timer / time;
-            shieldHealth = timerPercent * maxShield;
-            shieldBar.SetValue(shieldHealth);
+            shield = timerPercent * maxShield;
+            shieldBar.SetValue(shield);
             yield return null;
         }
-        shieldHealth = maxShield;
+        shield = maxShield;
         shieldBar.ShieldRestore();
         shieldBroken = false;
     }
@@ -649,7 +654,7 @@ public class BasicShip : MonoBehaviour
     public void ShieldsDown()
     {
         shielded = false;
-        Destroy(shield);
+        Destroy(shieldObject);
     }
 
     #endregion Shield Mechanics
@@ -715,15 +720,15 @@ public class BasicShip : MonoBehaviour
     {
         if (healing)
         {
-            var missingShield = maxShield - shieldHealth;
+            var missingShield = maxShield - shield;
             var amount = healPercent * missingShield;
-            shieldHealth += amount;
+            shield += amount;
 
-            if (shieldHealth > maxHealth)
+            if (shield > maxHealth)
             {
-                shieldHealth = maxHealth;
+                shield = maxHealth;
             }
-            shieldBar.SetValue(shieldHealth);
+            shieldBar.SetValue(shield);
 
             healing = false;
 
