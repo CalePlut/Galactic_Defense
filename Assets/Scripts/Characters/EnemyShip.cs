@@ -11,6 +11,10 @@ public enum AttackType { foreTurret, aftTurret, specialAttack, heal, delay }
 public class EnemyShip : BasicShip
 {
     public float globalCooldown;
+
+    [Tooltip("Used to synchronize special attack to hit right after last shot")]
+    public float specialSyncDelay;//Used to synchronize special attack
+
     //public float delayLength;
 
     public float specialAttackFrameLength;
@@ -112,57 +116,46 @@ public class EnemyShip : BasicShip
     #region Affect
 
     /// <summary>
-    /// Enemy predicts attacks when setting up combo length.
-    /// Because the AI selects early, we can predict the entire attack chain
+    /// Finishes PredictAttack with adding to enemy list
     /// </summary>
     protected override void PredictAttacks()
     {
         base.PredictAttacks();
+        affect.AddUpcomingEnemyAttack(firingFinishEvent);
+    }
 
-        var simulateTimer = comboStartDelayMaximum; //To begin the combo, we assume maximum (there's also travel time)
-        for (int comboSimulate = 0; comboSimulate < comboMax; comboSimulate++) //We then set up
-        {
-            //Set up basic emotion changes for normal shot
-            var valenceChange = new Emotion(EmotionDirection.decrease, EmotionStrength.weak); //Sucks getting hit
-            var tensionChange = new Emotion(EmotionDirection.none, EmotionStrength.none); //Tension with a normal shot doesn't change
+    /// <summary>
+    /// Overrides attack pattern valence to provide enemy values
+    /// </summary>
+    /// <returns></returns>
+    protected override Emotion attackPatternValence()
+    {
+        return new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
+    }
 
-            //If player ship is low on health for normal shot, add some tension
-            if (playerShip.LowHealth())
-            {
-                tensionChange = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
-            }
+    //NOTE: We don't need to override arousal in enemy because enemy attack doesn't change arousal level
 
-            //Finally, load the correct number of events into the queue and to the affect manager
-            for (int i = 0; i < comboSimulate; i++)
-            {
-                var newEvent = new ProspectiveEvent(valenceChange, null, tensionChange, simulateTimer + 2.0f, false, affect);
-                affect.AddUpcomingEnemyAttack(newEvent);
-                AddEventToQueue(newEvent);
-            }
-
-            simulateTimer += globalCooldown; //Advance simulateTimer after each attack
-        }
-
-        //Once we've completed the basic combo, add an event for the special attack/heal (Same emotion - neg valence pos tension)
-        var specialValenceChange = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate); //Specials are one level stronger by default
-        var specialTensionChange = new Emotion(EmotionDirection.increase, EmotionStrength.moderate); //Specials also have tension
-
-        var specialEvent = new ProspectiveEvent(specialValenceChange, null, specialTensionChange, simulateTimer + 2.0f, false, affect);
-        affect.AddEvent(specialEvent);
-        AddEventToQueue(specialEvent);
+    /// <summary>
+    /// Overrides attack pattern tension to provide enemy values
+    /// </summary>
+    /// <returns></returns>
+    protected override Emotion attackPatternTension()
+    {
+        return new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
     }
 
     public override void TakeDamage(float _damage)
     {
         base.TakeDamage(_damage);
         var damageValence = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
+        var damageArousal = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
         var damageTension = new Emotion(EmotionDirection.none, EmotionStrength.none);
         if (healthPercent() < 0.25f)
         {
             damageValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
             damageTension = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
         }
-        affect.CreatePastEvent(damageValence, null, damageTension, 2.5f);
+        affect.CreatePastEvent(damageValence, damageArousal, damageTension, 2.5f);
     }
 
     protected override void LowHealthEvaluate()
@@ -289,9 +282,8 @@ public class EnemyShip : BasicShip
         {
             if (!attacking)
             {
-                Debug.Log("Starting Attack:" + warmupShots + " warmup, " + doubleShots + "double, " + comboMax + "total");
                 ShieldsDown();
-                StartCoroutine(AutoAttack(playerShip, warmupShots, doubleShots, comboMax));
+                StartCoroutine(AutoAttack(playerShip, warmupShots, totalShots));
             }
             else
             {
@@ -307,6 +299,17 @@ public class EnemyShip : BasicShip
     {
         base.FinishFiring();
         // Debug.Log("Finished firing");
+        StartCoroutine(SpecialSyncDelay());
+        StartCoroutine(ComboInitialWait(Random.Range(comboStartDelayMinimum, comboStartDelayMaximum)));
+    }
+
+    /// <summary>
+    /// Used to sync up
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator SpecialSyncDelay()
+    {
+        yield return new WaitForSeconds(specialSyncDelay);
         if (comboHeal)
         {
             HealTrigger();
@@ -315,7 +318,6 @@ public class EnemyShip : BasicShip
         {
             SpecialAttackTrigger();
         }
-        StartCoroutine(ComboInitialWait(Random.Range(comboStartDelayMinimum, comboStartDelayMaximum)));
     }
 
     #endregion Combat AI

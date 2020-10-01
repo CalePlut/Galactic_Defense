@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba4d499d2b74c934fb549b6cc19ed65c, type: 3}
   m_Name: Enemy Attributes
   m_EditorClassIdentifier: 
-  baseHealth: 10
-  level2Health: 15
-  level3Health: 20
-  baseShield: 50
-  level2Shield: 75
-  level3Shield: 100
+  baseHealth: 25
+  level2Health: 35
+  level3Health: 50
+  baseShield: 25
+  level2Shield: 50
+  level3Shield: 75
   baseArmour: 1
   level2Armour: 0.9
   level3Armour: 0.75
@@ -25,14 +25,11 @@ MonoBehaviour:
   level2TurretDamage: 2
   level3TurretDamage: 3
   baseWarmupShots: 4
-  level2WarmupShots: 3
-  level3WarmupShots: 2
-  baseDoubleShots: 2
-  level2DoubleShots: 3
-  level3DoubleShots: 4
-  baseMaxShots: 8
-  level2MaxShots: 9
-  level3MaxShots: 10
+  level2WarmupShots: 4
+  level3WarmupShots: 3
+  baseMaxShots: 6
+  level2MaxShots: 7
+  level3MaxShots: 8
   baseFusionCannonDamage: 10
   level2FusionCannonDamage: 15
   level3FusionCannonDamage: 20

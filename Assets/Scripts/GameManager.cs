@@ -17,8 +17,6 @@ public class GameManager : MonoBehaviour
     [Header("Player Variables and Objects")]
     public PlayerShip Player;
 
-    private int attackUpgrade = 0, defendUpgrade = 0, skillUpgrade = 0;
-
     #endregion Player Variables and Objects
 
     #region Affect Variables
@@ -169,6 +167,7 @@ public class GameManager : MonoBehaviour
     public void EnterHyperspace()
     {
         Player.FullHeal(); //Fully heals player
+        Player.ShieldsDown();
 
         //Plays the warping camera movement, sound, and screen flash
         anim.Play("Warp");
@@ -201,6 +200,7 @@ public class GameManager : MonoBehaviour
         sky.exitWarp();
         warpFlash.flash();
         gmAudio.exitHyperspace();
+        Player.ShieldsUp();
 
         //Re-activates hidden UI
         foreach (GameObject hide in toHide)
@@ -208,7 +208,7 @@ public class GameManager : MonoBehaviour
             hide.SetActive(true);
         }
 
-        startCombat();
+        StartCombat();
     }
 
     private IEnumerator victoryWarp()
@@ -325,12 +325,10 @@ public class GameManager : MonoBehaviour
 
     #region Combat
 
-    public void startCombat()
+    public void StartCombat()
     {
         music.RunActionPreset("Mid-Mid-Mid");
         //affect.musicControl = true;
-        EnemyCompositionSetup();
-
         if (stage == 1)
         {
             affect.setMood(OrdinalAffect.low, OrdinalAffect.low, OrdinalAffect.low);
@@ -343,6 +341,8 @@ public class GameManager : MonoBehaviour
         {
             affect.setMood(OrdinalAffect.medium, OrdinalAffect.high, OrdinalAffect.medium);
         }
+
+        EnemyCompositionSetup();
     }
 
     private void CombatAffectUpdate()
@@ -400,10 +400,19 @@ public class GameManager : MonoBehaviour
 
         void StageOneLogic()
         {
-            encounter = 0;
-            stage = 2;
-            endCombat();
-            warpNext = true;
+            if (encounter == 0)
+            {
+                encounter++;
+                stageManager.setEncounterProgress(1);
+                advanceToNextWave();
+            }
+            else
+            {
+                encounter = 0;
+                stage = 2;
+                endCombat();
+                warpNext = true;
+            }
         }
 
         void StageTwoLogic()
@@ -471,9 +480,17 @@ public class GameManager : MonoBehaviour
 
         void StageOneEncounterLogic()
         {
-            stageManager.setWaveLength(1);
-            stageManager.setText("1-1");
-            SpawnEnemy(enemyType.main, false);
+            if (encounter == 0)
+            {
+                stageManager.setWaveLength(2);
+                stageManager.setText("1-1");
+                SpawnEnemy(enemyType.main, false);
+            }
+            else
+            {
+                stageManager.setText("1-2");
+                SpawnEnemy(enemyType.miniboss, true);
+            }
         }
 
         void StageTwoEncounterLogic()
@@ -524,6 +541,7 @@ public class GameManager : MonoBehaviour
         newEnemy.transform.position = spawnPoint.transform.position;
         currentEnemy = newEnemy.GetComponent<EnemyShip>();
         currentEnemy.ShipSetup();
+        currentEnemy.ShieldsUp();
 
         Player.SetEnemyReference(newEnemy);
 
@@ -574,12 +592,6 @@ public class GameManager : MonoBehaviour
         music = GetComponent<EliasPlayer>();
         sky = GetComponent<skyboxManager>();
         affect = GetComponent<AffectManager>();
-
-        //Calls relevant setup functions and sets variables
-        attackUpgrade = 0;
-        defendUpgrade = 0;
-        skillUpgrade = 0;
-        //SetupShips();
 
         music.RunActionPreset("Hyperspace");
         EnterHyperspace();

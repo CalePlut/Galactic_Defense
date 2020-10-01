@@ -10,6 +10,8 @@ public class healthBarAnimator : MonoBehaviour
     public Image fill;
     public float adjustSpeed = 5.0f;
     private Color fillCol;
+    public Color fullColor;
+    public Color emptyColor;
 
     public bool textDisplay = false;
 
@@ -58,14 +60,9 @@ public class healthBarAnimator : MonoBehaviour
     protected void SetHealthColor(int _value)
     {
         var healthPercentage = (float)_value / (float)max;
-        var r = 1.0f - healthPercentage;
-        var g = healthPercentage;
+        var col = Color.Lerp(emptyColor, fullColor, healthPercentage);
 
-        var textColor = new Color(r * 2.0f, g * 2.0f, 1.0f, 1.0f);
-        healthText.color = textColor;
-
-        fillCol = new Color(r, g, fillCol.b);
-        fill.color = fillCol;
+        fill.color = col;
     }
 
     /// <summary>

@@ -13,6 +13,10 @@ public class shieldBarAnimator : healthBarAnimator
         {
             OverrideHealthColor(Color.red);
         }
+        else
+        {
+            SetHealthColor(health);
+        }
     }
 
     public void ShieldBreak()

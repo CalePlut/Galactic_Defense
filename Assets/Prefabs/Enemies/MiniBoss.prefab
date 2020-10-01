@@ -639,6 +639,8 @@ MonoBehaviour:
     m_RotationOrder: 4
   fill: {fileID: 1785400486938063616}
   adjustSpeed: 225
+  fullColor: {r: 0, g: 0, b: 1, a: 1}
+  emptyColor: {r: 0.5882353, g: 0, b: 0.5882353, a: 1}
   textDisplay: 0
 --- !u!114 &8683839213781422380
 MonoBehaviour:
@@ -862,6 +864,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textFloat: {fileID: 3506712703530055037, guid: de9478ae4354a3249b3a2e0038c4d0f0,
     type: 3}
+  sumTime: 1
 --- !u!1 &5438463271851408472
 GameObject:
   m_ObjectHideFlags: 0
@@ -1182,6 +1185,8 @@ MonoBehaviour:
     m_RotationOrder: 4
   fill: {fileID: 5438463273494574919}
   adjustSpeed: 25
+  fullColor: {r: 1, g: 0, b: 0.39215687, a: 1}
+  emptyColor: {r: 1, g: 0.39215687, b: 0, a: 1}
   textDisplay: 1
 --- !u!114 &5438463272024223556
 MonoBehaviour:
@@ -2007,6 +2012,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attr: {fileID: 11400000, guid: 5beabbb60e8bf5a4c9cfbeac9bbc2a80, type: 2}
   shieldCooldown: 0.5
+  warmupRamp: 1
   level: 2
   damageText: {fileID: 5438463271669490432}
   healthBar: {fileID: 5438463272024223559}
@@ -2040,8 +2046,9 @@ MonoBehaviour:
   manager: {fileID: 0}
   affect: {fileID: 0}
   globalCooldown: 2
+  specialSyncDelay: 0.5
   specialAttackFrameLength: 1.5
-  comboStartDelayMinimum: 2
+  comboStartDelayMinimum: 5
   comboStartDelayMaximum: 7.5
   warpEffect: {fileID: 138802, guid: a8565406c64107841a9c18dc24ba9dc4, type: 3}
 --- !u!95 &2645079919187418856
@@ -2294,6 +2301,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textFloat: {fileID: 3506712703530055037, guid: de9478ae4354a3249b3a2e0038c4d0f0,
     type: 3}
+  sumTime: 1
 --- !u!1 &7047419410460916345
 GameObject:
   m_ObjectHideFlags: 0

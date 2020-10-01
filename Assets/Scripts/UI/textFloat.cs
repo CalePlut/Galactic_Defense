@@ -9,9 +9,9 @@ public class textFloat : MonoBehaviour
     private Vector3 initialPos;
     public float sizeMin = 50, sizeMax = 300;
     public float jitterMin = -50, jitterMax = 50;
-    public float speed = 25f;
+    public float speed = 12.5f;
 
-    public void floatText(int amount, float percent, Color col, string append)
+    public void floatText(string append, int amount, float percent, Color col)
     {
         text = GetComponent<TextMeshProUGUI>();
         text.color = col;
@@ -47,6 +47,11 @@ public class textFloat : MonoBehaviour
         }
     }
 
+    public void changeText(string append, string newText)
+    {
+        text.text = append + newText;
+    }
+
     private void OnDisable()
     {
         Destroy(this.gameObject);
@@ -61,7 +66,7 @@ public class textFloat : MonoBehaviour
 
         while (text.alpha > 0.0f)
         {
-            text.alpha -= Time.deltaTime;
+            text.alpha -= Time.deltaTime * 0.25f;
 
             pos.y += Time.deltaTime * speed;
             fontSize = Mathf.Clamp(fontSize - Time.deltaTime, sizeMin, sizeMax);

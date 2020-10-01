@@ -145,45 +145,39 @@ public class PlayerShip : BasicShip
     #region Affect
 
     /// <summary>
-    /// Predicts future attacks from the player - we assume that the player will continue to attack, as this is how they progress the game.
-    /// This is where the math is done to determine affective levels
+    /// finishes PredictAttack by adding to affectmanager lists
     /// </summary>
     protected override void PredictAttacks()
     {
         base.PredictAttacks();
+        affect.AddUpcomingPlayerAttack(firingFinishEvent);
+    }
 
-        //Set up basic emotion changes for normal shot
-        var valenceChange = new Emotion(EmotionDirection.increase, EmotionStrength.weak); //Each shot from player increases valence slightly
-        var arousalChange = new Emotion(EmotionDirection.increase, EmotionStrength.weak); //Also, each shot from player increases arousal
-        var tensionChange = new Emotion(EmotionDirection.none, EmotionStrength.none); //Tension with a normal shot doesn't change
-        var nextCombo = shots + 1;
+    /// <summary>
+    /// Overrides attack pattern valence to provide player values
+    /// </summary>
+    /// <returns></returns>
+    protected override Emotion attackPatternValence()
+    {
+        return new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+    }
 
-        //Consider special cases when healths are low
-        EvaluateHealthAffect(ref valenceChange, ref tensionChange);
+    /// <summary>
+    /// Overrides attack pattern arousal to provide player values
+    /// </summary>
+    /// <returns></returns>
+    protected override Emotion attackPatternArousal()
+    {
+        return new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+    }
 
-        //Finally, load the correct number of events into the queue and to the affect manager
-        for (int i = 0; i < nextCombo; i++)
-        {
-            var newEvent = new ProspectiveEvent(valenceChange, arousalChange, tensionChange, 5.0f, false, affect);
-            affect.AddUpcomingPlayerAttack(newEvent);
-            AddEventToQueue(newEvent);
-        }
-
-        void EvaluateHealthAffect(ref Emotion valenceChange, ref Emotion tensionChange)
-        {
-            //Special cases change the emotion strengths
-
-            if (enemyShip.LowHealth())  //If this may be the shot that finishes the battle, increase valence strength and add tension
-            {
-                valenceChange = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
-
-                if (LowHealth()) //If we are also low health, our shot is even more tense ("Can we pull it off?!"
-                {
-                    tensionChange = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
-                }
-                else { tensionChange = new Emotion(EmotionDirection.increase, EmotionStrength.weak); }
-            }
-        }
+    /// <summary>
+    /// Overrides attack pattern tension to provide player values
+    /// </summary>
+    /// <returns></returns>
+    protected override Emotion attackPatternTension()
+    {
+        return new Emotion(EmotionDirection.increase, EmotionStrength.weak);
     }
 
     /// <summary>
@@ -200,7 +194,7 @@ public class PlayerShip : BasicShip
             damageValence = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
             damageTension = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
         }
-        affect.CreatePastEvent(damageValence, null, damageTension, 2.5f);
+        affect.CreatePastEvent(damageValence, null, damageTension, 10.0f);
     }
 
     protected override void LowHealthEvaluate()
@@ -237,19 +231,19 @@ public class PlayerShip : BasicShip
         {
             //Debug.Log("Starting Attack");
             ShieldsDown();
-            StartCoroutine(AutoAttack(enemyShip, warmupShots, doubleShots, comboMax));
+            StartCoroutine(AutoAttack(enemyShip, warmupShots, totalShots));
             attackButton.HoldButton();
         }
         else
         {
-            //TriggerGlobalCooldown();
-            FinishFiring();
+            InterruptFiring();
         }
     }
 
     protected override void FinishFiring()
     {
         base.FinishFiring();
+
         //Debug.Log("Player finishing firing, trying to release attack button");
         attackButton.ReleaseButton();
         TriggerGlobalCooldown();
@@ -300,7 +294,7 @@ public class PlayerShip : BasicShip
     private IEnumerator AbsorbFrame(float duration, GameObject absorbEffect)
     {
         var timer = duration;
-        while (timer > 0.0f & !retaliate)
+        while (timer > 0.0f)
         {
             timer -= Time.deltaTime;
             yield return null;
@@ -362,7 +356,7 @@ public class PlayerShip : BasicShip
             cannon.transform.SetParent(retaliateCannon);
             cannon.gameObject.tag = tag;
             cannon.layer = 9;
-            cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, enemyShip, retaliateEvent, affect);
+            cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, enemyShip, affect);
             retaliateEvent = null; //After firing, we clear our retaliateEvent
         }
     }

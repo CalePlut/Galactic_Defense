@@ -37,7 +37,8 @@ public class BasicShip : MonoBehaviour
     public float shieldCooldown = 0.5f;
 
     public bool attacking { get; protected set; } = false;
-    protected int warmupShots, doubleShots, comboMax;
+    public float warmupRamp = 1.0f;
+    protected int warmupShots, totalShots;
     public bool healing { get; private set; } = false;
     public bool shielded { get; protected set; } = false;
 
@@ -126,8 +127,7 @@ public class BasicShip : MonoBehaviour
 
     #region Affect references
 
-    private LinkedList<Event> attackQueue;
-    private LinkedListNode<Event> nextAttack;
+    protected ProspectiveEvent firingFinishEvent;
 
     #endregion Affect references
 
@@ -149,7 +149,7 @@ public class BasicShip : MonoBehaviour
 
         //Sets attributes and sets up health bar, and sets alive to true
         SetAttributes(level);
-        ShieldsUp(); //Raises shields
+        //ShieldsUp(); //Raises shields
         alive = true;
 
         //Begins coroutines for updating statuses and health
@@ -177,8 +177,7 @@ public class BasicShip : MonoBehaviour
     {
         turretDamage = attr.turretDamage(level);
         warmupShots = attr.warmupShots(level);
-        doubleShots = attr.DoubleShots(level);
-        comboMax = attr.MaxShots(level);
+        totalShots = attr.MaxShots(level);
     }
 
     /// <summary>
@@ -229,75 +228,76 @@ public class BasicShip : MonoBehaviour
     #region Affect
 
     /// <summary>
-    /// Hacky interface
-    ///Creates an event that predicts a weapon firing - called as soon as shot is decided upon
-    ///When called by player, this is called at the same time as firing, when called by enemy, this is called when AI decides on event
+    ///Predicts attack and sets firingFinishEvent to the new event that predicts end of combo. Called when starting attack
+    ///Override sets whether it's a player or enemy attack
     /// </summary>
     protected virtual void PredictAttacks()
-    { }
-
-    /// <summary>
-    /// Adds event to queue - called once event is created
-    /// </summary>
-    /// <param name="event"></param>
-    protected void AddEventToQueue(Event @event)
     {
-        //If there's not a current queue, create one on the first event call
-        if (attackQueue == null)
-        {
-            attackQueue = new LinkedList<Event>();
-        }
-
-        var node = new LinkedListNode<Event>(@event);
-        attackQueue.AddLast(node);
+        var firingTime = attackPatternFinishTime(warmupShots, totalShots);
+        var valence = attackPatternValence();
+        var arousal = attackPatternArousal();
+        var tension = attackPatternTension();
+        firingFinishEvent = new ProspectiveEvent(valence, arousal, tension, firingTime, true, affect);
     }
 
     /// <summary>
-    /// Gets next attack and removes it from queue
+    /// Hacky interface, overridden in children
+    /// Calculates valence of attack pattern at point of firing
     /// </summary>
     /// <returns></returns>
-    protected Event NextAttack()
+    protected virtual Emotion attackPatternValence()
     {
-        //If we don't have an attack loaded, first see if the attack queue has one
-        if (nextAttack == null)
-        {
-            if (attackQueue == null) //If attack queue doesn't exist yet, we can't attach the event
-            {
-                return new Event(null, null, null, 0.0f, affect);
-            }
-            if (attackQueue.Count > 0)
-            {
-                nextAttack = attackQueue.First;
-            }
-            else
-            {
-                //Debug.Log("NextAttack called without any attacks in queue");
-                return new Event(null, null, null, 0.0f, affect);
-            }
-        }
-        var nextEvent = nextAttack.Value;
-        nextAttack = nextAttack.Next;
-        attackQueue.RemoveFirst();
-
-        return nextEvent;
+        return new Emotion(EmotionDirection.none, EmotionStrength.none);
     }
 
     /// <summary>
-    /// Removes toRemove events from front of queue, and sets next attack to the next attack
+    /// Hacky interface, overridden in children
+    /// Calculates arousaal of attack pattern at point of firing
     /// </summary>
-    /// <param name="ToRemove">number of events to remove</param>
-    protected void RemoveEvents(int toRemove)
+    /// <returns></returns>
+    protected virtual Emotion attackPatternArousal()
     {
-        for (int i = 0; i < toRemove; i++)
+        return new Emotion(EmotionDirection.none, EmotionStrength.none);
+    }
+
+    /// <summary>
+    /// Hacky interface, overridden in children
+    /// Calculates tension of attack pattern at point of firing
+    /// </summary>
+    /// <returns></returns>
+    protected virtual Emotion attackPatternTension()
+    {
+        return new Emotion(EmotionDirection.none, EmotionStrength.none);
+    }
+
+    /// <summary>
+    /// Way more complcated than it seems
+    /// Simulates attack pattern and returns the time that the simulation took
+    /// I'm sure there's a math way to do this, but I have two music degrees
+    /// </summary>
+    /// <returns>Returns total time taken for attack pattern</returns>
+    private float attackPatternFinishTime(int _warmupShots, int _totalShots)
+    {
+        var takenShots = 0;
+        var totalTime = 0f;
+        var stockFiringDelay = 0.234075f;
+        for (int i = 0; i < _warmupShots; i++) ///First, warmupShots
         {
-            attackQueue.RemoveFirst();
+            var firingDelay = stockFiringDelay;
+            var remainingShots = _warmupShots - takenShots;
+            firingDelay *= (float)remainingShots * warmupRamp;
+            totalTime += firingDelay;
         }
-        nextAttack = attackQueue.First;
+        //Once we've simulated the warmup, we can pretty easily calculate the rest - each shot after this takes the standard delay
+        totalTime += (_totalShots - _warmupShots) * stockFiringDelay;
+        return totalTime;
     }
 
     #endregion Affect
 
     #region Mechanics
+
+    #region Attacks
 
     /// <summary>
     /// Overridden for targetting, but starts or ends attack
@@ -314,10 +314,9 @@ public class BasicShip : MonoBehaviour
     /// <param name="_warmupShots">Shots until starting to fire both cannons</param>
 
     /// <returns></returns>
-    protected IEnumerator AutoAttack(BasicShip target, int _warmupShots, int _doubleShots, int _totalShots)
+    protected IEnumerator AutoAttack(BasicShip target, int _warmupShots, int _totalShots)
     {
         attacking = true;
-        //Debug.Log("Firing " + shots + " shots from " + position);
         var takenShots = 0;
         var turret = turretPosition.fore;
 
@@ -325,40 +324,11 @@ public class BasicShip : MonoBehaviour
         {
             if (jamTimer <= 0.0f)
             {
-                //Debug.Log("Not Jammed");
                 var damage = turretDamage;
                 var firingDelay = 0.234075f;
-                if (target.alive)
-                {
-                    //  Debug.Log("Target alive");
-                    if (takenShots < _warmupShots) //If we're warming up our shots, take single alternating shot
-                    {
-                        //   Debug.Log("Taking shot");
-                        //Debug.Log("Taken shots = " + takenShots + "_warmupShots = " + _warmupShots);
-                        //First, some timing math based on the number of shots until full
-                        var remainingShots = _warmupShots - takenShots;
-                        firingDelay *= ((float)remainingShots / 2.0f); //Just a guess for now
 
-                        Vector3 pos = AlternatePosition(ref turret);
-                        FireTurret(target, damage, pos);
-                        //Adds shot
-                        takenShots++;
-                    }
-                    else if (takenShots < _doubleShots) //When we've reached the max warmup shots, we still attack from one until we hit double
-                    {
-                        Vector3 pos = AlternatePosition(ref turret);
-                        FireTurret(target, damage, pos);
-                        takenShots++;
-                    }
-                    else if (takenShots < _totalShots) //Once we've hit our double target, we take shots until the end of the combo
-                    {
-                        FireTurret(target, damage, foreTurret.position);
-                        FireTurret(target, damage, aftTurret.position);
-                        takenShots++;
-                    }
-                    else if (takenShots >= _totalShots) { FinishFiring(); } //If we complete all shots, finish firing.
-                }
-                yield return new WaitForSeconds(firingDelay); //Waits 1 eighth note at 130 bpm
+                ExecuteFiringPattern(target, _warmupShots, _totalShots, ref takenShots, ref turret, damage, ref firingDelay);
+                yield return new WaitForSeconds(firingDelay); // Waits for the firing delay and continues firing
             }
             else { yield return null; }
         }
@@ -378,13 +348,31 @@ public class BasicShip : MonoBehaviour
 
             return pos;
         }
-    }
 
-    /// <summary>
-    /// Overridden for enemy
-    /// </summary>
-    protected virtual void WarmupFinish()
-    {
+        void ExecuteFiringPattern(BasicShip target, int _warmupShots, int _totalShots, ref int takenShots, ref turretPosition turret, float damage, ref float firingDelay)
+        {
+            if (target.alive)
+            {
+                if (takenShots < _warmupShots) //If we're warming up our shots, take single alternating shot
+                {
+                    //Calculate timing
+                    var remainingShots = _warmupShots - takenShots;
+                    firingDelay *= ((float)remainingShots * warmupRamp);
+
+                    //Fire turret and track number of shots taken
+                    Vector3 pos = AlternatePosition(ref turret);
+                    FireTurret(target, damage, pos);
+                    takenShots++;
+                }
+                else if (takenShots < _totalShots) //Once we've hit our warmupTarget, we fire double broadsides until we've hit total shots.
+                {
+                    FireTurret(target, damage, foreTurret.position);
+                    FireTurret(target, damage, aftTurret.position);
+                    takenShots++;
+                }
+                else { FinishFiring(); } //If we complete all shots, finish firing.
+            }
+        }
     }
 
     private void FireTurret(BasicShip target, float damage, Vector3 pos)
@@ -393,7 +381,7 @@ public class BasicShip : MonoBehaviour
         var cannon = Instantiate(basicTurretShot, pos, Quaternion.identity, bulletParent);
         cannon.gameObject.tag = tag;
         cannon.layer = 9;
-        cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, target, NextAttack(), affect);
+        cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, target, affect);
         cannon.transform.LookAt(target.transform);
         cannon.GetComponent<Rigidbody>().AddForce(foreTurret.transform.forward * 2500);
     }
@@ -413,7 +401,11 @@ public class BasicShip : MonoBehaviour
     protected virtual void InterruptFiring()
     {
         attacking = false;
+        affect.CullEvent(firingFinishEvent);
+        ChargeShield(shieldCooldown);
     }
+
+    #endregion Attacks
 
     /// <summary>
     /// This takes damage from any source
@@ -449,7 +441,7 @@ public class BasicShip : MonoBehaviour
                 health -= damage;
                 //Update health bar
                 healthBar.SetValue(health);
-                Jam(0.5f); //Getting hit without shields adds half second delay
+                Jam(0.25f); //Getting hit without shields adds short stagger
             }
 
             //Calculate int and percent damage for UI effects, and pass damage to UI
@@ -545,14 +537,6 @@ public class BasicShip : MonoBehaviour
         ChargeShield(duration);
     }
 
-    /// <summary>
-    /// Resets combo, overridetn
-    /// </summary>
-    protected virtual void ResetCombo()
-    {
-        Debug.Log("Whoops! Forgot to write ResetCombo");
-    }
-
     #endregion Mechanics
 
     #region Shield Mechanics
@@ -560,9 +544,9 @@ public class BasicShip : MonoBehaviour
     /// <summary>
     /// Shields default to up most of the time
     /// </summary>
-    protected void ShieldsUp()
+    public void ShieldsUp()
     {
-        if (!shieldBroken && !attacking && !healing && !absorbing)
+        if (!shieldBroken && !shielded)
         {
             //Sets mechanics
             shielded = true;
@@ -634,8 +618,8 @@ public class BasicShip : MonoBehaviour
         Jam(2.5f);
         ShieldsDown();
         shieldBar.ShieldBreak();
-        ChargeShield(30.0f);
-        StartCoroutine(ShieldRecharge(30.0f));
+        ChargeShield(10.0f);
+        StartCoroutine(ShieldRecharge(10.0f));
     }
 
     /// <summary>
@@ -651,6 +635,7 @@ public class BasicShip : MonoBehaviour
             timer += Time.deltaTime;
             var timerPercent = timer / time;
             shieldHealth = timerPercent * maxShield;
+            shieldBar.SetValue(shieldHealth);
             yield return null;
         }
         shieldHealth = maxShield;
@@ -661,7 +646,7 @@ public class BasicShip : MonoBehaviour
     /// <summary>
     /// Turns off shield
     /// </summary>
-    protected void ShieldsDown()
+    public void ShieldsDown()
     {
         shielded = false;
         Destroy(shield);
@@ -730,8 +715,8 @@ public class BasicShip : MonoBehaviour
     {
         if (healing)
         {
-            var missingHealth = maxShield - shieldHealth;
-            var amount = healPercent * missingHealth;
+            var missingShield = maxShield - shieldHealth;
+            var amount = healPercent * missingShield;
             shieldHealth += amount;
 
             if (shieldHealth > maxHealth)
@@ -745,6 +730,7 @@ public class BasicShip : MonoBehaviour
             var healingEffect = Instantiate(healEffect, transform.position, Quaternion.identity, this.transform);
             healingEffect.transform.SetParent(this.transform);
         }
+        ChargeShield(shieldCooldown);
     }
 
     #endregion Heal

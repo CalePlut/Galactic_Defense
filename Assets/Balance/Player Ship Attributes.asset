@@ -12,27 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba4d499d2b74c934fb549b6cc19ed65c, type: 3}
   m_Name: Player Ship Attributes
   m_EditorClassIdentifier: 
-  baseHealth: 10
-  level2Health: 15
-  level3Health: 20
-  baseShield: 50
-  level2Shield: 75
-  level3Shield: 100
+  baseHealth: 25
+  level2Health: 35
+  level3Health: 50
+  baseShield: 25
+  level2Shield: 50
+  level3Shield: 75
   baseArmour: 1
   level2Armour: 0.9
   level3Armour: 0.75
   baseTurretDamage: 1
   level2TurretDamage: 2
   level3TurretDamage: 3
-  baseWarmupShots: 6
-  level2WarmupShots: 5
+  baseWarmupShots: 8
+  level2WarmupShots: 6
   level3WarmupShots: 4
-  baseDoubleShots: 1
-  level2DoubleShots: 2
-  level3DoubleShots: 3
-  baseMaxShots: 8
-  level2MaxShots: 9
-  level3MaxShots: 10
+  baseMaxShots: 15
+  level2MaxShots: 20
+  level3MaxShots: 25
   baseFusionCannonDamage: 10
   level2FusionCannonDamage: 20
   level3FusionCannonDamage: 30

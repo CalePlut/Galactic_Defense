@@ -19,7 +19,6 @@ namespace SciFiArsenal
 
         private float damage;
         private BasicShip target;
-        private Event myEvent;
         private AffectManager affect;
         private Vector3 targetPos;
 
@@ -37,12 +36,11 @@ namespace SciFiArsenal
             }
         }
 
-        public void CannonSetup(float _damage, BasicShip _target, Event @event, AffectManager affectManager)
+        public void CannonSetup(float _damage, BasicShip _target, AffectManager affectManager)
         {
             damage = _damage;
             target = _target;
             targetPos = target.transform.position;
-            myEvent = @event;
             affect = affectManager;
             //GetComponent<Collider>().enabled = false;
             StartCoroutine(cannonDelay());
@@ -69,7 +67,6 @@ namespace SciFiArsenal
                     {
                         hasCollided = true;
                         impactParticle = Instantiate(impactParticle, transform.position, Quaternion.FromToRotation(Vector3.up, impactNormal)) as GameObject;
-                        affect.CullEvent(myEvent); //This is where the bullet culls its own event
                         target.TakeDamage(damage); //Target takes damage
 
                         //This is all back to stock stuff

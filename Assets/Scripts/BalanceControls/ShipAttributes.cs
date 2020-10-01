@@ -105,25 +105,6 @@ public class ShipAttributes : ScriptableObject
         }
     }
 
-    [Tooltip("Number of shots to fire with both cannons, once warmed up")]
-    public int baseDoubleShots, level2DoubleShots, level3DoubleShots;
-
-    [HideInInspector]
-    public int DoubleShots(int level)
-    {
-        switch (level)
-        {
-            default:
-                return baseDoubleShots + baseWarmupShots;
-
-            case 2:
-                return level2DoubleShots + level2WarmupShots;
-
-            case 3:
-                return level3DoubleShots + level3WarmupShots;
-        }
-    }
-
     [Tooltip("Total number of shots in combo")]
     public int baseMaxShots, level2MaxShots, level3MaxShots;
 
