@@ -180,7 +180,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Galactic Conquest
+  m_text: Galactic Defense
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4ab1c744477e3a44bbdf737f6d378af, type: 2}
   m_sharedMaterial: {fileID: 9208401273420773845, guid: d4ab1c744477e3a44bbdf737f6d378af,
@@ -211,7 +211,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 160.2
+  m_fontSize: 171.8
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -255,7 +255,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 126384692}
-    characterCount: 17
+    characterCount: 16
     spriteCount: 0
     spaceCount: 1
     wordCount: 2
