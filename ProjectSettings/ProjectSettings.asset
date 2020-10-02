@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: Simon Fraser University
-  productName: Galactic Conquest
+  productName: Galactic Defense
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -129,7 +129,7 @@ PlayerSettings:
     16:10: 0
     16:9: 1
     Others: 0
-  bundleVersion: 0.4
+  bundleVersion: 0.5
   preloadedAssets:
   - {fileID: 11400000, guid: 82650b1652806f345a7a2ff9f4a657b0, type: 2}
   metroInputSource: 0
