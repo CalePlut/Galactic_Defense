@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 19988694}
   - component: {fileID: -6639585770343377460}
   m_Layer: 0
-  m_Name: SpinShieldRed
+  m_Name: EnemyShield
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -224,7 +224,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 0, b: 0.30980393, a: 0.039215688}
+      maxColor: {r: 1, g: 0, b: 0.30980393, a: 0.09803922}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}

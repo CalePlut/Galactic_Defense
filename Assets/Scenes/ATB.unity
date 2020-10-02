@@ -12138,7 +12138,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: W
+  m_text: 'E
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4ab1c744477e3a44bbdf737f6d378af, type: 2}
   m_sharedMaterial: {fileID: 9208401273420773845, guid: d4ab1c744477e3a44bbdf737f6d378af,
@@ -12213,9 +12215,9 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 130063158}
-    characterCount: 1
+    characterCount: 2
     spriteCount: 0
-    spaceCount: 0
+    spaceCount: 1
     wordCount: 1
     linkCount: 0
     lineCount: 1
@@ -18404,7 +18406,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: f459acabc626b2145801729722acd7a2, type: 3}
+  m_Sprite: {fileID: 21300000, guid: fcf19fae8c63f0c4c8c2ca41610e28e7, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -19700,7 +19702,6 @@ GameObject:
   - component: {fileID: 641168081}
   - component: {fileID: 641168083}
   - component: {fileID: 641168082}
-  - component: {fileID: 641168084}
   m_Layer: 5
   m_Name: icon
   m_TagString: Untagged
@@ -19747,7 +19748,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: f3b4d030073ae024c966fc5a3b6c363e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4e1d1db5168b71c4888f214cf804844b, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -19765,21 +19766,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 641168080}
   m_CullTransparentMesh: 0
---- !u!114 &641168084
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 641168080}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0a1aeec52bee2d448fa4bcf6d1fdbdb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  basicAttack: {fileID: 0}
-  bothFireAttack: {fileID: 0}
-  combo: {fileID: 641168082}
 --- !u!1 &646614597
 GameObject:
   m_ObjectHideFlags: 0
@@ -20354,15 +20340,15 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4715087}
+  - {fileID: 1476275552}
   - {fileID: 2100624337}
   - {fileID: 1406448386}
-  - {fileID: 1476275552}
   m_Father: {fileID: 2017490536}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 250, y: 160}
+  m_AnchoredPosition: {x: -275, y: 118.79999}
   m_SizeDelta: {x: 450, y: 110}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &671322362
@@ -26358,7 +26344,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: c33f7369d9a86f34fbe100452b432640, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 29769e42567f35744a405e4012ececcc, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -34718,7 +34704,7 @@ GameObject:
   - component: {fileID: 1406448388}
   - component: {fileID: 1406448387}
   m_Layer: 5
-  m_Name: Heal
+  m_Name: Repair
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34739,11 +34725,11 @@ RectTransform:
   - {fileID: 1296869635}
   - {fileID: 1618303634}
   m_Father: {fileID: 671322361}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 40.000122, y: 0.000061035156}
+  m_AnchoredPosition: {x: 137.25, y: 0.000061035156}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1406448387
@@ -34768,7 +34754,7 @@ MonoBehaviour:
     m_SingletonActionBindings:
     - m_Name: 
       m_Id: aaabc873-a16d-49a2-b262-5e59a8187d6f
-      m_Path: <Keyboard>/e
+      m_Path: <Keyboard>/r
       m_Interactions: 
       m_Processors: 
       m_Groups: 
@@ -34776,7 +34762,7 @@ MonoBehaviour:
       m_Flags: 0
     - m_Name: 
       m_Id: 390827f7-4573-4dfe-85c7-ead0fe71d3f2
-      m_Path: <XInputController>/buttonEast
+      m_Path: <XInputController>/buttonSouth
       m_Interactions: 
       m_Processors: 
       m_Groups: 
@@ -34791,7 +34777,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1478765750860414}
         m_TargetAssemblyTypeName: PlayerShip, Assembly-CSharp
-        m_MethodName: HealButton
+        m_MethodName: HealButtonCheck
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -36275,7 +36261,7 @@ GameObject:
   - component: {fileID: 1476275547}
   - component: {fileID: 1476275548}
   m_Layer: 5
-  m_Name: Ultimate
+  m_Name: Laser (Heavy attack)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -36310,15 +36296,15 @@ MonoBehaviour:
       m_Action: FrigateAttack
       m_Flags: 0
     - m_Name: 
-      m_Id: a76d49f7-a5f0-4b97-bad5-bff1efd6595a
-      m_Path: <Keyboard>/r
+      m_Id: 47fae833-0322-4f37-9326-6a624bfc1566
+      m_Path: <Keyboard>/w
       m_Interactions: 
       m_Processors: 
       m_Groups: 
       m_Action: Hot Key
       m_Flags: 0
     - m_Name: 
-      m_Id: a0ac9e8c-1f38-4ce5-adfe-9e4e9cdd6493
+      m_Id: 1c27d318-9ce3-44e3-b8f1-41a44ae4bdbf
       m_Path: <XInputController>/buttonNorth
       m_Interactions: 
       m_Processors: 
@@ -36332,7 +36318,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1478765750860414}
         m_TargetAssemblyTypeName: PlayerShip, Assembly-CSharp
-        m_MethodName: UltimateTrigger
+        m_MethodName: HeavyAttackButtonCheck
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -36346,8 +36332,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1478765750860414}
-        m_TargetAssemblyTypeName: PlayerShip, Assembly-CSharp
-        m_MethodName: Ultimate
+        m_TargetAssemblyTypeName: BasicShip, Assembly-CSharp
+        m_MethodName: HeavyAttackTrigger
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -36358,7 +36344,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   fill: {fileID: 1824085115}
-  myCD: 45
+  myCD: 7.5
   haste: 1
   shieldRecover: 0.231
 --- !u!114 &1476275548
@@ -36487,11 +36473,11 @@ RectTransform:
   - {fileID: 1743980001}
   - {fileID: 2062722504}
   m_Father: {fileID: 671322361}
-  m_RootOrder: 3
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 165.00014, y: 0.000061035156}
+  m_AnchoredPosition: {x: -65, y: 0.000061035156}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1480413299
@@ -40180,7 +40166,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: E
+  m_text: 'R
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4ab1c744477e3a44bbdf737f6d378af, type: 2}
   m_sharedMaterial: {fileID: 9208401273420773845, guid: d4ab1c744477e3a44bbdf737f6d378af,
@@ -40255,9 +40243,9 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 1618303635}
-    characterCount: 1
+    characterCount: 2
     spriteCount: 0
-    spaceCount: 0
+    spaceCount: 1
     wordCount: 1
     linkCount: 0
     lineCount: 1
@@ -42740,7 +42728,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: R
+  m_text: 'W
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4ab1c744477e3a44bbdf737f6d378af, type: 2}
   m_sharedMaterial: {fileID: 9208401273420773845, guid: d4ab1c744477e3a44bbdf737f6d378af,
@@ -42815,9 +42805,9 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 1743980002}
-    characterCount: 1
+    characterCount: 2
     spriteCount: 0
-    spaceCount: 0
+    spaceCount: 1
     wordCount: 1
     linkCount: 0
     lineCount: 1
@@ -49390,7 +49380,7 @@ GameObject:
   - component: {fileID: 2100624338}
   - component: {fileID: 2100624343}
   m_Layer: 5
-  m_Name: Shield
+  m_Name: Absorb (Parry)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -49404,18 +49394,18 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2100624336}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.0002454819}
+  m_LocalPosition: {x: 0, y: 0, z: -0.00004522035}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 571850349}
   - {fileID: 22618505}
   - {fileID: 130063157}
   m_Father: {fileID: 671322361}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -59.999863, y: 0.000061035156}
+  m_AnchoredPosition: {x: 40.000122, y: 0.000061035156}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2100624338
@@ -49549,7 +49539,7 @@ MonoBehaviour:
     m_SingletonActionBindings:
     - m_Name: 
       m_Id: 33d2c7fc-b485-45d0-b993-6d9f12b303b4
-      m_Path: <Keyboard>/w
+      m_Path: <Keyboard>/e
       m_Interactions: 
       m_Processors: 
       m_Groups: 
@@ -49557,7 +49547,7 @@ MonoBehaviour:
       m_Flags: 0
     - m_Name: 
       m_Id: db8c0bc1-fd99-45e1-814f-b03d7a08c2e4
-      m_Path: <XInputController>/buttonSouth
+      m_Path: <XInputController>/buttonEast
       m_Interactions: 
       m_Processors: 
       m_Groups: 
@@ -50148,12 +50138,12 @@ MonoBehaviour:
   manager: {fileID: 1339880051}
   affect: {fileID: 1339880058}
   attackCooldown: 0.924
-  healCooldown: 2.5
-  ultimateCooldown: 30
+  healCooldown: 5
+  heavyAttackCooldown: 5
   retaliateCannon: {fileID: 468083735}
   absorbObject: {fileID: 187606, guid: 8e197dcc591031548bff44f581ad784e, type: 3}
   disableShotPrefab: {fileID: 150084, guid: f22db53bc2b4f7f449cf627bdc581f52, type: 3}
-  comboTracker: {fileID: 641168084}
+  comboTracker: {fileID: 0}
   SFX_absorbAttack: {fileID: 8300000, guid: 38445327789f7b74ea8633d5a375c9f2, type: 3}
   SFX_Heal: {fileID: 8300000, guid: 0b4ef63205111fd48a0d2ea733036d7b, type: 3}
   attackButton: {fileID: 4715089}
@@ -50850,6 +50840,10 @@ PrefabInstance:
       propertyPath: affect
       value: 
       objectReference: {fileID: 1339880058}
+    - target: {fileID: 538872698, guid: 6bfbf4e5af4112f428e75a10edc63b69, type: 3}
+      propertyPath: shieldSize
+      value: 40
+      objectReference: {fileID: 0}
     - target: {fileID: 1253428158, guid: 6bfbf4e5af4112f428e75a10edc63b69, type: 3}
       propertyPath: m_AnchorMax.x
       value: 1
@@ -51062,6 +51056,11 @@ PrefabInstance:
       propertyPath: affect
       value: 
       objectReference: {fileID: 1339880058}
+    - target: {fileID: 5438463272983740334, guid: 1239af78e9043f54c9c8cc690496ac2f,
+        type: 3}
+      propertyPath: shieldSize
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 5438463273494574916, guid: 1239af78e9043f54c9c8cc690496ac2f,
         type: 3}
       propertyPath: m_AnchorMax.x

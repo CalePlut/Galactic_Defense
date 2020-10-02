@@ -1274,6 +1274,170 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!136 &1887729570558721410
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 993407470212336900}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 100
+  m_Height: 100
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!82 &2603953844454435677
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 993407470212336900}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 7325195470484845209, guid: d97af06335f456b4a91e04b60bebf7a6,
+    type: 2}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &538872698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 993407470212336900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9e5e5a65674aaf44bdb9ba54f915b03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attr: {fileID: 11400000, guid: 5beabbb60e8bf5a4c9cfbeac9bbc2a80, type: 2}
+  shieldCooldown: 0.5
+  warmupRamp: 1
+  level: 3
+  damageText: {fileID: 345791974}
+  healthBar: {fileID: 1946436703}
+  shieldBar: {fileID: 8841314631737726873}
+  SFX_shieldActivate: {fileID: 8300000, guid: ffe099be0b34ed44da1b04457e583ff8, type: 3}
+  laserEmitter: {fileID: 59263463}
+  foreTurret: {fileID: 1221374218}
+  aftTurret: {fileID: 1205281235}
+  flareLoc: {fileID: 7958058451876082161}
+  basicTurretShot: {fileID: 126790, guid: 8b41f5320e19912428ff12551caca1e8, type: 3}
+  warningFlare: {fileID: 7166164739200910186, guid: 28975ad4756aaf94fb3dc170d0456f10,
+    type: 3}
+  warningFlareSize: 80
+  jamFirePrefab: {fileID: 119147845428083974, guid: 85971c99144656b46a7d90520d914b49,
+    type: 3}
+  healEffect: {fileID: 1077433979050930671, guid: 34aa31306c70ebb4998f88abfaa20681,
+    type: 3}
+  nearDeathFirePrefab: {fileID: 1343497475418638690, guid: 17a7cdde987eeb545a021d46d0cfd42b,
+    type: 3}
+  shieldPrefab: {fileID: 151800, guid: 49d88577872e4c74a94c95b308f94e04, type: 3}
+  shieldSize: 20
+  explosion: {fileID: 3719004749702151878, guid: 196cd4f584177904ca612be527b98c11,
+    type: 3}
+  SFX_Explosion: {fileID: 8300000, guid: b7928435d4a46354b891d219399ab511, type: 3}
+  beamStartPrefab: {fileID: 185238, guid: b80d00a943c44a14181b7df0488d1927, type: 3}
+  beamEndPrefab: {fileID: 149788, guid: 5b364370854f7064e9d23e9799fc4297, type: 3}
+  beamPrefab: {fileID: 113598, guid: 662c9a292b84cf54c8a9cab863559576, type: 3}
+  beamEndOffset: 1
+  textureScrollSpeed: 8
+  textureLengthScale: 3
+  manager: {fileID: 0}
+  affect: {fileID: 0}
+  globalCooldown: 1.5
+  specialSyncDelay: 0.4
+  specialAttackFrameLength: 0.5
+  comboStartDelayMinimum: 2.5
+  comboStartDelayMaximum: 6
+  warpEffect: {fileID: 138802, guid: a8565406c64107841a9c18dc24ba9dc4, type: 3}
 --- !u!1 &1324252427750556041
 GameObject:
   m_ObjectHideFlags: 0
@@ -2341,156 +2505,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!82 &2603953844454435677
-AudioSource:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 993407470212336900}
-  m_Enabled: 1
-  serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 7325195470484845209, guid: d97af06335f456b4a91e04b60bebf7a6,
-    type: 2}
-  m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
-  m_Volume: 1
-  m_Pitch: 1
-  Loop: 0
-  Mute: 0
-  Spatialize: 0
-  SpatializePostEffects: 0
-  Priority: 128
-  DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 500
-  Pan2D: 0
-  rolloffMode: 0
-  BypassEffects: 0
-  BypassListenerEffects: 0
-  BypassReverbZones: 0
-  rolloffCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  panLevelCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  spreadCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  reverbZoneMixCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
---- !u!114 &538872698
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 993407470212336900}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9e5e5a65674aaf44bdb9ba54f915b03, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  attr: {fileID: 11400000, guid: 5beabbb60e8bf5a4c9cfbeac9bbc2a80, type: 2}
-  shieldCooldown: 0.5
-  warmupRamp: 1
-  level: 3
-  damageText: {fileID: 345791974}
-  healthBar: {fileID: 1946436703}
-  shieldBar: {fileID: 8841314631737726873}
-  SFX_shieldActivate: {fileID: 8300000, guid: ffe099be0b34ed44da1b04457e583ff8, type: 3}
-  laserEmitter: {fileID: 59263463}
-  foreTurret: {fileID: 1221374218}
-  aftTurret: {fileID: 1205281235}
-  flareLoc: {fileID: 7958058451876082161}
-  basicTurretShot: {fileID: 126790, guid: 8b41f5320e19912428ff12551caca1e8, type: 3}
-  warningFlare: {fileID: 7166164739200910186, guid: 28975ad4756aaf94fb3dc170d0456f10,
-    type: 3}
-  warningFlareSize: 80
-  jamFirePrefab: {fileID: 119147845428083974, guid: 85971c99144656b46a7d90520d914b49,
-    type: 3}
-  healEffect: {fileID: 1077433979050930671, guid: 34aa31306c70ebb4998f88abfaa20681,
-    type: 3}
-  nearDeathFirePrefab: {fileID: 1343497475418638690, guid: 17a7cdde987eeb545a021d46d0cfd42b,
-    type: 3}
-  shieldPrefab: {fileID: 151800, guid: 49d88577872e4c74a94c95b308f94e04, type: 3}
-  shieldSize: 15
-  explosion: {fileID: 3719004749702151878, guid: 196cd4f584177904ca612be527b98c11,
-    type: 3}
-  SFX_Explosion: {fileID: 8300000, guid: b7928435d4a46354b891d219399ab511, type: 3}
-  beamStartPrefab: {fileID: 185238, guid: b80d00a943c44a14181b7df0488d1927, type: 3}
-  beamEndPrefab: {fileID: 149788, guid: 5b364370854f7064e9d23e9799fc4297, type: 3}
-  beamPrefab: {fileID: 113598, guid: 662c9a292b84cf54c8a9cab863559576, type: 3}
-  beamEndOffset: 1
-  textureScrollSpeed: 8
-  textureLengthScale: 3
-  manager: {fileID: 0}
-  affect: {fileID: 0}
-  globalCooldown: 1.5
-  specialSyncDelay: 0.4
-  specialAttackFrameLength: 0.5
-  comboStartDelayMinimum: 5
-  comboStartDelayMaximum: 6
-  warpEffect: {fileID: 138802, guid: a8565406c64107841a9c18dc24ba9dc4, type: 3}
 --- !u!1 &9147397483215394294
 GameObject:
   m_ObjectHideFlags: 0
@@ -2631,17 +2645,17 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: 8220d65260758dc4e8e264a8b326363f,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 8220d65260758dc4e8e264a8b326363f,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 8220d65260758dc4e8e264a8b326363f,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -927199367670048503, guid: 8220d65260758dc4e8e264a8b326363f,
         type: 3}
@@ -2660,15 +2674,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8220d65260758dc4e8e264a8b326363f, type: 3}
---- !u!4 &4292514338653028119 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: 8220d65260758dc4e8e264a8b326363f,
-    type: 3}
-  m_PrefabInstance: {fileID: 9144743498752627725}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &993407470212336900 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: 8220d65260758dc4e8e264a8b326363f,
+    type: 3}
+  m_PrefabInstance: {fileID: 9144743498752627725}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4292514338653028119 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: 8220d65260758dc4e8e264a8b326363f,
     type: 3}
   m_PrefabInstance: {fileID: 9144743498752627725}
   m_PrefabAsset: {fileID: 0}

@@ -14,7 +14,7 @@ public class PlayerShip : BasicShip
 
     public float healCooldown = 2.5f;
 
-    public float ultimateCooldown = 30.0f;
+    public float heavyAttackCooldown = 2.5f;
 
     #endregion Cooldown varibles
 
@@ -107,8 +107,8 @@ public class PlayerShip : BasicShip
 
         if (godMode) //Here's where all the godmode code is because I'm lazy
         {
-            laserDamage = 100.0f;
-            turretDamage = 100.0f;
+            heavyAttackDamage = 100.0f;
+            basicAttackDamage = 100.0f;
             maxHealth = 10000000.0f;
             health = maxHealth;
             healthBar.Refresh(maxHealth, health);
@@ -138,6 +138,27 @@ public class PlayerShip : BasicShip
     {
         base.doneDeath();
         manager.LoseGame();
+    }
+
+    protected override GameObject myTargetObject()
+    {
+        if (enemyShipObj != null)
+        {
+            return enemyShipObj;
+        }
+        else { return base.myTargetObject(); }
+    }
+
+    protected override BasicShip myTarget()
+    {
+        if (enemyShip != null)
+        {
+            return enemyShip;
+        }
+        else
+        {
+            return base.myTarget();
+        }
     }
 
     #endregion Setup and bookkeeping
@@ -228,23 +249,10 @@ public class PlayerShip : BasicShip
         }
     }
 
-    /// <summary>
-    /// Basic player attack toggle
-    /// If not currently firing, begins firing
-    /// </summary>
-    public override void AttackToggle()
+    protected override void BeginAttack()
     {
-        if (!attacking)
-        {
-            //Debug.Log("Starting Attack");
-            ShieldsDown();
-            StartCoroutine(AutoAttack(enemyShip, warmupShots, totalShots));
-            attackButton.HoldButton();
-        }
-        else
-        {
-            InterruptFiring();
-        }
+        base.BeginAttack();
+        attackButton.HoldButton();
     }
 
     protected override void FinishFiring()
@@ -256,7 +264,7 @@ public class PlayerShip : BasicShip
         TriggerGlobalCooldown();
     }
 
-    protected override void InterruptFiring()
+    public override void InterruptFiring()
     {
         base.InterruptFiring();
         attackButton.ReleaseButton();
@@ -283,7 +291,7 @@ public class PlayerShip : BasicShip
     /// </summary>
     public void BeginAbsorb()
     {
-        if (attacking) //If we interrupt an attack, interupt it
+        if (attacking != null) //If we interrupt an attack, interupt it
         {
             InterruptFiring();
         }
@@ -335,7 +343,7 @@ public class PlayerShip : BasicShip
     /// <summary>
     /// Absorbs attack and prepares to retaliate
     /// </summary>
-    public void SetRetaliate()
+    public override void SetRetaliate()
     {
         SFX.PlayOneShot(SFX_absorbAttack);
         retaliate = true;
@@ -379,7 +387,7 @@ public class PlayerShip : BasicShip
     /// Triggers and implementation are used to allow for queueing actions
     /// Naming isn't consistent because HealTrigger() is used for the mechanical heal
     /// </summary>
-    public void HealButton()
+    public void HealButtonCheck()
     {
         if (healButton.CanActivate())
         {
@@ -410,7 +418,7 @@ public class PlayerShip : BasicShip
     public override void HealTrigger()
     {
         base.HealTrigger();
-        if (attacking)
+        if (attacking != null)
         {
             InterruptFiring();
         }
@@ -424,47 +432,21 @@ public class PlayerShip : BasicShip
 
     #endregion Heal
 
-    #region Ultimate
+    #region HeavyAttack
 
     /// <summary>
     /// Button mechanics for Ultimate
     /// Triggers and implementation are used to allow for queueing actions
     /// </summary>
-    public void UltimateTrigger()
+    public void HeavyAttackButtonCheck()
     {
         if (ultimateButton.CanActivate())
         {
-            ultimateButton.sendToButton(ultimateCooldown);
+            ultimateButton.sendToButton(heavyAttackCooldown);
         }
     }
 
-    /// <summary>
-    /// Repairs all systems
-    /// Fires laser for large damage
-    /// If interrupting heal, fires full broadside
-    /// </summary>
-    public void Ultimate()
-    {
-        buttonManager.RefreshAllCooldowns();
-        LaserFire();
-    }
-
-    /// <summary>
-    /// Fires big ol' laser
-    /// Deals big damage and jams enemy (allows for heal!)
-    /// </summary>
-    public void LaserFire()
-    {
-        var emitter = laserEmitter.position;
-        var damage = laserDamage;
-
-        SpawnLaser(emitter, enemyShipObj.transform.position);
-
-        enemyShip.TakeDamage(damage);
-        enemyShip.Jam(jamDuration);
-    }
-
-    #endregion Ultimate
+    #endregion HeavyAttack
 
     /// <summary>
     /// Override of Jam

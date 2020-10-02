@@ -488,7 +488,6 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            SpawnEnemy(enemyType.main, true);
             Debug.Log("Fell through all cases for spawning, which is probably bad");
         }
 
@@ -503,7 +502,7 @@ public class GameManager : MonoBehaviour
             else
             {
                 stageManager.setText("1-2");
-                SpawnEnemy(enemyType.miniboss, true);
+                SpawnEnemy(enemyType.main, true);
             }
         }
 
@@ -533,7 +532,7 @@ public class GameManager : MonoBehaviour
             {
                 stageManager.setWaveLength(2);
                 stageManager.setText("3-1");
-                SpawnEnemy(enemyType.main, false);
+                SpawnEnemy(enemyType.miniboss, false);
             }
             else
             {
@@ -563,7 +562,6 @@ public class GameManager : MonoBehaviour
         {
             StartCoroutine(currentEnemy.FlyIn());
         }
-        //enemyCore = core;
     }
 
     /// <summary>

@@ -5,6 +5,7 @@ using UnityEngine.Audio;
 using UnityEngine.Video;
 using SciFiArsenal;
 using System.CodeDom;
+using UnityEngine.InputSystem.XR.Haptics;
 
 public enum turretPosition { fore, aft };
 
@@ -18,13 +19,13 @@ public class BasicShip : MonoBehaviour
     protected float maxHealth, health;
     protected float maxShield, shield;
     protected bool shieldBroken;
-
     protected float armour;
 
-    protected float turretDamage;
-
+    protected float basicAttackDamage;
+    protected float heavyAttackDamage;
+    protected float heavyAttackDelay;
     protected float retaliateDamage;
-    protected float laserDamage;
+
     public bool alive { get; private set; } = true;
 
     #endregion Health and Damage varaibles
@@ -36,11 +37,15 @@ public class BasicShip : MonoBehaviour
     protected float healPercent, healDelay;
     public float shieldCooldown = 0.5f;
 
-    public bool attacking { get; protected set; } = false;
+    //public bool attacking { get; protected set; } = false;
     public float warmupRamp = 1.0f;
+
     protected int warmupShots, totalShots;
     public bool healing { get; private set; } = false;
     public bool shielded { get; protected set; } = false;
+    public bool heavyAttackWindup { get; protected set; } = false;
+    protected Coroutine attacking;
+    protected Coroutine shieldCharging;
 
     public bool absorbing { get; protected set; } = false;
     public int level = 1;
@@ -175,9 +180,11 @@ public class BasicShip : MonoBehaviour
     /// <param name="level"></param>
     public virtual void SetAttack(int level)
     {
-        turretDamage = attr.turretDamage(level);
+        basicAttackDamage = attr.turretDamage(level);
+        heavyAttackDamage = attr.heavyAttackDamage(level);
         warmupShots = attr.warmupShots(level);
         totalShots = attr.MaxShots(level);
+        heavyAttackDelay = attr.heavyAttackDelay(level);
     }
 
     /// <summary>
@@ -188,7 +195,6 @@ public class BasicShip : MonoBehaviour
     {
         maxHealth = attr.health(level);
         maxShield = attr.shield(level);
-        jamDuration = attr.disableDuration(level);
         armour = attr.armour(level);
     }
 
@@ -199,9 +205,9 @@ public class BasicShip : MonoBehaviour
     public virtual void SetSpecial(int level)
     {
         healDelay = attr.healDelay(level);
-        laserDamage = attr.laserDamage(level);
-        retaliateDamage = attr.fusionCannonDamage(level);
+        retaliateDamage = attr.retaliateDamage(level);
         healPercent = attr.healPercent(level);
+        jamDuration = attr.disableDuration(level);
     }
 
     /// <summary>
@@ -226,6 +232,16 @@ public class BasicShip : MonoBehaviour
     public float shieldPercent()
     {
         return shield / maxShield;
+    }
+
+    protected virtual GameObject myTargetObject()
+    {
+        return null;
+    }
+
+    protected virtual BasicShip myTarget()
+    {
+        return null;
     }
 
     #endregion Setup and Bookkeeping
@@ -307,8 +323,32 @@ public class BasicShip : MonoBehaviour
     /// <summary>
     /// Overridden for targetting, but starts or ends attack
     /// </summary>
-    public virtual void AttackToggle()
+    public void AttackToggle()
     {
+        if (alive)
+        {
+            if (attacking == null)
+            {
+                BeginAttack();
+            }
+            else
+            {
+                InterruptFiring();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Turns shields off - overridden in player to hold button
+    /// </summary>
+    protected virtual void BeginAttack()
+    {
+        ShieldsDown();
+        if (attacking == null)
+        {
+            attacking = StartCoroutine(AutoAttack(myTarget(), warmupShots, totalShots));
+        }
+        else { Debug.Log("Attack started, but not null?"); }
     }
 
     /// <summary>
@@ -321,15 +361,15 @@ public class BasicShip : MonoBehaviour
     /// <returns></returns>
     protected IEnumerator AutoAttack(BasicShip target, int _warmupShots, int _totalShots)
     {
-        attacking = true;
+        var firing = true;
         var takenShots = 0;
         var turret = turretPosition.fore;
 
-        while (attacking)
+        while (firing)
         {
             if (jamTimer <= 0.0f)
             {
-                var damage = turretDamage;
+                var damage = basicAttackDamage;
                 var firingDelay = 0.234075f;
 
                 ExecuteFiringPattern(target, _warmupShots, _totalShots, ref takenShots, ref turret, damage, ref firingDelay);
@@ -396,18 +436,79 @@ public class BasicShip : MonoBehaviour
     /// </summary>
     protected virtual void FinishFiring()
     {
-        attacking = false;
-        ChargeShield(shieldCooldown);
+        if (attacking != null)
+        {
+            StopCoroutine(attacking);
+            attacking = null;
+            ChargeShield(shieldCooldown);
+        }
     }
 
     /// <summary>
     /// Called to interrupt firing midway
     /// </summary>
-    protected virtual void InterruptFiring()
+    public virtual void InterruptFiring()
     {
-        attacking = false;
-        affect.CullEvent(firingFinishEvent);
+        if (attacking != null)
+        {
+            StopCoroutine(attacking);
+            attacking = null;
+            affect.CullEvent(firingFinishEvent);
+            ChargeShield(shieldCooldown);
+        }
+    }
+
+    public void HeavyAttackTrigger()
+    {
+        ShieldsDown();
+        heavyAttackWindup = true;
+        StartCoroutine(HeavyAttackFlare());
+        SpecialIndicator(Color.red, heavyAttackDelay);
+    }
+
+    private IEnumerator HeavyAttackFlare()
+    {
+        var timer = heavyAttackDelay;
+        while (timer > 0.0f)
+        {
+            timer -= Time.deltaTime;
+            yield return null;
+        }
+        HeavyAttack(myTargetObject());
+    }
+
+    public void InterruptHeavyAttack()
+    {
+        heavyAttackWindup = false;
+    }
+
+    /// <summary>
+    /// Deals heavy damage to player ship and disables a part. If player ship is shielded, primes retaliation
+    /// </summary>
+    public void HeavyAttack(GameObject targetObj)
+    {
+        if (heavyAttackWindup)
+        {
+            var emitter = laserEmitter.position;
+            var damage = heavyAttackDamage;
+            var target = targetObj.GetComponent<BasicShip>();
+
+            SpawnLaser(emitter, targetObj.transform.position);
+
+            if (target.absorbing)
+            {
+                target.SetRetaliate();
+            }
+            else
+            {
+                target.TakeHeavyDamage(damage, jamDuration);
+            }
+        }
         ChargeShield(shieldCooldown);
+    }
+
+    public virtual void SetRetaliate()
+    {
     }
 
     #endregion Attacks
@@ -422,13 +523,11 @@ public class BasicShip : MonoBehaviour
         if (alive)
         {
             var damage = _damage;
-            var intDamage = Mathf.RoundToInt(damage);
 
             //If we're shielded, we take damage to our shield
             if (shielded)
             {
                 ShieldHit(damage);
-                shieldBar.SetValue(shield);
             }
             else
             {
@@ -438,11 +537,13 @@ public class BasicShip : MonoBehaviour
                     HealInterrupt();
                     _damage *= 2f;
                 }
-
+                if (heavyAttackWindup)
+                {
+                    InterruptHeavyAttack();
+                    _damage *= 2f;
+                }
                 //Take damage
                 damage = _damage * armour;
-                intDamage = Mathf.RoundToInt(damage);
-
                 health -= damage;
                 //Update health bar
                 healthBar.SetValue(health);
@@ -450,7 +551,48 @@ public class BasicShip : MonoBehaviour
             }
 
             //Calculate int and percent damage for UI effects, and pass damage to UI
+            var intDamage = Mathf.RoundToInt(damage);
             var percent = damage / health;
+            damageText.TakeDamage(intDamage, percent, shielded);
+        }
+    }
+
+    /// <summary>
+    /// Takes damage from heavy attack
+    /// </summary>
+    /// <param name="_damage"></param>
+    public void TakeHeavyDamage(float _damage, float _jamLength)
+    {
+        if (alive)
+        {
+            var damage = _damage;
+
+            if (shielded) //Shield reduces damage
+            {
+                damage *= attr.heavyAttackShieldReduction;
+                ShieldHit(damage);
+            }
+            else //Otherwise, take full damage and jam
+            {
+                if (healing) //Player done fucked up
+                {
+                    HealInterrupt();
+                    damage *= 2f;
+                }
+                if (heavyAttackWindup)
+                {
+                    InterruptHeavyAttack();
+                    _damage *= 2f;
+                }
+
+                //Take damage
+                health -= damage;
+                healthBar.SetValue(health);
+                Jam(_jamLength);
+            }
+            //Calculate int and percent damage for UI effects, and pass damage to UI
+            var percent = damage / health;
+            var intDamage = Mathf.RoundToInt(damage);
             damageText.TakeDamage(intDamage, percent, shielded);
         }
     }
@@ -537,9 +679,7 @@ public class BasicShip : MonoBehaviour
     /// <param name="duration">Duration of Jam</param>
     public virtual void Jam(float duration)
     {
-        ShieldsDown();
         jamTimer = duration;
-        ChargeShield(duration);
     }
 
     #endregion Mechanics
@@ -577,7 +717,17 @@ public class BasicShip : MonoBehaviour
     /// <param name="delay"></param>
     protected void ChargeShield(float delay)
     {
-        StartCoroutine(ShieldWait(delay));
+        //    if (shieldCharging == null)
+        //    {
+        shieldCharging = StartCoroutine(ShieldWait(delay));
+        //}
+        //else
+        //{
+        //    Debug.Log("ShieldCharge exists - stopping and deleting it. Shouldn't happen?");
+        //    StopCoroutine(shieldCharging);
+        //    shieldCharging = null;
+        //    ChargeShield(delay);
+        //}
     }
 
     /// <summary>
@@ -593,10 +743,7 @@ public class BasicShip : MonoBehaviour
             timer -= Time.deltaTime;
             yield return null;
         }
-        if (!shielded)
-        {
-            ShieldsUp();
-        }
+        ShieldsUp();
     }
 
     /// <summary>
@@ -612,6 +759,8 @@ public class BasicShip : MonoBehaviour
         {
             ShieldBreak();
         }
+
+        shieldBar.SetValue(shield);
     }
 
     /// <summary>
@@ -620,7 +769,8 @@ public class BasicShip : MonoBehaviour
     public void ShieldBreak()
     {
         shieldBroken = true;
-        Jam(2.5f);
+        Jam(0.5f);
+        InterruptFiring();
         ShieldsDown();
         shieldBar.ShieldBreak();
         ChargeShield(10.0f);
@@ -653,6 +803,12 @@ public class BasicShip : MonoBehaviour
     /// </summary>
     public void ShieldsDown()
     {
+        //It's possible to trigger shields down while
+        if (shieldCharging != null)
+        {
+            StopCoroutine(shieldCharging);
+            shieldCharging = null;
+        }
         shielded = false;
         Destroy(shieldObject);
     }
@@ -720,15 +876,11 @@ public class BasicShip : MonoBehaviour
     {
         if (healing)
         {
-            var missingShield = maxShield - shield;
-            var amount = healPercent * missingShield;
-            shield += amount;
-
-            if (shield > maxHealth)
-            {
-                shield = maxHealth;
-            }
+            shield = CalculateHeal(shield, maxShield);
             shieldBar.SetValue(shield);
+
+            health = CalculateHeal(health, maxHealth);
+            healthBar.SetValue(health);
 
             healing = false;
 
@@ -736,6 +888,22 @@ public class BasicShip : MonoBehaviour
             healingEffect.transform.SetParent(this.transform);
         }
         ChargeShield(shieldCooldown);
+
+        ///Calculates the amount to heal
+        float CalculateHeal(float current, float max)
+        {
+            var newCurrent = current;
+            var missing = max - current;
+            var amount = healPercent * missing;
+
+            newCurrent += amount;
+            if (newCurrent > max)
+            {
+                newCurrent = max;
+            }
+
+            return newCurrent;
+        }
     }
 
     #endregion Heal
@@ -748,6 +916,8 @@ public class BasicShip : MonoBehaviour
     protected virtual void die()
     {
         alive = false;
+        myTarget().InterruptFiring();
+
         SFX.PlayOneShot(SFX_Explosion);
         var deathExplode = Instantiate(explosion, this.transform.position, Quaternion.identity, this.transform);
         StartCoroutine(death());
@@ -760,7 +930,9 @@ public class BasicShip : MonoBehaviour
     }
 
     protected virtual void doneDeath()
-    { }
+    {
+        myTarget().InterruptLaser();
+    }
 
     #endregion Death
 
@@ -820,7 +992,10 @@ public class BasicShip : MonoBehaviour
     public void InterruptLaser()
     {
         //Debug.Log("Interrupting laser");
-        firing = false;
+        if (firing)
+        {
+            firing = false;
+        }
     }
 
     private void DestroyLaser(GameObject start, GameObject end, GameObject _beam)

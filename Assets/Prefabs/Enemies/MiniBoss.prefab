@@ -2033,7 +2033,7 @@ MonoBehaviour:
   nearDeathFirePrefab: {fileID: 1343497475418638690, guid: 17a7cdde987eeb545a021d46d0cfd42b,
     type: 3}
   shieldPrefab: {fileID: 151800, guid: 49d88577872e4c74a94c95b308f94e04, type: 3}
-  shieldSize: 4
+  shieldSize: 25
   explosion: {fileID: 836951591077622030, guid: 8d8892d5acb4afd4fb2d85bb8fba36f5,
     type: 3}
   SFX_Explosion: {fileID: 8300000, guid: 404e8b68a05205f4f844be45becdcc19, type: 3}
@@ -2048,7 +2048,7 @@ MonoBehaviour:
   globalCooldown: 2
   specialSyncDelay: 0.5
   specialAttackFrameLength: 1.5
-  comboStartDelayMinimum: 5
+  comboStartDelayMinimum: 2.5
   comboStartDelayMaximum: 7.5
   warpEffect: {fileID: 138802, guid: a8565406c64107841a9c18dc24ba9dc4, type: 3}
 --- !u!95 &2645079919187418856

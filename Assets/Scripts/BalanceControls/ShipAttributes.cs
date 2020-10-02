@@ -4,6 +4,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Ship Attributes", menuName = "Balance/Ship Attributes", order = 1)]
 public class ShipAttributes : ScriptableObject
 {
+    #region Basic Attributes
+
     [Header("Basic Attributes")]
     [Tooltip("Maximum health")]
     public float baseHealth;
@@ -13,17 +15,12 @@ public class ShipAttributes : ScriptableObject
     [HideInInspector]
     public float health(int level)
     {
-        switch (level)
+        return level switch
         {
-            default:
-                return baseHealth;
-
-            case 2:
-                return level2Health;
-
-            case 3:
-                return level3Health;
-        }
+            2 => level2Health,
+            3 => level3Health,
+            _ => baseHealth,
+        };
     }
 
     [Tooltip("Shield health")]
@@ -34,17 +31,12 @@ public class ShipAttributes : ScriptableObject
     [HideInInspector]
     public float shield(int level)
     {
-        switch (level)
+        return level switch
         {
-            default:
-                return baseShield;
-
-            case 2:
-                return level2Shield;
-
-            case 3:
-                return level3Shield;
-        }
+            2 => level2Shield,
+            3 => level3Shield,
+            _ => baseShield,
+        };
     }
 
     [Range(0, 1)]
@@ -54,17 +46,12 @@ public class ShipAttributes : ScriptableObject
     [HideInInspector]
     public float armour(int level)
     {
-        switch (level)
+        return level switch
         {
-            default:
-                return baseArmour;
-
-            case 2:
-                return level2Armour;
-
-            case 3:
-                return level3Armour;
-        }
+            2 => level2Armour,
+            3 => level3Armour,
+            _ => baseArmour,
+        };
     }
 
     [Tooltip("Auto-attack damage")]
@@ -73,17 +60,12 @@ public class ShipAttributes : ScriptableObject
     [HideInInspector]
     public float turretDamage(int level)
     {
-        switch (level)
+        return level switch
         {
-            default:
-                return baseTurretDamage;
-
-            case 2:
-                return level2TurretDamage;
-
-            case 3:
-                return level3TurretDamage;
-        }
+            2 => level2TurretDamage,
+            3 => level3TurretDamage,
+            _ => baseTurretDamage,
+        };
     }
 
     [Tooltip("Shots in combo before beginning to fire continuously")]
@@ -92,17 +74,12 @@ public class ShipAttributes : ScriptableObject
     [HideInInspector]
     public int warmupShots(int level)
     {
-        switch (level)
+        return level switch
         {
-            default:
-                return baseWarmupShots;
-
-            case 2:
-                return level2WarmupShots;
-
-            case 3:
-                return level3WarmupShots;
-        }
+            2 => level2WarmupShots,
+            3 => level3WarmupShots,
+            _ => baseWarmupShots,
+        };
     }
 
     [Tooltip("Total number of shots in combo")]
@@ -111,39 +88,46 @@ public class ShipAttributes : ScriptableObject
     [HideInInspector]
     public int MaxShots(int level)
     {
-        switch (level)
+        return level switch
         {
-            default:
-                return baseMaxShots;
-
-            case 2:
-                return level2MaxShots;
-
-            case 3:
-                return level3MaxShots;
-        }
+            2 => level2MaxShots,
+            3 => level3MaxShots,
+            _ => baseMaxShots,
+        };
     }
 
     [Header("Abilities")]
-    public float baseFusionCannonDamage;
+    public float baseHeavyAttackDamage;
 
-    public float level2FusionCannonDamage, level3FusionCannonDamage;
+    public float level2HeavyAttackDamage, level3HeavyAttackDamage;
 
     [HideInInspector]
-    public float fusionCannonDamage(int level)
+    public float heavyAttackDamage(int level)
     {
-        switch (level)
+        return level switch
         {
-            default:
-                return baseFusionCannonDamage;
-
-            case 2:
-                return level2FusionCannonDamage;
-
-            case 3:
-                return level3FusionCannonDamage;
-        }
+            2 => level2HeavyAttackDamage,
+            3 => level3HeavyAttackDamage,
+            _ => baseHeavyAttackDamage,
+        };
     }
+
+    public float baseHeavyAttackDelay, level2HeavyAttackDelay, level3HeavyAttackDelay;
+
+    [HideInInspector]
+    public float heavyAttackDelay(int level)
+    {
+        return level switch
+        {
+            2 => level2HeavyAttackDelay,
+            3 => level3HeavyAttackDelay,
+            _ => baseHeavyAttackDelay,
+        };
+    }
+
+    #endregion Basic Attributes
+
+    #region Abilities
 
     [Tooltip("Parry frame duration (primarily used for player")]
     public float baseParryFrame, level2ParryFrame, level3ParryFrame;
@@ -151,35 +135,25 @@ public class ShipAttributes : ScriptableObject
     [HideInInspector]
     public float parryFrame(int level)
     {
-        switch (level)
+        return level switch
         {
-            default:
-                return baseParryFrame;
-
-            case 2:
-                return level2ParryFrame;
-
-            case 3:
-                return level3ParryFrame;
-        }
+            2 => level2ParryFrame,
+            3 => level3ParryFrame,
+            _ => baseParryFrame,
+        };
     }
 
-    public float baseLaserDamage, level2LaserDamage, level3LaserDamage;
+    public float baseRetaliateDamage, level2RetaliateDamage, level3RetaliateDamage;
 
     [HideInInspector]
-    public float laserDamage(int level)
+    public float retaliateDamage(int level)
     {
-        switch (level)
+        return level switch
         {
-            default:
-                return baseLaserDamage;
-
-            case 2:
-                return level2LaserDamage;
-
-            case 3:
-                return level3LaserDamage;
-        }
+            2 => level2RetaliateDamage,
+            3 => level3RetaliateDamage,
+            _ => baseRetaliateDamage,
+        };
     }
 
     [Tooltip("Disable duration on outgoing laser")]
@@ -188,17 +162,12 @@ public class ShipAttributes : ScriptableObject
     [HideInInspector]
     public float disableDuration(int level)
     {
-        switch (level)
+        return level switch
         {
-            default:
-                return baseDisableDuration;
-
-            case 2:
-                return level2DisableDuration;
-
-            case 3:
-                return level3DisableDuration;
-        }
+            2 => level2DisableDuration,
+            3 => level3DisableDuration,
+            _ => baseDisableDuration,
+        };
     }
 
     [Range(0f, 1f)]
@@ -207,17 +176,12 @@ public class ShipAttributes : ScriptableObject
     [HideInInspector]
     public float healPercent(int level)
     {
-        switch (level)
+        return level switch
         {
-            default:
-                return baseHealPercent;
-
-            case 2:
-                return level2HealPercent;
-
-            case 3:
-                return level3HealPercent;
-        }
+            2 => level2HealPercent,
+            3 => level3HealPercent,
+            _ => baseHealPercent,
+        };
     }
 
     public float baseHealDelay, level2HealDelay, level3HealDelay;
@@ -225,16 +189,23 @@ public class ShipAttributes : ScriptableObject
     [HideInInspector]
     public float healDelay(int level)
     {
-        switch (level)
+        return level switch
         {
-            default:
-                return baseHealDelay;
-
-            case 2:
-                return level2HealDelay;
-
-            case 3:
-                return level3HealDelay;
-        }
+            2 => level2HealDelay,
+            3 => level3HealDelay,
+            _ => baseHealDelay,
+        };
     }
+
+    #endregion Abilities
+
+    #region Global attributes
+
+    [Tooltip("Multiplier by which the shield reduces the damage of the heavy attack")]
+    public float heavyAttackShieldReduction;
+
+    public float shieldRechargeDelay;
+    public float shieldBreakDelay;
+
+    #endregion Global attributes
 }

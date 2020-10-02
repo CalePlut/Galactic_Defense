@@ -25,7 +25,7 @@ PrefabInstance:
     - target: {fileID: 1557383708907746902, guid: 9610a1ba652ff4043988b0669cb8fdbd,
         type: 3}
       propertyPath: InitialModule.startColor.maxColor.a
-      value: 0.039215688
+      value: 0.19607843
       objectReference: {fileID: 0}
     - target: {fileID: 1557383708908084144, guid: 9610a1ba652ff4043988b0669cb8fdbd,
         type: 3}
@@ -40,7 +40,7 @@ PrefabInstance:
     - target: {fileID: 1557383708921629598, guid: 9610a1ba652ff4043988b0669cb8fdbd,
         type: 3}
       propertyPath: m_Name
-      value: SpinShieldBlue
+      value: PlayerShield
       objectReference: {fileID: 0}
     - target: {fileID: 1557383708921930444, guid: 9610a1ba652ff4043988b0669cb8fdbd,
         type: 3}

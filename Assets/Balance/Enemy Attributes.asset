@@ -12,33 +12,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba4d499d2b74c934fb549b6cc19ed65c, type: 3}
   m_Name: Enemy Attributes
   m_EditorClassIdentifier: 
-  baseHealth: 25
-  level2Health: 35
-  level3Health: 50
-  baseShield: 25
-  level2Shield: 50
-  level3Shield: 75
+  baseHealth: 50
+  level2Health: 75
+  level3Health: 100
+  baseShield: 10
+  level2Shield: 15
+  level3Shield: 20
   baseArmour: 1
   level2Armour: 0.9
   level3Armour: 0.75
   baseTurretDamage: 1
-  level2TurretDamage: 2
-  level3TurretDamage: 3
-  baseWarmupShots: 4
-  level2WarmupShots: 4
-  level3WarmupShots: 3
-  baseMaxShots: 6
-  level2MaxShots: 7
-  level3MaxShots: 8
-  baseFusionCannonDamage: 10
-  level2FusionCannonDamage: 15
-  level3FusionCannonDamage: 20
-  baseParryFrame: 0
-  level2ParryFrame: 0
-  level3ParryFrame: 0
-  baseLaserDamage: 25
-  level2LaserDamage: 35
-  level3LaserDamage: 50
+  level2TurretDamage: 1
+  level3TurretDamage: 2
+  baseWarmupShots: 6
+  level2WarmupShots: 5
+  level3WarmupShots: 4
+  baseMaxShots: 8
+  level2MaxShots: 8
+  level3MaxShots: 10
+  baseHeavyAttackDamage: 25
+  level2HeavyAttackDamage: 50
+  level3HeavyAttackDamage: 75
+  baseHeavyAttackDelay: 1
+  level2HeavyAttackDelay: 0.75
+  level3HeavyAttackDelay: 0.5
+  baseParryFrame: 0.465
+  level2ParryFrame: 0.93
+  level3ParryFrame: 1.5
+  baseRetaliateDamage: 5
+  level2RetaliateDamage: 10
+  level3RetaliateDamage: 15
   baseDisableDuration: 2.5
   level2DisableDuration: 5
   level3DisableDuration: 10
@@ -48,3 +51,6 @@ MonoBehaviour:
   baseHealDelay: 2.5
   level2HealDelay: 1.5
   level3HealDelay: 0.5
+  heavyAttackShieldReduction: 0.2
+  shieldRechargeDelay: 0.5
+  shieldBreakDelay: 10
