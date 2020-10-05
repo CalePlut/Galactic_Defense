@@ -54,7 +54,10 @@ public class healthBarAnimator : MonoBehaviour
     public void SetValue(float _value)
     {
         var value = Mathf.RoundToInt(_value);
-        health = value;
+        if (health != value)
+        {
+            health = value;
+        }
     }
 
     protected void SetHealthColor(int _value)
@@ -81,17 +84,6 @@ public class healthBarAnimator : MonoBehaviour
             healthText.text = _value + "/" + max;
         }
         else { healthText.text = ""; }
-    }
-
-    public void TakeDamage(int _dam)
-    {
-        health -= _dam;
-    }
-
-    public void addValue(int toAdd)
-    {
-        health += toAdd;
-        if (health > max) { health = max; }
     }
 
     private void Update()

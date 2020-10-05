@@ -24,12 +24,12 @@ MonoBehaviour:
   baseTurretDamage: 1
   level2TurretDamage: 1
   level3TurretDamage: 2
-  baseWarmupShots: 6
-  level2WarmupShots: 5
-  level3WarmupShots: 4
+  baseWarmupShots: 4
+  level2WarmupShots: 3
+  level3WarmupShots: 2
   baseMaxShots: 8
-  level2MaxShots: 8
-  level3MaxShots: 10
+  level2MaxShots: 10
+  level3MaxShots: 15
   baseHeavyAttackDamage: 25
   level2HeavyAttackDamage: 50
   level3HeavyAttackDamage: 75
@@ -53,4 +53,4 @@ MonoBehaviour:
   level3HealDelay: 0.5
   heavyAttackShieldReduction: 0.2
   shieldRechargeDelay: 0.5
-  shieldBreakDelay: 10
+  shieldBreakDelay: 7.5

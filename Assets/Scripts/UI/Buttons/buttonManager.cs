@@ -7,7 +7,6 @@ public class buttonManager : MonoBehaviour
     public float gcdValue = 2.5f;
 
     public List<basicButton> buttons;
-    public basicButton ultimate;
 
     public AffectManager affect;
 
@@ -20,15 +19,6 @@ public class buttonManager : MonoBehaviour
 
     private bool onCooldown;
     private float postCooldown;
-
-    // Start is called before the first frame update
-    private void Start()
-    {
-        if (!ultimateFromStart) //Debug code
-        {
-            ultimate.gameObject.SetActive(false);
-        }
-    }
 
     public void globalCooldown() //Starts global cooldowns and begins clock for internal cooldown.
     {
@@ -72,11 +62,6 @@ public class buttonManager : MonoBehaviour
         {
             button.ReleaseButton();
         }
-    }
-
-    public void unlockUltimate()
-    {
-        ultimate.gameObject.SetActive(true);
     }
 
     public void RefreshAllCooldowns()

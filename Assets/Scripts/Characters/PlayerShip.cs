@@ -75,7 +75,7 @@ public class PlayerShip : BasicShip
 
     #region Prospective event variables
 
-    private Event retaliateEvent;
+    private AffectEvent retaliateEvent;
 
     private ProspectiveEvent playerDeath;
     private ProspectiveEvent nextCombo;
@@ -208,27 +208,31 @@ public class PlayerShip : BasicShip
     public override void TakeDamage(float _damage)
     {
         base.TakeDamage(_damage);
-        //Set base levels - the first few shots aren't actually important to the strength of the emotion
-        var damageValence = new Emotion(EmotionDirection.none, EmotionStrength.none);
-        var damageTension = new Emotion(EmotionDirection.none, EmotionStrength.none);
-
-        if (shieldPercent() < 0.75f)
-        {
-            damageValence = new Emotion(EmotionDirection.decrease, EmotionStrength.weak);
-            damageTension = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
-        }
-        if (!shielded)
-        {
-            damageValence = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
-            damageTension = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
-            if (LowHealth())
-            {
-                damageValence = new Emotion(EmotionDirection.decrease, EmotionStrength.strong);
-                damageTension = new Emotion(EmotionDirection.increase, EmotionStrength.strong);
-            }
-        }
+        ///Past events are moderately strong, because most of the modifiers will reduce them significantly
+        var damageValence = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
+        var damageTension = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
 
         affect.CreatePastEvent(damageValence, null, damageTension, 45.0f);
+    }
+
+    public override void TakeHeavyDamage(float _damage, float _jamLength)
+    {
+        base.TakeHeavyDamage(_damage, _jamLength);
+
+        ///Past events are moderately strong, because most of the modifiers will reduce them significantly
+        var damageValence = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
+        var damageTension = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
+
+        affect.CreatePastEvent(damageValence, null, damageTension, 45.0f);
+    }
+
+    public override ProspectiveEvent SpecialProspectiveEvent(float estimatedTime)
+    {
+        var specialValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+        var specialArousal = new Emotion(EmotionDirection.increase, EmotionStrength.strong);
+        var specialTension = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
+
+        return new ProspectiveEvent(specialValence, specialArousal, specialTension, estimatedTime, true, affect);
     }
 
     #endregion Affect
@@ -373,6 +377,8 @@ public class PlayerShip : BasicShip
             cannon.layer = 9;
             cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, enemyShip, affect);
             retaliateEvent = null; //After firing, we clear our retaliateEvent
+            target.Jam(jamDuration * 2);
+            target.ShieldBreak();
         }
 
         buttonManager.RefreshAllCooldowns();
@@ -426,6 +432,7 @@ public class PlayerShip : BasicShip
         {
             ShieldsDown();
         }
+        affect.AddUpcomingPlayerAttack(SpecialProspectiveEvent(healDelay));
         //ChargeShield(shieldCooldown);
         TriggerGlobalCooldown();
     }
@@ -444,6 +451,14 @@ public class PlayerShip : BasicShip
         {
             ultimateButton.sendToButton(heavyAttackCooldown);
         }
+    }
+
+    public override void HeavyAttackTrigger()
+    {
+        base.HeavyAttackTrigger();
+        specialFiringEvent = SpecialProspectiveEvent(heavyAttackDelay);
+        affect.AddUpcomingPlayerAttack(specialFiringEvent);
+        TriggerGlobalCooldown();
     }
 
     #endregion HeavyAttack

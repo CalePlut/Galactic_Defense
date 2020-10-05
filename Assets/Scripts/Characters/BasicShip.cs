@@ -133,6 +133,7 @@ public class BasicShip : MonoBehaviour
     #region Affect references
 
     protected ProspectiveEvent firingFinishEvent;
+    protected ProspectiveEvent specialFiringEvent;
 
     #endregion Affect references
 
@@ -160,6 +161,7 @@ public class BasicShip : MonoBehaviour
         //Begins coroutines for updating statuses and health
         StartCoroutine(JamEvaluate());
         StartCoroutine(HealthEvaluate());
+        StartCoroutine(ShieldEvaluate());
 
         //Sets attributes
         void SetAttributes(int level)
@@ -297,7 +299,7 @@ public class BasicShip : MonoBehaviour
     /// I'm sure there's a math way to do this, but I have two music degrees
     /// </summary>
     /// <returns>Returns total time taken for attack pattern</returns>
-    private float attackPatternFinishTime(int _warmupShots, int _totalShots)
+    protected float attackPatternFinishTime(int _warmupShots, int _totalShots)
     {
         var takenShots = 0;
         var totalTime = 0f;
@@ -330,6 +332,7 @@ public class BasicShip : MonoBehaviour
             if (attacking == null)
             {
                 BeginAttack();
+                PredictAttacks();
             }
             else
             {
@@ -427,8 +430,9 @@ public class BasicShip : MonoBehaviour
         cannon.gameObject.tag = tag;
         cannon.layer = 9;
         cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, target, affect);
+        var toLook = target.transform.position - transform.position;
         cannon.transform.LookAt(target.transform);
-        cannon.GetComponent<Rigidbody>().AddForce(foreTurret.transform.forward * 2500);
+        cannon.GetComponent<Rigidbody>().AddForce(toLook * 5);
     }
 
     /// <summary>
@@ -440,6 +444,7 @@ public class BasicShip : MonoBehaviour
         {
             StopCoroutine(attacking);
             attacking = null;
+            affect.CullEvent(firingFinishEvent);
             ChargeShield(shieldCooldown);
         }
     }
@@ -458,12 +463,17 @@ public class BasicShip : MonoBehaviour
         }
     }
 
-    public void HeavyAttackTrigger()
+    public virtual void HeavyAttackTrigger()
     {
         ShieldsDown();
         heavyAttackWindup = true;
         StartCoroutine(HeavyAttackFlare());
         SpecialIndicator(Color.red, heavyAttackDelay);
+    }
+
+    public virtual ProspectiveEvent SpecialProspectiveEvent(float estimatedTime)
+    {
+        return new ProspectiveEvent(null, null, null, estimatedTime, true, affect);
     }
 
     private IEnumerator HeavyAttackFlare()
@@ -537,17 +547,13 @@ public class BasicShip : MonoBehaviour
                     HealInterrupt();
                     _damage *= 2f;
                 }
-                if (heavyAttackWindup)
-                {
-                    InterruptHeavyAttack();
-                    _damage *= 2f;
-                }
+
                 //Take damage
                 damage = _damage * armour;
                 health -= damage;
                 //Update health bar
                 healthBar.SetValue(health);
-                Jam(0.25f); //Getting hit without shields adds short stagger
+                //Jam(0.25f); //Getting hit without shields adds short stagger
             }
 
             //Calculate int and percent damage for UI effects, and pass damage to UI
@@ -561,7 +567,7 @@ public class BasicShip : MonoBehaviour
     /// Takes damage from heavy attack
     /// </summary>
     /// <param name="_damage"></param>
-    public void TakeHeavyDamage(float _damage, float _jamLength)
+    public virtual void TakeHeavyDamage(float _damage, float _jamLength)
     {
         if (alive)
         {
@@ -582,7 +588,7 @@ public class BasicShip : MonoBehaviour
                 if (heavyAttackWindup)
                 {
                     InterruptHeavyAttack();
-                    _damage *= 2f;
+                    damage *= 2f;
                 }
 
                 //Take damage
@@ -717,17 +723,7 @@ public class BasicShip : MonoBehaviour
     /// <param name="delay"></param>
     protected void ChargeShield(float delay)
     {
-        //    if (shieldCharging == null)
-        //    {
         shieldCharging = StartCoroutine(ShieldWait(delay));
-        //}
-        //else
-        //{
-        //    Debug.Log("ShieldCharge exists - stopping and deleting it. Shouldn't happen?");
-        //    StopCoroutine(shieldCharging);
-        //    shieldCharging = null;
-        //    ChargeShield(delay);
-        //}
     }
 
     /// <summary>
@@ -753,14 +749,6 @@ public class BasicShip : MonoBehaviour
     public void ShieldHit(float _damage)
     {
         shield -= _damage;
-        shieldBar.SetValue(shield);
-
-        if (shield <= 0.0f)
-        {
-            ShieldBreak();
-        }
-
-        shieldBar.SetValue(shield);
     }
 
     /// <summary>
@@ -768,13 +756,15 @@ public class BasicShip : MonoBehaviour
     /// </summary>
     public void ShieldBreak()
     {
-        shieldBroken = true;
-        Jam(0.5f);
-        InterruptFiring();
-        ShieldsDown();
-        shieldBar.ShieldBreak();
-        ChargeShield(10.0f);
-        StartCoroutine(ShieldRecharge(10.0f));
+        if (!shieldBroken)
+        {
+            shieldBroken = true;
+            Jam(0.5f);
+            //Debug.Log("Shield Broken");
+            ShieldsDown();
+            shieldBar.ShieldBreak();
+            StartCoroutine(ShieldRecharge(10.0f));
+        }
     }
 
     /// <summary>
@@ -785,6 +775,7 @@ public class BasicShip : MonoBehaviour
     protected IEnumerator ShieldRecharge(float time)
     {
         var timer = 0.0f;
+        shield = 0.0f;
         while (timer < time)
         {
             timer += Time.deltaTime;
@@ -793,9 +784,10 @@ public class BasicShip : MonoBehaviour
             shieldBar.SetValue(shield);
             yield return null;
         }
-        shield = maxShield;
-        shieldBar.ShieldRestore();
         shieldBroken = false;
+        shield = maxShield;
+        shieldBar.SetValue(shield);
+        shieldBar.ShieldRestore();
     }
 
     /// <summary>
@@ -803,14 +795,24 @@ public class BasicShip : MonoBehaviour
     /// </summary>
     public void ShieldsDown()
     {
-        //It's possible to trigger shields down while
-        if (shieldCharging != null)
+        if (shielded)
         {
-            StopCoroutine(shieldCharging);
-            shieldCharging = null;
+            shielded = false;
+            Destroy(shieldObject);
         }
-        shielded = false;
-        Destroy(shieldObject);
+    }
+
+    private IEnumerator ShieldEvaluate()
+    {
+        while (alive)
+        {
+            //If we don't have our shield broken, shield behaves as normal
+            if (!shieldBroken)
+            {
+            }
+
+            yield return null;
+        }
     }
 
     #endregion Shield Mechanics

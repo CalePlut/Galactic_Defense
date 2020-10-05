@@ -20368,6 +20368,7 @@ MonoBehaviour:
   - {fileID: 4715089}
   - {fileID: 2100624343}
   - {fileID: 1406448387}
+  - {fileID: 1476275547}
   ultimate: {fileID: 1476275547}
   affect: {fileID: 1339880058}
   ultimateFromStart: 1
@@ -36344,7 +36345,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   fill: {fileID: 1824085115}
-  myCD: 7.5
+  myCD: 10
   haste: 1
   shieldRecover: 0.231
 --- !u!114 &1476275548
@@ -50104,7 +50105,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attr: {fileID: 11400000, guid: 002c0366a3d4cfb45ab30c6a59d5585a, type: 2}
-  shieldCooldown: 0.5
+  shieldCooldown: 0.234
   warmupRamp: 1
   level: 1
   damageText: {fileID: 1169183755}
@@ -50126,7 +50127,7 @@ MonoBehaviour:
   nearDeathFirePrefab: {fileID: 1343497475418638690, guid: 17a7cdde987eeb545a021d46d0cfd42b,
     type: 3}
   shieldPrefab: {fileID: 151800, guid: 8ab93d00373fccd49856789dc57b759c, type: 3}
-  shieldSize: 4
+  shieldSize: 4.5
   explosion: {fileID: 1000011797152326, guid: acf39d9f4addf294d93fa56fa373961b, type: 3}
   SFX_Explosion: {fileID: 8300000, guid: 80164361c240b3b4abdd3400c9c3fb77, type: 3}
   beamStartPrefab: {fileID: 152740, guid: 6f4783baaba4016438fbffe0577577bf, type: 3}
@@ -50139,7 +50140,7 @@ MonoBehaviour:
   affect: {fileID: 1339880058}
   attackCooldown: 0.924
   healCooldown: 5
-  heavyAttackCooldown: 5
+  heavyAttackCooldown: 10
   retaliateCannon: {fileID: 468083735}
   absorbObject: {fileID: 187606, guid: 8e197dcc591031548bff44f581ad784e, type: 3}
   disableShotPrefab: {fileID: 150084, guid: f22db53bc2b4f7f449cf627bdc581f52, type: 3}

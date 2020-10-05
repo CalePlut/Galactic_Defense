@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -112,15 +113,6 @@ public class EnemyShip : BasicShip
         playerShip.SetEnemyReference(this.gameObject);
     }
 
-    protected override GameObject myTargetObject()
-    {
-        if (playerShipObj != null) { return playerShipObj; }
-        else
-        {
-            return base.myTargetObject();
-        }
-    }
-
     protected override BasicShip myTarget()
     {
         if (playerShip != null)
@@ -130,6 +122,15 @@ public class EnemyShip : BasicShip
         else
         {
             return base.myTarget();
+        }
+    }
+
+    protected override GameObject myTargetObject()
+    {
+        if (playerShipObj != null) { return playerShipObj; }
+        else
+        {
+            return base.myTargetObject();
         }
     }
 
@@ -146,52 +147,50 @@ public class EnemyShip : BasicShip
         affect.AddUpcomingEnemyAttack(firingFinishEvent);
     }
 
-    /// <summary>
-    /// Overrides attack pattern valence to provide enemy values
-    /// </summary>
-    /// <returns></returns>
     protected override Emotion attackPatternValence()
     {
         return new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
     }
 
-    //NOTE: We don't need to override arousal in enemy because enemy attack doesn't change arousal level
+    protected override Emotion attackPatternArousal()
+    {
+        return new Emotion(EmotionDirection.none, EmotionStrength.none);
+    }
 
-    /// <summary>
-    /// Overrides attack pattern tension to provide enemy values
-    /// </summary>
-    /// <returns></returns>
     protected override Emotion attackPatternTension()
     {
-        return new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+        return new Emotion(EmotionDirection.increase, EmotionStrength.weak);
     }
 
     public override void TakeDamage(float _damage)
     {
         base.TakeDamage(_damage);
         //Set base levels - the first few shots aren't actually important to the strength of the emotion
-        var damageValence = new Emotion(EmotionDirection.none, EmotionStrength.none);
-        var damageArousal = new Emotion(EmotionDirection.none, EmotionStrength.none);
-        var damageTension = new Emotion(EmotionDirection.none, EmotionStrength.none);
+        var damageValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+        var damageArousal = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+        var damageTension = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
 
-        if (shieldPercent() < 0.75f)
-        {
-            damageValence = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
-            damageArousal = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
-            damageTension = new Emotion(EmotionDirection.none, EmotionStrength.none);
-        }
-        if (!shielded)
-        {
-            damageValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
-            damageArousal = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
-            damageTension = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
-            if (LowHealth())
-            {
-                damageValence = new Emotion(EmotionDirection.increase, EmotionStrength.strong);
-                damageTension = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
-            }
-        }
         affect.CreatePastEvent(damageValence, damageArousal, damageTension, 45.0f);
+    }
+
+    public override void TakeHeavyDamage(float _damage, float _jamLength)
+    {
+        base.TakeHeavyDamage(_damage, _jamLength);
+        //Set base levels - the first few shots aren't actually important to the strength of the emotion
+        var damageValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+        var damageArousal = new Emotion(EmotionDirection.increase, EmotionStrength.strong);
+        var damageTension = new Emotion(EmotionDirection.decrease, EmotionStrength.weak);
+
+        affect.CreatePastEvent(damageValence, damageArousal, damageTension, 45.0f);
+    }
+
+    public override ProspectiveEvent SpecialProspectiveEvent(float estimatedTime)
+    {
+        var specialValence = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
+        var specialArousal = new Emotion(EmotionDirection.decrease, EmotionStrength.weak);
+        var specialTension = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+
+        return new ProspectiveEvent(specialValence, specialArousal, specialTension, estimatedTime, true, affect);
     }
 
     #endregion Affect
@@ -251,20 +250,32 @@ public class EnemyShip : BasicShip
     }
 
     /// <summary>
-    /// Selects and executes attack combo - may be full combo, attack with no finisher, or attack with
+    /// Selects and executes attack combo
+    /// Combo is of random length up to maximum length
     /// </summary>
     protected void SelectAttack()
     {
         var combo = Random.value > 0.5f;
         if (combo)
         {
+            var comboTotalShots = Random.Range(warmupShots, totalShots);
+            var comboWarmup = Random.Range(warmupShots, comboTotalShots);
             executeFinisher = Random.value > 0.5f; //Coin flip for whether we'll do the finisher or not
+            if (executeFinisher)
+            {
+                specialFiringEvent = SpecialProspectiveEvent(attackPatternFinishTime(comboWarmup, comboTotalShots)); //If we're going to execute a finisher, start building up now
+            }
             AttackToggle();
         }
         else
         {
+            var toWait = Random.Range(comboStartDelayMinimum, comboStartDelayMaximum);
+
+            specialFiringEvent = SpecialProspectiveEvent(heavyAttackDelay + toWait);
             if (comboHeal) { HealTrigger(); }
             else { HeavyAttackTrigger(); }
+
+            StartCoroutine(ComboInitialWait(toWait));
         }
     }
 

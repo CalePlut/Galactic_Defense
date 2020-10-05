@@ -225,9 +225,6 @@ public class GameManager : MonoBehaviour
         //Now we do additional logic
         if (stage == 2)
         {
-            //Unlocks ultimate ability at stage 2
-            playerButtons.unlockUltimate();
-
             //Brings up clear slide and allows for level up
             stage1Clear.SetActive(true);
             upgradeMenu.SetActive(true);
@@ -332,21 +329,25 @@ public class GameManager : MonoBehaviour
         StartCoroutine(CombatAffectUpdate());
         affect.StartCombat();
         music.RunActionPreset("StartCombat");
-        //affect.musicControl = true;
-        if (stage == 1)
-        {
-            affect.SetMood(OrdinalAffect.low, OrdinalAffect.low, OrdinalAffect.low);
-        }
-        else if (stage == 2)
-        {
-            affect.SetMood(OrdinalAffect.medium, OrdinalAffect.medium, OrdinalAffect.medium);
-        }
-        else if (stage == 3)
-        {
-            affect.SetMood(OrdinalAffect.medium, OrdinalAffect.high, OrdinalAffect.medium);
-        }
+        SetMood();
 
         EnemyCompositionSetup();
+
+        void SetMood()
+        {
+            if (stage == 1)
+            {
+                affect.SetMood(OrdinalAffect.medium, OrdinalAffect.low, OrdinalAffect.medium);
+            }
+            else if (stage == 2)
+            {
+                affect.SetMood(OrdinalAffect.medium, OrdinalAffect.medium, OrdinalAffect.medium);
+            }
+            else if (stage == 3)
+            {
+                affect.SetMood(OrdinalAffect.medium, OrdinalAffect.high, OrdinalAffect.medium);
+            }
+        }
     }
 
     /// <summary>
@@ -357,9 +358,10 @@ public class GameManager : MonoBehaviour
     {
         while (inCombat)
         {
-            if (VAT != affect.GetMusicLevel())
+            var VATLevels = affect.GetMusicLevel();
+            if (VAT != VATLevels)
             {
-                VAT = affect.GetMusicLevel();
+                VAT = VATLevels;
                 music.RunActionPreset(VAT);
             }
             yield return null;
@@ -418,7 +420,7 @@ public class GameManager : MonoBehaviour
             {
                 encounter++;
                 stageManager.setEncounterProgress(1);
-                advanceToNextWave();
+                AdvanceToNextWave();
             }
             else
             {
@@ -435,13 +437,13 @@ public class GameManager : MonoBehaviour
             {
                 encounter++;
                 stageManager.setEncounterProgress(1);
-                advanceToNextWave();
+                AdvanceToNextWave();
             }
             else if (encounter == 1)
             {
                 encounter++;
                 stageManager.setEncounterProgress(2);
-                advanceToNextWave();
+                AdvanceToNextWave();
                 warpNext = false;
             }
             else
@@ -459,7 +461,7 @@ public class GameManager : MonoBehaviour
             {
                 encounter++;
                 stageManager.setEncounterProgress(1);
-                advanceToNextWave();
+                AdvanceToNextWave();
                 warpNext = false;
             }
             else
@@ -567,7 +569,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     ///Advances to the next wave after a short delay
     /// </summary>
-    private void advanceToNextWave()
+    private void AdvanceToNextWave()
     {
         StartCoroutine(warpWindow());
     }
@@ -617,9 +619,6 @@ public class GameManager : MonoBehaviour
         menu.Enable();
         //pause.Enable();
         focusToggle.Enable();
-
-        //Unlocks ultimate early for tutorial
-        if (tutorial) { playerButtons.unlockUltimate(); }
     }
 
     // Update is called once per frame

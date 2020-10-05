@@ -25,13 +25,10 @@ public class AffectManager : MonoBehaviour
 
     #region Events
 
-    private List<Event> events; //List of all events, prospective and past
-    private List<Event> toCull; //Faux garbage collection
+    private List<AffectEvent> events; //List of all events, prospective and past
+    private List<AffectEvent> toCull; //Faux garbage collection
     private List<ProspectiveEvent> upcomingPlayerAttackEvents; //List of all upcoming player attacks
     private List<ProspectiveEvent> upcomingEnemyAttackEvents; //List of all upcoming enemy attacks
-
-    private bool playerLowHealth = false;
-    private bool enemyLowHealth = false;
 
     #endregion Events
 
@@ -48,8 +45,8 @@ public class AffectManager : MonoBehaviour
 
     private void Start()
     {
-        events = new List<Event>();
-        toCull = new List<Event>();
+        events = new List<AffectEvent>();
+        toCull = new List<AffectEvent>();
 
         upcomingPlayerAttackEvents = new List<ProspectiveEvent>();
         upcomingEnemyAttackEvents = new List<ProspectiveEvent>();
@@ -85,8 +82,8 @@ public class AffectManager : MonoBehaviour
     /// </summary>
     public void ClearWave()
     {
-        events = new List<Event>();
-        CreatePastEvent(new Emotion(EmotionDirection.increase, EmotionStrength.strong), null, null, 5.0f);
+        events = new List<AffectEvent>();
+        CreatePastEvent(new Emotion(EmotionDirection.increase, EmotionStrength.strong), null, null, 15.0f);
     }
 
     public void SetEnemy(EnemyShip enemy)
@@ -106,7 +103,7 @@ public class AffectManager : MonoBehaviour
     /// <param name="_tension">tension (max)</param>
     /// <param name="_duration">Time until event</param>
     /// <param name="_determinate">(Opt) Event has determinate timing</param>
-    public Event CreateProspectiveEvent(Emotion _valence, Emotion _arousal, Emotion _tension, float _duration, bool _determinate = false)
+    public AffectEvent CreateProspectiveEvent(Emotion _valence, Emotion _arousal, Emotion _tension, float _duration, bool _determinate = false)
     {
         var toAdd = new ProspectiveEvent(_valence, _arousal, _tension, _duration, _determinate, this);
         events.Add(toAdd);
@@ -130,7 +127,7 @@ public class AffectManager : MonoBehaviour
     /// Indeterminate events will need to be able to be created outside of the normal voids and manually entered
     /// </summary>
     /// <param name="toAdd"></param>
-    public void AddEvent(Event toAdd)
+    public void AddEvent(AffectEvent toAdd)
     {
         events.Add(toAdd);
     }
@@ -151,7 +148,7 @@ public class AffectManager : MonoBehaviour
     /// Used for faux garbage collection. Adds event to culling list to be culled when we're done enumerating.
     /// </summary>
     /// <param name="_event"></param>
-    public void CullEvent(Event _event)
+    public void CullEvent(AffectEvent _event)
     {
         toCull.Add(_event);
     }
@@ -177,15 +174,15 @@ public class AffectManager : MonoBehaviour
 
         float multiplier(BasicShip ship)
         {
-            var mult = 0.25f;
-            if (ship.shieldPercent() < 0.75f)
-            {
-                mult = 0.5f;
-            }
+            var mult = 0f;
+            var missingShieldPercent = 1.0f - ship.shieldPercent();
+            mult += missingShieldPercent;
+
             if (!ship.shielded)
             {
                 mult = 1.0f;
-                if (ship.LowHealth()) { mult = 2.0f; }
+                var missingHealth = 1.0f - ship.healthPercent();
+                mult += missingHealth;
             }
             return mult;
         }
@@ -226,22 +223,25 @@ public class AffectManager : MonoBehaviour
             var arousalValue = 0.0f;
             var tensionValue = 0.0f;
 
-            foreach (Event _event in events)
+            foreach (AffectEvent _event in events)
             {
                 _event.Advance(Time.deltaTime); //Advance event's clock and processing
 
                 var valenceAdd = _event.GetValence();
                 var arousalAdd = _event.GetArousal();
                 var tensionAdd = _event.GetTension();
-                //Debug.Log("Adding VAT of " + valenceAdd + "," + arousalAdd + "," + tensionAdd);
+
+                //Debug.Log("Adding event to total list. VAT: " + valenceAdd + "|" + arousalAdd + "|" + tensionAdd);
 
                 valenceValue += valenceAdd / events.Count; //Retreives VAT values from event
                 arousalValue += arousalAdd / events.Count;
                 tensionValue += tensionAdd / events.Count;
             }
 
+            emotionDebug();
+
             //Garbage collection - removes toCull and creates new one
-            foreach (Event _event in toCull)
+            foreach (AffectEvent _event in toCull)
             {
                 if (events.Contains(_event))
                 {
@@ -257,12 +257,18 @@ public class AffectManager : MonoBehaviour
                 }
             }
 
-            toCull = new List<Event>();
+            toCull = new List<AffectEvent>();
 
             //Debug.Log("Total VAT Values: " + valenceValue + "," + arousalValue + "," + tensionValue);
 
             ProcessEmotions(valenceValue, arousalValue, tensionValue);
 
+            void emotionDebug()
+            {
+                Grapher.Log(valenceValue, "Valence");
+                Grapher.Log(arousalValue, "Arousal");
+                Grapher.Log(tensionValue, "Tension");
+            }
             yield return null;
         }
     }
@@ -276,8 +282,6 @@ public class AffectManager : MonoBehaviour
         valence = ProcessEmotion(valenceMood, valenceChange);
         arousal = ProcessEmotion(arousalMood, arousalChange);
         tension = ProcessEmotion(tensionMood, tensionChange);
-
-        //Debug.Log("V: " + valence + "A: " + arousal + "T:" + tension);
 
         valenceDisplay.UpdateAffect(valence);
         arousalDisplay.UpdateAffect(arousal);
@@ -308,24 +312,31 @@ public class AffectManager : MonoBehaviour
 
     private OrdinalAffect ProcessEmotion(OrdinalAffect mood, float emotionValue)
     {
+        var positiveThreshold = affectVars.positiveThreshold;
         var strongThreshold = affectVars.strongThreshold;
-        var threshold = affectVars.changeThreshold;
+        var negativeThreshold = affectVars.negativeThreshold;
+        var strongNegativeThreshold = affectVars.strongNegativeThreshold;
+
+        Grapher.Log(positiveThreshold, "Positive threshold");
+        Grapher.Log(strongThreshold, "Strong positive threshold");
+        Grapher.Log(negativeThreshold, "Negative Threshold");
+        Grapher.Log(strongNegativeThreshold, "Strong negative threshold");
 
         //First, process strong emotions
         if (emotionValue > strongThreshold)
         {
             return LayerAffect(mood, 2);
         }
-        else if (emotionValue < -strongThreshold)
+        else if (emotionValue < strongNegativeThreshold)
         {
             return LayerAffect(mood, -2);
         }
         //Next, we process weak emotions.
-        else if (emotionValue > threshold)
+        else if (emotionValue > positiveThreshold)
         {
             return LayerAffect(mood, 1);
         }
-        else if (emotionValue < -threshold)
+        else if (emotionValue < negativeThreshold)
         {
             return LayerAffect(mood, -1);
         }
@@ -399,7 +410,7 @@ public class AffectManager : MonoBehaviour
 /// <summary>
 /// Affective event class. Tracks time and scales affect with Advance(). Can be prospective or past, determinate or not.
 /// </summary>
-public class Event
+public class AffectEvent
 {
     //private float maxValence, maxArousal, maxTension; //Maximum values of events, to be modified by time
     public Emotion valence { get; protected set; } //Emotions are stored as Emotion and Value - Value is used to pass upstream, Emotion is used to process
@@ -416,7 +427,7 @@ public class Event
 
 #nullable enable
 
-    public Event(Emotion? _valence, Emotion? _arousal, Emotion? _tension, float _duration, AffectManager _manager, float _multiplier = 1.0f)
+    public AffectEvent(Emotion? _valence, Emotion? _arousal, Emotion? _tension, float _duration, AffectManager _manager, float _multiplier = 1.0f)
     {
         if (_valence != null)
         {
@@ -483,7 +494,7 @@ public class Event
 /// <summary>
 /// Event that has happened - Emotion will fade over a provided duration
 /// </summary>
-public class PastEvent : Event
+public class PastEvent : AffectEvent
 {
     public PastEvent(Emotion _valence, Emotion _arousal, Emotion _tension, float _duration, AffectManager _manager) : base(_valence, _arousal, _tension, _duration, _manager)
     {
@@ -513,7 +524,7 @@ public class PastEvent : Event
 /// <summary>
 /// Event that has not yet happened - may be determinate (known end point) or indeterminate (max 60 seconds)
 /// </summary>
-public class ProspectiveEvent : Event
+public class ProspectiveEvent : AffectEvent
 {
     private float safetyTimer;
 
@@ -595,6 +606,7 @@ public class Emotion
     {
         direction = _direction;
         strength = _strength;
+        //Debug.Log("New emotion created: " + direction + (float)direction + " Direction/float, " + strength + (float)strength + "Strength\float");
     }
 
     /// <summary>
@@ -610,33 +622,3 @@ public class Emotion
 }
 
 #endregion Emotions
-
-public class ArousalModify
-{
-    //ArousalModify stores events and weights, and decreases the weight over 6 seconds.
-
-    private float amount;
-    private float weight;
-
-    public ArousalModify(float _amount)
-    {
-        amount = _amount;
-        weight = 1.0f;
-    }
-
-    public float queryArousal()
-    {
-        return amount * weight;
-    }
-
-    public void tick(float deltaTime)
-    {
-        weight -= deltaTime / 6.0f;
-    }
-
-    public bool zeroWeight()
-    {
-        if (weight <= 0.0f) { return true; }
-        else return false;
-    }
-}
