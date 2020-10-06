@@ -93,8 +93,6 @@ public class GameManager : MonoBehaviour
     public GameObject enemyWarpPrefab;
 
     public GameObject spawnPoint;
-    public GameObject stage1Clear;
-    public GameObject stage2Clear;
 
     #endregion Enemies and Waves
 
@@ -193,7 +191,6 @@ public class GameManager : MonoBehaviour
     {
         //Disable menus
         mapMenu.SetActive(false);
-        stage1Clear.SetActive(false);
 
         //Calls special effects
         anim.Play("cameraExitWarp");
@@ -222,19 +219,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1.0f);
         map.advanceStage(stage);
 
-        //Now we do additional logic
-        if (stage == 2)
-        {
-            //Brings up clear slide and allows for level up
-            stage1Clear.SetActive(true);
-            upgradeMenu.SetActive(true);
-        }
-        if (stage == 3)
-        {
-            //Brings up clear slide and allows for level up
-            stage2Clear.SetActive(true);
-            upgradeMenu.SetActive(true);
-        }
+        upgradeMenu.SetActive(true);
     }
 
     /// <summary>
@@ -242,8 +227,6 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void ToMapMenu()
     {
-        stage1Clear.SetActive(false);
-        stage2Clear.SetActive(false);
         upgradeMenu.SetActive(false);
         mapMenu.SetActive(true);
     }
@@ -394,6 +377,16 @@ public class GameManager : MonoBehaviour
         warpGate.GetComponent<portalAppear>().warp(10);
         yield return new WaitForSeconds(1.5f);
         EnemyCompositionSetup();
+    }
+
+    public void EnemyDie() //If we aren't at the boss, we continue playing. Otherwise, we've won!
+    {
+        affect.ClearWave(); //Calls the clearWave void, resetting emotions
+        if (!atBoss)
+        {
+            StageLogic();
+        }
+        else { win(); }
     }
 
     /// <summary>
@@ -583,16 +576,6 @@ public class GameManager : MonoBehaviour
         {
             anim.Play("cameraEnemyArrive");
         }
-    }
-
-    public void EnemyDie() //If we aren't at the boss, we continue playing. Otherwise, we've won!
-    {
-        affect.ClearWave(); //Calls the clearWave void, resetting emotions
-        if (!atBoss)
-        {
-            StageLogic();
-        }
-        else { win(); }
     }
 
     #endregion Stage Managerment

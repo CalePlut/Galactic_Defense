@@ -18,7 +18,7 @@ public class BasicShip : MonoBehaviour
 
     protected float maxHealth, health;
     protected float maxShield, shield;
-    protected bool shieldBroken;
+    public float shieldRechargeRate = 0.25f;
     protected float armour;
 
     protected float basicAttackDamage;
@@ -32,23 +32,52 @@ public class BasicShip : MonoBehaviour
 
     #region Ability values and mechanic varaibles
 
-    protected float jamDuration;
-    protected float jamTimer;
-    protected float healPercent, healDelay;
-    public float shieldCooldown = 0.5f;
+    #region Attack
 
-    //public bool attacking { get; protected set; } = false;
     public float warmupRamp = 1.0f;
 
     protected int warmupShots, totalShots;
-    public bool healing { get; private set; } = false;
-    public bool shielded { get; protected set; } = false;
-    public bool heavyAttackWindup { get; protected set; } = false;
+
     protected Coroutine attacking;
-    protected Coroutine shieldCharging;
+    private bool isAttacking;
+
+    #endregion Attack
+
+    #region Heavy Attack
+
+    public bool heavyAttackWindup { get; protected set; } = false;
+
+    #endregion Heavy Attack
+
+    #region Absorb
 
     public bool absorbing { get; protected set; } = false;
+
+    #endregion Absorb
+
+    #region Healing
+
+    protected float healPercent, healDelay;
+    public bool healing { get; private set; } = false;
+
+    #endregion Healing
+
+    #region Shield
+
+    public bool shielded { get; protected set; } = false;
+    public float shieldCooldown = 0.5f;
+    protected float shieldCharge;
+    protected bool shieldBroken;
+
+    #endregion Shield
+
+    #region Other
+
+    protected float jamDuration;
+    protected float jamTimer;
     public int level = 1;
+
+    #endregion Other
 
     #endregion Ability values and mechanic varaibles
 
@@ -81,26 +110,37 @@ public class BasicShip : MonoBehaviour
 
     #region Effect variables
 
+    #region Attack and Heal effects
+
     [Header("Effects - Base")]
     public GameObject warningFlare;
 
     private GameObject warningFlareRuntimeObject;
     public float warningFlareSize = 10.0f;
 
-    public GameObject jamFirePrefab;
-    private GameObject jamEffect;
-
     public GameObject healEffect;
 
-    public GameObject nearDeathFirePrefab;
-    private GameObject nearDeathFire;
+    #endregion Attack and Heal effects
+
+    #region Shield Effects
 
     public GameObject shieldPrefab;
     protected GameObject shieldObject;
     public float shieldSize = 2f;
 
-    public GameObject explosion;
+    #endregion Shield Effects
 
+    #region Status Effects
+
+    public GameObject jamFirePrefab;
+    private GameObject jamEffect;
+
+    public GameObject nearDeathFirePrefab;
+    private GameObject nearDeathFire;
+
+    #endregion Status Effects
+
+    public GameObject explosion;
     public AudioClip SFX_Explosion;
     protected AudioSource SFX;
 
@@ -320,7 +360,7 @@ public class BasicShip : MonoBehaviour
 
     #region Mechanics
 
-    #region Attacks
+    #region Attack
 
     /// <summary>
     /// Overridden for targetting, but starts or ends attack
@@ -329,7 +369,7 @@ public class BasicShip : MonoBehaviour
     {
         if (alive)
         {
-            if (attacking == null)
+            if (!isAttacking)
             {
                 BeginAttack();
                 PredictAttacks();
@@ -347,6 +387,7 @@ public class BasicShip : MonoBehaviour
     protected virtual void BeginAttack()
     {
         ShieldsDown();
+        isAttacking = true;
         if (attacking == null)
         {
             attacking = StartCoroutine(AutoAttack(myTarget(), warmupShots, totalShots));
@@ -440,12 +481,13 @@ public class BasicShip : MonoBehaviour
     /// </summary>
     protected virtual void FinishFiring()
     {
+        isAttacking = false;
         if (attacking != null)
         {
             StopCoroutine(attacking);
             attacking = null;
             affect.CullEvent(firingFinishEvent);
-            ChargeShield(shieldCooldown);
+            ShieldsUp();
         }
     }
 
@@ -454,14 +496,19 @@ public class BasicShip : MonoBehaviour
     /// </summary>
     public virtual void InterruptFiring()
     {
+        isAttacking = false;
         if (attacking != null)
         {
             StopCoroutine(attacking);
             attacking = null;
             affect.CullEvent(firingFinishEvent);
-            ChargeShield(shieldCooldown);
+            ShieldsUp();
         }
     }
+
+    #endregion Attack
+
+    #region Heavy Attack
 
     public virtual void HeavyAttackTrigger()
     {
@@ -490,6 +537,7 @@ public class BasicShip : MonoBehaviour
     public void InterruptHeavyAttack()
     {
         heavyAttackWindup = false;
+        ShieldsUp();
     }
 
     /// <summary>
@@ -499,6 +547,7 @@ public class BasicShip : MonoBehaviour
     {
         if (heavyAttackWindup)
         {
+            heavyAttackWindup = false;
             var emitter = laserEmitter.position;
             var damage = heavyAttackDamage;
             var target = targetObj.GetComponent<BasicShip>();
@@ -514,14 +563,235 @@ public class BasicShip : MonoBehaviour
                 target.TakeHeavyDamage(damage, jamDuration);
             }
         }
-        ChargeShield(shieldCooldown);
+        ShieldsUp();
     }
+
+    #endregion Heavy Attack
+
+    #region Absorb
 
     public virtual void SetRetaliate()
     {
     }
 
-    #endregion Attacks
+    #endregion Absorb
+
+    #region Heal
+
+    /// <summary>
+    /// Begins healing process
+    /// </summary>
+    public virtual void HealTrigger()
+    {
+        StartCoroutine(HealDelay());
+        SpecialIndicator(Color.green, healDelay);
+    }
+
+    public IEnumerator HealDelay()
+    {
+        healing = true;
+        var timer = healDelay;
+        while (timer > 0.0f)
+        {
+            timer -= Time.deltaTime;
+            yield return null;
+        }
+        Heal();
+    }
+
+    /// <summary>
+    /// Interrupts heal, destroys warning flare.
+    /// </summary>
+    public void HealInterrupt()
+    {
+        healing = false;
+        Destroy(warningFlareRuntimeObject);
+    }
+
+    /// <summary>
+    /// Heals shield for % of missing health, determined by healPercent modifier attribute
+    /// </summary>
+    public virtual void Heal()
+    {
+        if (healing)
+        {
+            health = CalculateHeal(health, maxHealth);
+            healthBar.SetValue(health);
+
+            healing = false;
+
+            var healingEffect = Instantiate(healEffect, transform.position, Quaternion.identity, this.transform);
+            healingEffect.transform.SetParent(this.transform);
+        }
+        ShieldsUp();
+
+        ///Calculates the amount to heal
+        float CalculateHeal(float current, float max)
+        {
+            var newCurrent = current;
+            var missing = max - current;
+            var amount = healPercent * missing;
+
+            newCurrent += amount;
+            if (newCurrent > max)
+            {
+                newCurrent = max;
+            }
+
+            return newCurrent;
+        }
+    }
+
+    #endregion Heal
+
+    #region Shield
+
+    /// <summary>
+    /// Constantly updates the status of the shield
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator ShieldEvaluate()
+    {
+        while (alive)
+        {
+            //If we don't have our shield broken, shield behaves as normal
+            if (!shieldBroken)
+            {
+                if (shielded) //If we are shielded, watch for charge and break
+                {
+                    if (shield < maxShield)
+                    {
+                        shield += Time.deltaTime * shieldRechargeRate;
+                    }
+                    if (shieldCharge > 0f)  //If we still have shieldCharge time remaining, charge shield
+                    {
+                        shieldCharge -= Time.deltaTime;
+                    }
+                    else //Otherwise
+                    {
+                        if (shield <= 0.0f)
+                        {
+                            ShieldBreak();
+                        }
+                    }
+                }
+            }
+            else //If our shield is broken, we re-charge it
+            {
+                shield += Time.deltaTime;
+                if (shield >= maxShield)
+                {
+                    shield = maxShield;
+                    shieldBar.ShieldRestore();
+                    shieldBroken = false;
+                    shieldCharge = 0f;
+                    ShieldsUp();
+                }
+            }
+            ShieldCheck();
+            shieldBar.SetValue(shield);
+            yield return null;
+        }
+    }
+
+    /// <summary>
+    /// Ensures that shield object matches status
+    /// </summary>
+    private void ShieldCheck()
+    {
+        if (shielded)
+        {
+            if (shieldObject == null)
+            {
+                InstantiateShield();
+            }
+        }
+        else
+        {
+            if (shieldObject != null)
+            {
+                ShieldDestroy();
+            }
+        }
+    }
+
+    /// <summary>
+    /// If the shield is up, we take shield damage
+    /// </summary>
+    /// <param name="damage"></param>
+    public void ShieldHit(float _damage)
+    {
+        shield -= _damage;
+    }
+
+    /// <summary>
+    /// If we're not doing something else, we can bring shields up.
+    /// IMPORTANT: Must be called AFTER changing value
+    /// </summary>
+    public void ShieldsUp()
+    {
+        if (!isAttacking && !healing && !heavyAttackWindup && !absorbing && !shieldBroken)
+        {
+            shielded = true;
+        }
+        else
+        {
+            //Debug.Log("Did not raise shields: Attacking: " + isAttacking + " | H. Attack: " + heavyAttackWindup + " | Absorbing: " + absorbing + " | Healing: " + healing + " | Shield Broken: " + shieldBroken);
+        }
+    }
+
+    /// <summary>
+    /// Turns off shield and sets recharge time
+    /// </summary>
+    public void ShieldsDown()
+    {
+        shielded = false;
+        shieldCharge = shieldCooldown;
+    }
+
+    protected void InstantiateShield()
+    {
+        //Plays sound, creates object
+        CreateShieldObject();
+
+        void CreateShieldObject()
+        {
+            SFX.PlayOneShot(SFX_shieldActivate);
+            shieldObject = Instantiate(shieldPrefab, transform.position, Quaternion.identity, this.transform);
+            shieldObject.tag = gameObject.tag;
+            shieldObject.name = "Shield";
+            shieldObject.transform.SetParent(this.transform);
+            shieldObject.transform.localScale = new Vector3(shieldSize, shieldSize, shieldSize);
+        }
+    }
+
+    public void ShieldDestroy()
+    {
+        Destroy(shieldObject);
+    }
+
+    /// <summary>
+    /// ShieldBreak sets shield break and
+    /// </summary>
+    public void ShieldBreak()
+    {
+        ShieldsDown();
+        shieldBroken = true;
+        shieldBar.ShieldBreak();
+    }
+
+    /// <summary>
+    /// Sets shield charge. Shield charge sets how much time it will take to bring shields up when appropriate
+    /// </summary>
+    /// <param name="delay"></param>
+    protected void SetShieldCharge(float delay)
+    {
+        shieldCharge = delay;
+    }
+
+    #endregion Shield
+
+    #region Health
 
     /// <summary>
     /// This takes damage from any source
@@ -545,7 +815,7 @@ public class BasicShip : MonoBehaviour
                 if (healing)
                 {
                     HealInterrupt();
-                    _damage *= 2f;
+                    _damage *= 1.5f;
                 }
 
                 //Take damage
@@ -553,7 +823,6 @@ public class BasicShip : MonoBehaviour
                 health -= damage;
                 //Update health bar
                 healthBar.SetValue(health);
-                //Jam(0.25f); //Getting hit without shields adds short stagger
             }
 
             //Calculate int and percent damage for UI effects, and pass damage to UI
@@ -580,15 +849,15 @@ public class BasicShip : MonoBehaviour
             }
             else //Otherwise, take full damage and jam
             {
-                if (healing) //Player done fucked up
+                if (healing) //Done fucked up
                 {
                     HealInterrupt();
-                    damage *= 2f;
+                    damage *= 1.5f;
                 }
                 if (heavyAttackWindup)
                 {
                     InterruptHeavyAttack();
-                    damage *= 2f;
+                    damage *= 1.5f;
                 }
 
                 //Take damage
@@ -650,6 +919,10 @@ public class BasicShip : MonoBehaviour
         return health <= (0.25f * maxHealth);
     }
 
+    #endregion Health
+
+    #region Status Effects
+
     /// <summary>
     /// Evaluates the Jam timer
     /// Spawns jam effect if we're jammed and it doesn't exist
@@ -688,134 +961,9 @@ public class BasicShip : MonoBehaviour
         jamTimer = duration;
     }
 
+    #endregion Status Effects
+
     #endregion Mechanics
-
-    #region Shield Mechanics
-
-    /// <summary>
-    /// Shields default to up most of the time
-    /// </summary>
-    public void ShieldsUp()
-    {
-        if (!shieldBroken && !shielded)
-        {
-            //Sets mechanics
-            shielded = true;
-
-            //Plays sound, creates object
-            CreateShieldObject();
-
-            void CreateShieldObject()
-            {
-                SFX.PlayOneShot(SFX_shieldActivate);
-                shieldObject = Instantiate(shieldPrefab, transform.position, Quaternion.identity, this.transform);
-                shieldObject.tag = gameObject.tag;
-                shieldObject.name = "Shield";
-                shieldObject.transform.SetParent(this.transform);
-                shieldObject.transform.localScale = new Vector3(shieldSize, shieldSize, shieldSize);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Starts shield recharging for delay, - just to avoid problems with forgetting to call startCoroutine
-    /// </summary>
-    /// <param name="delay"></param>
-    protected void ChargeShield(float delay)
-    {
-        shieldCharging = StartCoroutine(ShieldWait(delay));
-    }
-
-    /// <summary>
-    /// Waits the given time and reactivates shield (if shield is down)
-    /// </summary>
-    /// <param name="_time"></param>
-    /// <returns></returns>
-    protected IEnumerator ShieldWait(float _time)
-    {
-        var timer = _time;
-        while (timer > 0.0f)
-        {
-            timer -= Time.deltaTime;
-            yield return null;
-        }
-        ShieldsUp();
-    }
-
-    /// <summary>
-    /// If the shield is up, we take shield damage
-    /// </summary>
-    /// <param name="damage"></param>
-    public void ShieldHit(float _damage)
-    {
-        shield -= _damage;
-    }
-
-    /// <summary>
-    /// If we run out of shield, it goes down for a long time and
-    /// </summary>
-    public void ShieldBreak()
-    {
-        if (!shieldBroken)
-        {
-            shieldBroken = true;
-            Jam(0.5f);
-            //Debug.Log("Shield Broken");
-            ShieldsDown();
-            shieldBar.ShieldBreak();
-            StartCoroutine(ShieldRecharge(10.0f));
-        }
-    }
-
-    /// <summary>
-    /// Scales shield amount to timer
-    /// </summary>
-    /// <param name="time"></param>
-    /// <returns></returns>
-    protected IEnumerator ShieldRecharge(float time)
-    {
-        var timer = 0.0f;
-        shield = 0.0f;
-        while (timer < time)
-        {
-            timer += Time.deltaTime;
-            var timerPercent = timer / time;
-            shield = timerPercent * maxShield;
-            shieldBar.SetValue(shield);
-            yield return null;
-        }
-        shieldBroken = false;
-        shield = maxShield;
-        shieldBar.SetValue(shield);
-        shieldBar.ShieldRestore();
-    }
-
-    /// <summary>
-    /// Turns off shield
-    /// </summary>
-    public void ShieldsDown()
-    {
-        if (shielded)
-        {
-            shielded = false;
-            Destroy(shieldObject);
-        }
-    }
-
-    private IEnumerator ShieldEvaluate()
-    {
-        while (alive)
-        {
-            //If we don't have our shield broken, shield behaves as normal
-            if (!shieldBroken)
-            {
-            }
-
-            yield return null;
-        }
-    }
-
-    #endregion Shield Mechanics
 
     #region Effects and indicators
 
@@ -838,77 +986,6 @@ public class BasicShip : MonoBehaviour
     }
 
     #endregion Effects and indicators
-
-    #region Heal
-
-    /// <summary>
-    /// Begins healing process
-    /// </summary>
-    public virtual void HealTrigger()
-    {
-        StartCoroutine(HealDelay());
-        SpecialIndicator(Color.green, healDelay);
-    }
-
-    public IEnumerator HealDelay()
-    {
-        healing = true;
-        var timer = healDelay;
-        while (timer > 0.0f)
-        {
-            timer -= Time.deltaTime;
-            yield return null;
-        }
-        Heal();
-    }
-
-    /// <summary>
-    /// Interrupts heal, destroys warning flare.
-    /// </summary>
-    public void HealInterrupt()
-    {
-        healing = false;
-        Destroy(warningFlareRuntimeObject);
-    }
-
-    /// <summary>
-    /// Heals shield for % of missing health, determined by healPercent modifier attribute
-    /// </summary>
-    public virtual void Heal()
-    {
-        if (healing)
-        {
-            shield = CalculateHeal(shield, maxShield);
-            shieldBar.SetValue(shield);
-
-            health = CalculateHeal(health, maxHealth);
-            healthBar.SetValue(health);
-
-            healing = false;
-
-            var healingEffect = Instantiate(healEffect, transform.position, Quaternion.identity, this.transform);
-            healingEffect.transform.SetParent(this.transform);
-        }
-        ChargeShield(shieldCooldown);
-
-        ///Calculates the amount to heal
-        float CalculateHeal(float current, float max)
-        {
-            var newCurrent = current;
-            var missing = max - current;
-            var amount = healPercent * missing;
-
-            newCurrent += amount;
-            if (newCurrent > max)
-            {
-                newCurrent = max;
-            }
-
-            return newCurrent;
-        }
-    }
-
-    #endregion Heal
 
     #region Death
 

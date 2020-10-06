@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba4d499d2b74c934fb549b6cc19ed65c, type: 3}
   m_Name: Player Ship Attributes
   m_EditorClassIdentifier: 
-  baseHealth: 75
-  level2Health: 100
-  level3Health: 150
+  baseHealth: 50
+  level2Health: 75
+  level3Health: 100
   baseShield: 10
   level2Shield: 20
   level3Shield: 35
@@ -30,9 +30,9 @@ MonoBehaviour:
   baseMaxShots: 15
   level2MaxShots: 20
   level3MaxShots: 25
-  baseHeavyAttackDamage: 25
-  level2HeavyAttackDamage: 50
-  level3HeavyAttackDamage: 75
+  baseHeavyAttackDamage: 20
+  level2HeavyAttackDamage: 40
+  level3HeavyAttackDamage: 80
   baseHeavyAttackDelay: 2
   level2HeavyAttackDelay: 1.5
   level3HeavyAttackDelay: 0.924

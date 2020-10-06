@@ -63,6 +63,7 @@ public class basicButton : MonoBehaviour
     public void HoldButton()
     {
         buttonHeld = true;
+        button.image.color = Color.green;
     }
 
     /// <summary>
@@ -71,6 +72,7 @@ public class basicButton : MonoBehaviour
     public void ReleaseButton()
     {
         buttonHeld = false;
+        button.image.color = baseColor;
         //Debug.Log("Released button");
     }
 

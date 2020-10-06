@@ -326,6 +326,7 @@ public class PlayerShip : BasicShip
     /// </summary>
     public void AbsorbEnd(GameObject absorbEffect)
     {
+        absorbing = false;
         Destroy(absorbEffect);
         if (retaliate)
         {
@@ -341,7 +342,7 @@ public class PlayerShip : BasicShip
             }
         }
         retaliate = false;
-        ChargeShield(shieldCooldown);
+        ShieldsUp();
     }
 
     /// <summary>
@@ -415,7 +416,7 @@ public class PlayerShip : BasicShip
             affect.CreatePastEvent(healValence, null, healTension, 10.0f);
         }
 
-        ChargeShield(shieldCooldown);
+        ShieldsUp();
     }
 
     /// <summary>

@@ -15,8 +15,8 @@ public class healthBarAnimator : MonoBehaviour
 
     public bool textDisplay = false;
 
-    public int max { get; private set; }
-    public int health { get; private set; }
+    public float max { get; private set; }
+    public float health { get; private set; }
 
     private void Awake()
     {
@@ -24,26 +24,13 @@ public class healthBarAnimator : MonoBehaviour
         fillCol = fill.color;
     }
 
-    public void Refresh(int _max, int _value)
+    public void Refresh(float _max, float _value)
     {
         max = _max;
         health = _value;
         healthBar.maxValue = _max;
-        healthBar.value = _value;
 
-        setHealthText(health);
         SetHealthColor(_value);
-    }
-
-    public void Refresh(float _max, float _value)
-    {
-        max = Mathf.RoundToInt(_max);
-        health = Mathf.RoundToInt(_value);
-        healthBar.maxValue = _max;
-        healthBar.value = _value;
-
-        setHealthText(health);
-        SetHealthColor(health);
     }
 
     public void deActivate()
@@ -53,16 +40,15 @@ public class healthBarAnimator : MonoBehaviour
 
     public void SetValue(float _value)
     {
-        var value = Mathf.RoundToInt(_value);
-        if (health != value)
+        if (health != _value)
         {
-            health = value;
+            health = _value;
         }
     }
 
-    protected void SetHealthColor(int _value)
+    protected void SetHealthColor(float _value)
     {
-        var healthPercentage = (float)_value / (float)max;
+        var healthPercentage = _value / max;
         var col = Color.Lerp(emptyColor, fullColor, healthPercentage);
 
         fill.color = col;
@@ -77,15 +63,6 @@ public class healthBarAnimator : MonoBehaviour
         fill.color = col;
     }
 
-    private void setHealthText(int _value)
-    {
-        if (textDisplay)
-        {
-            healthText.text = _value + "/" + max;
-        }
-        else { healthText.text = ""; }
-    }
-
     private void Update()
     {
         Evaluate();
@@ -96,30 +73,18 @@ public class healthBarAnimator : MonoBehaviour
     /// </summary>
     protected virtual void Evaluate()
     {
-        if (health > 0)
+        if (health > 0.0f)
         {
             if (!gameObject.activeInHierarchy) { gameObject.SetActive(true); }
-            if (healthBar.value - health < -1)
-            {
-                healthBar.value += adjustSpeed * Time.deltaTime;
-                setHealthText(Mathf.RoundToInt(healthBar.value));
-                SetHealthColor(Mathf.RoundToInt(healthBar.value));
-            }
-            else if (healthBar.value - health > 1)
-            {
-                healthBar.value -= adjustSpeed * Time.deltaTime;
-                setHealthText(Mathf.RoundToInt(healthBar.value));
-                SetHealthColor(Mathf.RoundToInt(healthBar.value));
-            }
-            else { }
+            healthBar.value = Mathf.MoveTowards(healthBar.value, health, adjustSpeed);
+            SetHealthColor(healthBar.value);
         }
         else
         {
-            if (healthBar.value > 0)
+            if (healthBar.value > 0f)
             {
-                healthBar.value -= adjustSpeed * 10.0f * Time.deltaTime;
-                setHealthText(Mathf.RoundToInt(healthBar.value));
-                SetHealthColor(Mathf.RoundToInt(healthBar.value));
+                healthBar.value = Mathf.MoveTowards(healthBar.value, health, adjustSpeed * 10);
+                SetHealthColor(healthBar.value);
             }
         }
     }
