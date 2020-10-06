@@ -409,19 +409,24 @@ public class GameManager : MonoBehaviour
 
         void StageOneLogic()
         {
-            if (encounter == 0)
-            {
-                encounter++;
-                stageManager.setEncounterProgress(1);
-                AdvanceToNextWave();
-            }
-            else
-            {
-                encounter = 0;
-                stage = 2;
-                EndCombat();
-                warpNext = true;
-            }
+            //if (encounter == 0)
+            //{
+            encounter = 0;
+            stage = 2;
+            EndCombat();
+            warpNext = true;
+            //}
+            //    encounter++;
+            //    stageManager.setEncounterProgress(1);
+            //    AdvanceToNextWave();
+            //}
+            //else
+            //{
+            //    encounter = 0;
+            //    stage = 2;
+            //    EndCombat();
+            //    warpNext = true;
+            //}
         }
 
         void StageTwoLogic()
@@ -432,13 +437,13 @@ public class GameManager : MonoBehaviour
                 stageManager.setEncounterProgress(1);
                 AdvanceToNextWave();
             }
-            else if (encounter == 1)
-            {
-                encounter++;
-                stageManager.setEncounterProgress(2);
-                AdvanceToNextWave();
-                warpNext = false;
-            }
+            //else if (encounter == 1)
+            //{
+            //    encounter++;
+            //    stageManager.setEncounterProgress(2);
+            //    AdvanceToNextWave();
+            //    warpNext = false;
+            //}
             else
             {
                 encounter = 0;
@@ -488,37 +493,37 @@ public class GameManager : MonoBehaviour
 
         void StageOneEncounterLogic()
         {
-            if (encounter == 0)
-            {
-                stageManager.setWaveLength(2);
-                stageManager.setText("1-1");
-                SpawnEnemy(enemyType.main, false);
-            }
-            else
-            {
-                stageManager.setText("1-2");
-                SpawnEnemy(enemyType.main, true);
-            }
+            //if (encounter == 0)
+            //  {
+            stageManager.setWaveLength(1);
+            stageManager.setText("Stage 1");
+            SpawnEnemy(enemyType.main, false);
+            //   }
+            //else
+            //{
+            //    stageManager.setText("1-2");
+            //    SpawnEnemy(enemyType.main, true);
+            //}
         }
 
         void StageTwoEncounterLogic()
         {
             if (encounter == 0)
             {
-                stageManager.setWaveLength(3);
+                stageManager.setWaveLength(2);
                 stageManager.setText("2-1");
                 SpawnEnemy(enemyType.main, false);
             }
-            else if (encounter == 1)
-            {
-                stageManager.setText("2-2");
-                SpawnEnemy(enemyType.main, true);
-            }
             else
             {
-                stageManager.setText("2-3");
+                stageManager.setText("2-2");
                 SpawnEnemy(enemyType.miniboss, true);
             }
+            //else
+            //{
+            //    stageManager.setText("2-3");
+            //    SpawnEnemy(enemyType.miniboss, true);
+            //}
         }
 
         void StageThreeEncounterLogic()
