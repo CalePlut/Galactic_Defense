@@ -15,6 +15,7 @@ public class SceneControl : MonoBehaviour
 
     public void menu()
     {
+        SceneManager.LoadScene("Menu");
     }
 
     // Start is called before the first frame update

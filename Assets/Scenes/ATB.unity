@@ -12550,7 +12550,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -12562,9 +12562,9 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
-  m_textAlignment: 514
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
+  m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -19730,7 +19730,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 500, y: 250}
+  m_AnchoredPosition: {x: 0, y: 100}
   m_SizeDelta: {x: 300, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &640067489
@@ -22887,9 +22887,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "<color=red>Alert!</color>\n An ancient derelict fleet has re-awakened,
+  m_text: "<color=red><b>Alert!</b></color>\n An ancient derelict fleet has re-awakened,
     under the command of a malfunctioning AI\r\n\n\nYou command the <color=blue><i>Vatic
-    Savate</i></color>: A lightly armed exploration vessel \n\nThe <color=blue><i>Vatic
+    Savate</i></color> - A lightly armed exploration vessel \n\nThe <color=blue><i>Vatic
     Savate</i></color> is the only ship fast enough to respond to this imminent threat\r"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4ab1c744477e3a44bbdf737f6d378af, type: 2}
@@ -26095,7 +26095,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -26107,9 +26107,9 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
-  m_textAlignment: 514
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
+  m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -31204,7 +31204,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 56.89, y: 24.01}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1341590179
 MonoBehaviour:
@@ -31251,21 +31251,21 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
+  m_fontSize: 124
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMax: 124
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
-  m_textAlignment: 514
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
+  m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -32133,7 +32133,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -32145,9 +32145,9 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 256
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
-  m_textAlignment: 514
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
+  m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -32658,7 +32658,7 @@ MonoBehaviour:
       m_Flags: 0
     - m_Name: 
       m_Id: 390827f7-4573-4dfe-85c7-ead0fe71d3f2
-      m_Path: <XInputController>/buttonSouth
+      m_Path: <XInputController>/buttonNorth
       m_Interactions: 
       m_Processors: 
       m_Groups: 
@@ -34053,6 +34053,7 @@ GameObject:
   - component: {fileID: 1485367299}
   - component: {fileID: 1485367298}
   - component: {fileID: 1485367297}
+  - component: {fileID: 1485367301}
   m_Layer: 5
   m_Name: Retry
   m_TagString: Untagged
@@ -34077,10 +34078,10 @@ RectTransform:
   m_Father: {fileID: 1984894409}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -500, y: 250}
-  m_SizeDelta: {x: 300, y: 100}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 500, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &1485367297
 Animator:
@@ -34195,6 +34196,34 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1485367295}
   m_CullTransparentMesh: 0
+--- !u!114 &1485367301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1485367295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a07fea862e4dcd47a05477d87d10db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  press:
+    m_Name: Press
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: c8eb6548-b1e8-4720-a894-69cf40e0f557
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 114cec89-1d8f-4b55-9afa-a3ad6f2b46de
+      m_Path: <XInputController>/buttonSouth
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Press
+      m_Flags: 0
 --- !u!114 &1486207656 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7411581884655697157, guid: e788db6f9a98ecb4d9efbfff3cd42ec0,
@@ -42472,7 +42501,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -43800,11 +43829,20 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "In addition to shield, all ships have <color=red>health</color> <sprite=0
-    color=#00ff00>\n\nIf you are hit by any attack while your <color=blue>shield</color>
-    is down, your <color=red>health</color> <sprite=0 color=#00ff00> will decrease\n
-    \nIf your <color=red>health</color> <sprite=0 color=#00ff00> reaches 0, you lose
-    the game\r\n\n"
+  m_text: 'In addition to shield, all ships have <color=red>health</color> <sprite=0
+    color=#00ff00>
+
+
+    If you are hit by any attack while your <color=blue>shield</color>
+    is down, your <color=red>health</color> <sprite=0 color=#00ff00> will decrease
+
+
+    If
+    your <color=red>health</color> <sprite=0 color=#00ff00> reaches 0, you lose the
+    game
+
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4ab1c744477e3a44bbdf737f6d378af, type: 2}
   m_sharedMaterial: {fileID: 9208401273420773845, guid: d4ab1c744477e3a44bbdf737f6d378af,

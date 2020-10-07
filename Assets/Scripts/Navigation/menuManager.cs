@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -6,8 +7,11 @@ public class menuManager : MonoBehaviour
 {
     public GameObject loadPanel;
 
-    public void Play()
+    public List<GameObject> toHide;
+
+    public void Play(bool tutorial)
     {
+        GameManager.tutorial = tutorial;
         StartCoroutine(loadingScreen("ATB"));
     }
 
@@ -29,9 +33,21 @@ public class menuManager : MonoBehaviour
 
     private IEnumerator loadingScreen(string sceneName)
     {
+        foreach (GameObject obj in toHide)
+        {
+            obj.SetActive(false);
+        }
         loadPanel.SetActive(true);
+
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
 
         while (!asyncLoad.isDone) { yield return null; }
+    }
+
+    private void Start()
+    {
+        var music = GetComponent<EliasPlayer>();
+
+        music.StartEliasWithActionPreset("Menu");
     }
 }
