@@ -1,7 +1,49 @@
 fileFormatVersion: 2
-guid: d958020621026f94aa19f97cc9d5f23f
+guid: eb718d5c3c7455a4aac462939206a2a0
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: 8777867290215700285
+    second: shieldcomb_0
+  - first:
+      213: -415560832881015807
+    second: shieldcomb_1
+  - first:
+      213: 5113755473714326252
+    second: shieldcomb_2
+  - first:
+      213: -7334496087646571864
+    second: shieldcomb_3
+  - first:
+      213: -7652726283483854418
+    second: shieldcomb_4
+  - first:
+      213: 4821936720562008009
+    second: shieldcomb_5
+  - first:
+      213: -1438540344788160444
+    second: shieldcomb_6
+  - first:
+      213: 3339006432336826633
+    second: shieldcomb_7
+  - first:
+      213: -4199139892968889761
+    second: shieldcomb_8
+  - first:
+      213: 4100593609303305780
+    second: shieldcomb_9
+  - first:
+      213: 5023137444620399218
+    second: shieldcomb_10
+  - first:
+      213: 9028310014137201573
+    second: shieldcomb_11
+  - first:
+      213: 6057733698649726799
+    second: shieldcomb_12
+  - first:
+      213: 1300045114967062266
+    second: shieldcomb_13
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -41,14 +83,14 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spriteGenerateFallbackPhysicsShape: 1
+  spriteGenerateFallbackPhysicsShape: 0
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
@@ -112,7 +154,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
-    buildTarget: WebGL
+    buildTarget: Windows Store Apps
     maxTextureSize: 8192
     resizeAlgorithm: 0
     textureFormat: -1
@@ -124,7 +166,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
-    buildTarget: Windows Store Apps
+    buildTarget: WebGL
     maxTextureSize: 8192
     resizeAlgorithm: 0
     textureFormat: -1
@@ -137,7 +179,28 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: shieldcomb_0
+      rect:
+        serializedVersion: 2
+        x: 36
+        y: 20
+        width: 446
+        height: 469
+      alignment: 1
+      pivot: {x: 0, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d37d3d61bcf31d970800000000000000
+      internalID: 8777867290215700285
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []

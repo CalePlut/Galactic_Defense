@@ -58,7 +58,7 @@ public class PlayerShip : BasicShip
 
     public basicButton absorbButton;
     public basicButton healButton;
-    public basicButton ultimateButton;
+    public basicButton heavyAttackButton;
     public buttonManager buttonManager;
 
     #endregion Button references
@@ -159,6 +159,22 @@ public class PlayerShip : BasicShip
         {
             return base.myTarget();
         }
+    }
+
+    public void StartCombat()
+    {
+        absorbButton.StartCombat();
+        healButton.StartCombat();
+        attackButton.StartCombat();
+        heavyAttackButton.StartCombat();
+    }
+
+    public void EndCombat()
+    {
+        absorbButton.EndCombat();
+        healButton.EndCombat();
+        attackButton.EndCombat();
+        heavyAttackButton.EndCombat();
     }
 
     #endregion Setup and bookkeeping
@@ -448,15 +464,16 @@ public class PlayerShip : BasicShip
     /// </summary>
     public void HeavyAttackButtonCheck()
     {
-        if (ultimateButton.CanActivate())
+        if (heavyAttackButton.CanActivate())
         {
-            ultimateButton.sendToButton(heavyAttackCooldown);
+            heavyAttackButton.sendToButton(heavyAttackCooldown);
         }
     }
 
     public override void HeavyAttackTrigger()
     {
         base.HeavyAttackTrigger();
+        if (attacking != null) { InterruptFiring(); }
         specialFiringEvent = SpecialProspectiveEvent(heavyAttackDelay);
         affect.AddUpcomingPlayerAttack(specialFiringEvent);
         TriggerGlobalCooldown();

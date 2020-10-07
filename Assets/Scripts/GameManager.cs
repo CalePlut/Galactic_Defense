@@ -32,6 +32,7 @@ public class GameManager : MonoBehaviour
     private environmentAudio gmAudio;
 
     public stageManager stageManager;
+    public TutorialManager tutorialManager;
 
     //  public TargetManager targets;
 
@@ -69,8 +70,6 @@ public class GameManager : MonoBehaviour
     private bool inCombat;
 
     [Header("Gameplay values")]
-    public static bool autoPause = true;
-
     public static int stage = 1, encounter = 0;
 
     public static bool tutorial = false;
@@ -79,9 +78,9 @@ public class GameManager : MonoBehaviour
 
     #region Enemies and Waves
 
-    private List<Turret> turrets;
-
     [Header("Enemies")]
+    public GameObject tutorialEnemy;
+
     public GameObject standardEnemy;
 
     public GameObject miniboss;
@@ -209,6 +208,31 @@ public class GameManager : MonoBehaviour
         StartCombat();
     }
 
+    /// <summary>
+    /// Called during tutorial, exits warp and sets up dummy versions of enemies for tutorial
+    /// </summary>
+    public void TutorialExit()
+    {
+        //Disable menus
+        mapMenu.SetActive(false);
+
+        //Calls special effects
+        anim.Play("cameraExitWarp");
+        Destroy(warpEffect);
+        sky.exitWarp();
+        warpFlash.flash();
+        gmAudio.exitHyperspace();
+        Player.ShieldsUp();
+
+        //Re-activates hidden UI
+        foreach (GameObject hide in toHide)
+        {
+            hide.SetActive(true);
+        }
+
+        tutorialCombatStart();
+    }
+
     private IEnumerator victoryWarp()
     {
         //First we do the special effects
@@ -271,7 +295,7 @@ public class GameManager : MonoBehaviour
     public void pauseGame()
     {
         Time.timeScale = 0.0025f;
-        pauseText.SetActive(true);
+        // pauseText.SetActive(true);
         paused = true;
         //pauseButton.pauseG();
     }
@@ -282,7 +306,7 @@ public class GameManager : MonoBehaviour
     public void resumeGame()
     {
         Time.timeScale = 1.0f;
-        pauseText.SetActive(false);
+        //pauseText.SetActive(false);
         paused = false;
         // pauseButton.resume();
     }
@@ -308,6 +332,7 @@ public class GameManager : MonoBehaviour
 
     public void StartCombat()
     {
+        Player.StartCombat();
         inCombat = true;
         StartCoroutine(CombatAffectUpdate());
         affect.StartCombat();
@@ -315,6 +340,36 @@ public class GameManager : MonoBehaviour
         SetMood();
 
         EnemyCompositionSetup();
+
+        void SetMood()
+        {
+            if (stage == 1)
+            {
+                affect.SetMood(OrdinalAffect.medium, OrdinalAffect.low, OrdinalAffect.medium);
+            }
+            else if (stage == 2)
+            {
+                affect.SetMood(OrdinalAffect.medium, OrdinalAffect.medium, OrdinalAffect.medium);
+            }
+            else if (stage == 3)
+            {
+                affect.SetMood(OrdinalAffect.medium, OrdinalAffect.high, OrdinalAffect.medium);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Called by tutorialExit - follows most of startcombat, but doesn't spawn normal enemies.
+    /// </summary>
+    private void tutorialCombatStart()
+    {
+        inCombat = true;
+        StartCoroutine(CombatAffectUpdate());
+        affect.StartCombat();
+        music.RunActionPreset("StartCombat");
+        SetMood();
+
+        tutorialEnemyCompositionSetup();
 
         void SetMood()
         {
@@ -359,6 +414,7 @@ public class GameManager : MonoBehaviour
         inCombat = false;
         affect.EndCombat();
         stageManager.RemoveUI();
+        Player.EndCombat();
 
         StartCoroutine(victoryWarp());
     }
@@ -542,6 +598,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void tutorialEnemyCompositionSetup()
+    {
+        stageManager.setWaveLength(1);
+        stageManager.setText("Tutorial");
+        SpawnTutorialEnemy();
+    }
+
     private void SpawnEnemy(enemyType type, bool warp)
     {
         //Selects appropriate main enemy
@@ -562,6 +625,22 @@ public class GameManager : MonoBehaviour
         {
             StartCoroutine(currentEnemy.FlyIn());
         }
+    }
+
+    private void SpawnTutorialEnemy()
+    {        //Selects appropriate main enemy
+        var enemyToInstantiate = tutorialEnemy;
+
+        //Instantiates wave, sets position, and gets reference
+        var newEnemy = GameObject.Instantiate(enemyToInstantiate);
+        newEnemy.transform.position = spawnPoint.transform.position;
+        currentEnemy = newEnemy.GetComponent<EnemyShip>();
+        currentEnemy.tutorialSetup();
+        currentEnemy.ShieldsUp();
+
+        Player.SetEnemyReference(newEnemy);
+        affect.SetEnemy(currentEnemy);
+        GameObject.Find("Tutorial").GetComponent<TutorialManager>().SetTutorialEnemy(currentEnemy);
     }
 
     /// <summary>
@@ -596,7 +675,11 @@ public class GameManager : MonoBehaviour
         affect = GetComponent<AffectManager>();
 
         EnterHyperspace();
-        mapMenu.SetActive(true);
+        if (tutorial) { tutorialManager.StartTutorial(); }
+        else
+        {
+            mapMenu.SetActive(true);
+        }
         stage = 1;
         encounter = 0;
 

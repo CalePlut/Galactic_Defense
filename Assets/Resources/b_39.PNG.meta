@@ -1,7 +1,10 @@
 fileFormatVersion: 2
-guid: d958020621026f94aa19f97cc9d5f23f
+guid: 40531094a98bbf1428a4e615b911bc02
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: -3240547131431264971
+    second: b_39_0
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -41,7 +44,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -112,7 +115,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
-    buildTarget: WebGL
+    buildTarget: Windows Store Apps
     maxTextureSize: 8192
     resizeAlgorithm: 0
     textureFormat: -1
@@ -124,7 +127,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
-    buildTarget: Windows Store Apps
+    buildTarget: WebGL
     maxTextureSize: 8192
     resizeAlgorithm: 0
     textureFormat: -1
@@ -137,11 +140,32 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: b_39_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 53dd0299d834703d0800000000000000
+      internalID: -3240547131431264971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 4e2a30747f900014f9e5429c9bff34a0
     internalID: 0
     vertices: []
     indices: 

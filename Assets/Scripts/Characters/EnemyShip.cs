@@ -54,6 +54,15 @@ public class EnemyShip : BasicShip
     }
 
     /// <summary>
+    /// Sets up important ship stuff, but doesn't start firing at all - used for tutorial
+    /// </summary>
+    public void tutorialSetup()
+    {
+        base.ShipSetup();
+        SetReferences();
+    }
+
+    /// <summary>
     /// Animates the opening of the warp gate and the flying in, starts setup block.
     /// </summary>
     /// <returns></returns>

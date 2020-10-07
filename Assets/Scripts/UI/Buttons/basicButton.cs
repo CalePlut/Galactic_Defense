@@ -38,13 +38,19 @@ public class basicButton : MonoBehaviour
     private void Start()
     {
         baseColor = fill.color;
-        if (!GameManager.tutorial)
-        {
-            hotKey.Enable();
-        }
 
         button = GetComponent<Button>();
         queueIndicator = GetComponent<Outline>();
+    }
+
+    public void StartCombat()
+    {
+        hotKey.Enable();
+    }
+
+    public void EndCombat()
+    {
+        hotKey.Disable();
     }
 
     #region Activation and Behaviour
