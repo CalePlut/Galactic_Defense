@@ -616,8 +616,8 @@ GameObject:
   - component: {fileID: 140595289}
   - component: {fileID: 140595288}
   - component: {fileID: 140595293}
-  - component: {fileID: 140595292}
   - component: {fileID: 140595291}
+  - component: {fileID: 140595292}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -718,7 +718,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   file: Galactic Defense Score.mepro
-  actionPreset: 13
+  actionPreset: 28
   customPreset:
     flags: 0
     preWaitTimeMs: 0
@@ -733,7 +733,7 @@ MonoBehaviour:
   eliasFramesPerBuffer: 4096
   eliasCachePageCount: 128
   eliasCachePageSize: 4096
-  eliasSampleRate: -1
+  eliasSampleRate: 44100
   eliasChannelCount: 0
   playOnStart: 1
   deserializeProjectOnStart: 1
