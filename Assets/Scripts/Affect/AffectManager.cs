@@ -265,9 +265,9 @@ public class AffectManager : MonoBehaviour
 
             void emotionDebug()
             {
-                Grapher.Log(valenceValue, "Valence");
-                Grapher.Log(arousalValue, "Arousal");
-                Grapher.Log(tensionValue, "Tension");
+                //   Grapher.Log(valenceValue, "Valence");
+                //  Grapher.Log(arousalValue, "Arousal");
+                //    Grapher.Log(tensionValue, "Tension");
             }
             yield return null;
         }
@@ -317,10 +317,10 @@ public class AffectManager : MonoBehaviour
         var negativeThreshold = affectVars.negativeThreshold;
         var strongNegativeThreshold = affectVars.strongNegativeThreshold;
 
-        Grapher.Log(positiveThreshold, "Positive threshold");
-        Grapher.Log(strongThreshold, "Strong positive threshold");
-        Grapher.Log(negativeThreshold, "Negative Threshold");
-        Grapher.Log(strongNegativeThreshold, "Strong negative threshold");
+        // Grapher.Log(positiveThreshold, "Positive threshold");
+        //     Grapher.Log(strongThreshold, "Strong positive threshold");
+        // Grapher.Log(negativeThreshold, "Negative Threshold");
+        //  Grapher.Log(strongNegativeThreshold, "Strong negative threshold");
 
         //First, process strong emotions
         if (emotionValue > strongThreshold)

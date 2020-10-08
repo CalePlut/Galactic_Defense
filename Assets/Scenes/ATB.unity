@@ -5182,6 +5182,7 @@ RectTransform:
   - {fileID: 463060949}
   - {fileID: 1414526630}
   - {fileID: 1487536125}
+  - {fileID: 1540196364}
   m_Father: {fileID: 671322361}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5235,7 +5236,7 @@ MonoBehaviour:
       m_Flags: 0
     - m_Name: 
       m_Id: 7deaed9f-d389-46e0-b5d0-1e384442a6d4
-      m_Path: <XInputController>/buttonWest
+      m_Path: <Gamepad>/buttonWest
       m_Interactions: 
       m_Processors: 
       m_Groups: 
@@ -13464,6 +13465,7 @@ GameObject:
   - component: {fileID: 222898245}
   - component: {fileID: 222898244}
   - component: {fileID: 222898247}
+  - component: {fileID: 222898248}
   m_Layer: 5
   m_Name: upgradeDefense
   m_TagString: Untagged
@@ -13605,6 +13607,34 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &222898248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 222898242}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a07fea862e4dcd47a05477d87d10db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  press:
+    m_Name: Press
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 66f8f39f-1687-4b9e-9098-fce1e3a1ca29
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: ff9a8c7d-fe65-49a2-822c-6e21fcc8658a
+      m_Path: <XInputController>/buttonSouth
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Press
+      m_Flags: 0
 --- !u!114 &231688344 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7411581884655697157, guid: e788db6f9a98ecb4d9efbfff3cd42ec0,
@@ -13994,6 +14024,7 @@ GameObject:
   - component: {fileID: 269564696}
   - component: {fileID: 269564695}
   - component: {fileID: 269564694}
+  - component: {fileID: 269564698}
   m_Layer: 5
   m_Name: upgradeAttack
   m_TagString: Untagged
@@ -14135,6 +14166,34 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 269564692}
   m_CullTransparentMesh: 0
+--- !u!114 &269564698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 269564692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a07fea862e4dcd47a05477d87d10db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  press:
+    m_Name: Press
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 730481ca-79f1-495e-a371-c4d4ead766ff
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 674169ae-b9ba-4619-8a10-5f5005985fb8
+      m_Path: <XInputController>/buttonWest
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Press
+      m_Flags: 0
 --- !u!1 &272056716
 GameObject:
   m_ObjectHideFlags: 0
@@ -23856,6 +23915,7 @@ GameObject:
   - component: {fileID: 933110496}
   - component: {fileID: 933110495}
   - component: {fileID: 933110494}
+  - component: {fileID: 933110498}
   m_Layer: 5
   m_Name: upgradeSkills
   m_TagString: Untagged
@@ -23997,6 +24057,34 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 933110492}
   m_CullTransparentMesh: 0
+--- !u!114 &933110498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 933110492}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a07fea862e4dcd47a05477d87d10db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  press:
+    m_Name: Press
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 0b4d8bbe-862a-4763-aad6-6411e43f96a0
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 6d6f8919-028e-4560-9baa-4c0bfbe70742
+      m_Path: <XInputController>/buttonEast
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Press
+      m_Flags: 0
 --- !u!1 &933915924
 GameObject:
   m_ObjectHideFlags: 0
@@ -27084,6 +27172,152 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1053450941}
   m_CullTransparentMesh: 0
+--- !u!1 &1053560510
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1053560511}
+  - component: {fileID: 1053560513}
+  - component: {fileID: 1053560512}
+  - component: {fileID: 1053560514}
+  m_Layer: 5
+  m_Name: ButtonPrompt
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1053560511
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1053560510}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1476275552}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -15, y: -15}
+  m_SizeDelta: {x: 25, y: 25}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1053560512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1053560510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: a1a7f9ec30b21694db7dee0b563a6e00, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1053560513
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1053560510}
+  m_CullTransparentMesh: 0
+--- !u!114 &1053560514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1053560510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 729cf8726569dfb48a54061e5c3d1c56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  KBAM:
+    m_Name: KBAM
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 89dfe0ba-da36-4cdb-9ecf-56f09bdbda87
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 0cd4b6e1-60df-4b4a-be60-6f7c0ff9adf0
+      m_Path: <Keyboard>/anyKey
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: KBAM
+      m_Flags: 0
+  Controller:
+    m_Name: Controller
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: cfad65c4-4e07-48d7-aaa5-ceea626d1f0c
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 47606cfc-536c-413d-ba45-04e3a403898c
+      m_Path: <Gamepad>/buttonWest
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Controller
+      m_Flags: 0
+    - m_Name: 
+      m_Id: 6603b291-397c-458a-b45a-5551f728f144
+      m_Path: <Gamepad>/buttonSouth
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Controller
+      m_Flags: 0
+    - m_Name: 
+      m_Id: 11de5bf7-4fed-410d-9638-6df7874c1db2
+      m_Path: <Gamepad>/buttonNorth
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Controller
+      m_Flags: 0
+    - m_Name: 
+      m_Id: 8236e79b-b6b6-4c73-8d94-4b5e9108ee84
+      m_Path: <Gamepad>/buttonEast
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Controller
+      m_Flags: 0
+  kbamPrompt: {fileID: 21300000, guid: 8c18ee536217be74ab137025db42885b, type: 3}
+  controllerPrompt: {fileID: 21300000, guid: a1a7f9ec30b21694db7dee0b563a6e00, type: 3}
 --- !u!1001 &1060484052
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27479,6 +27713,152 @@ MonoBehaviour:
       m_Groups: 
       m_Action: Press
       m_Flags: 0
+--- !u!1 &1076176797
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1076176798}
+  - component: {fileID: 1076176800}
+  - component: {fileID: 1076176799}
+  - component: {fileID: 1076176801}
+  m_Layer: 5
+  m_Name: ButtonPrompt
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1076176798
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1076176797}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2100624337}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -15, y: -15}
+  m_SizeDelta: {x: 25, y: 25}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1076176799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1076176797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: be5564916c412ea49914ae55a33b12f6, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1076176800
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1076176797}
+  m_CullTransparentMesh: 0
+--- !u!114 &1076176801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1076176797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 729cf8726569dfb48a54061e5c3d1c56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  KBAM:
+    m_Name: KBAM
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 89dfe0ba-da36-4cdb-9ecf-56f09bdbda87
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 0cd4b6e1-60df-4b4a-be60-6f7c0ff9adf0
+      m_Path: <Keyboard>/anyKey
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: KBAM
+      m_Flags: 0
+  Controller:
+    m_Name: Controller
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: cfad65c4-4e07-48d7-aaa5-ceea626d1f0c
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 47606cfc-536c-413d-ba45-04e3a403898c
+      m_Path: <Gamepad>/buttonWest
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Controller
+      m_Flags: 0
+    - m_Name: 
+      m_Id: 6603b291-397c-458a-b45a-5551f728f144
+      m_Path: <Gamepad>/buttonSouth
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Controller
+      m_Flags: 0
+    - m_Name: 
+      m_Id: 11de5bf7-4fed-410d-9638-6df7874c1db2
+      m_Path: <Gamepad>/buttonNorth
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Controller
+      m_Flags: 0
+    - m_Name: 
+      m_Id: 8236e79b-b6b6-4c73-8d94-4b5e9108ee84
+      m_Path: <Gamepad>/buttonEast
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Controller
+      m_Flags: 0
+  kbamPrompt: {fileID: 21300000, guid: c6f86db7e0024a74e996f1f9e74779d6, type: 3}
+  controllerPrompt: {fileID: 21300000, guid: be5564916c412ea49914ae55a33b12f6, type: 3}
 --- !u!1 &1084329383
 GameObject:
   m_ObjectHideFlags: 0
@@ -32620,6 +33000,7 @@ RectTransform:
   - {fileID: 963285565}
   - {fileID: 1296869635}
   - {fileID: 1618303634}
+  - {fileID: 1791165795}
   m_Father: {fileID: 671322361}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -33800,7 +34181,7 @@ MonoBehaviour:
       m_Flags: 0
     - m_Name: 
       m_Id: 1c27d318-9ce3-44e3-b8f1-41a44ae4bdbf
-      m_Path: <XInputController>/buttonNorth
+      m_Path: <XInputController>/buttonSouth
       m_Interactions: 
       m_Processors: 
       m_Groups: 
@@ -33967,6 +34348,7 @@ RectTransform:
   - {fileID: 1208302018}
   - {fileID: 1743980001}
   - {fileID: 2062722504}
+  - {fileID: 1053560511}
   m_Father: {fileID: 671322361}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -35159,6 +35541,152 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1538692781}
   m_CullTransparentMesh: 0
+--- !u!1 &1540196363
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1540196364}
+  - component: {fileID: 1540196366}
+  - component: {fileID: 1540196365}
+  - component: {fileID: 1540196367}
+  m_Layer: 5
+  m_Name: ButtonPrompt
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1540196364
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1540196363}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4715087}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -15, y: -15}
+  m_SizeDelta: {x: 25, y: 25}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1540196365
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1540196363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: b47ef543d7ce18543a1c00f059288c53, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1540196366
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1540196363}
+  m_CullTransparentMesh: 0
+--- !u!114 &1540196367
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1540196363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 729cf8726569dfb48a54061e5c3d1c56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  KBAM:
+    m_Name: KBAM
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 89dfe0ba-da36-4cdb-9ecf-56f09bdbda87
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 0cd4b6e1-60df-4b4a-be60-6f7c0ff9adf0
+      m_Path: <Keyboard>/anyKey
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: KBAM
+      m_Flags: 0
+  Controller:
+    m_Name: Controller
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: cfad65c4-4e07-48d7-aaa5-ceea626d1f0c
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 47606cfc-536c-413d-ba45-04e3a403898c
+      m_Path: <Gamepad>/buttonWest
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Controller
+      m_Flags: 0
+    - m_Name: 
+      m_Id: 6603b291-397c-458a-b45a-5551f728f144
+      m_Path: <Gamepad>/buttonSouth
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Controller
+      m_Flags: 0
+    - m_Name: 
+      m_Id: 11de5bf7-4fed-410d-9638-6df7874c1db2
+      m_Path: <Gamepad>/buttonNorth
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Controller
+      m_Flags: 0
+    - m_Name: 
+      m_Id: 8236e79b-b6b6-4c73-8d94-4b5e9108ee84
+      m_Path: <Gamepad>/buttonEast
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Controller
+      m_Flags: 0
+  kbamPrompt: {fileID: 21300000, guid: de7c1bb7c2bcd3d4db5ee932fe08e437, type: 3}
+  controllerPrompt: {fileID: 21300000, guid: b47ef543d7ce18543a1c00f059288c53, type: 3}
 --- !u!1 &1540376259
 GameObject:
   m_ObjectHideFlags: 0
@@ -39398,6 +39926,152 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1791165794
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1791165795}
+  - component: {fileID: 1791165797}
+  - component: {fileID: 1791165796}
+  - component: {fileID: 1791165798}
+  m_Layer: 5
+  m_Name: ButtonPrompt
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1791165795
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1791165794}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1406448386}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -15, y: -15}
+  m_SizeDelta: {x: 25, y: 25}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1791165796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1791165794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: b89b3628cf6b2ce489ff735d78f7c150, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1791165797
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1791165794}
+  m_CullTransparentMesh: 0
+--- !u!114 &1791165798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1791165794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 729cf8726569dfb48a54061e5c3d1c56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  KBAM:
+    m_Name: KBAM
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 89dfe0ba-da36-4cdb-9ecf-56f09bdbda87
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 0cd4b6e1-60df-4b4a-be60-6f7c0ff9adf0
+      m_Path: <Keyboard>/anyKey
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: KBAM
+      m_Flags: 0
+  Controller:
+    m_Name: Controller
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: cfad65c4-4e07-48d7-aaa5-ceea626d1f0c
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 47606cfc-536c-413d-ba45-04e3a403898c
+      m_Path: <Gamepad>/buttonWest
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Controller
+      m_Flags: 0
+    - m_Name: 
+      m_Id: 6603b291-397c-458a-b45a-5551f728f144
+      m_Path: <Gamepad>/buttonSouth
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Controller
+      m_Flags: 0
+    - m_Name: 
+      m_Id: 11de5bf7-4fed-410d-9638-6df7874c1db2
+      m_Path: <Gamepad>/buttonNorth
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Controller
+      m_Flags: 0
+    - m_Name: 
+      m_Id: 8236e79b-b6b6-4c73-8d94-4b5e9108ee84
+      m_Path: <Gamepad>/buttonEast
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Controller
+      m_Flags: 0
+  kbamPrompt: {fileID: 21300000, guid: 8f2a398ccefc88945ba9cd08ff35e1e3, type: 3}
+  controllerPrompt: {fileID: 21300000, guid: b89b3628cf6b2ce489ff735d78f7c150, type: 3}
 --- !u!1 &1792334971
 GameObject:
   m_ObjectHideFlags: 0
@@ -44561,6 +45235,7 @@ RectTransform:
   - {fileID: 571850349}
   - {fileID: 22618505}
   - {fileID: 130063157}
+  - {fileID: 1076176798}
   m_Father: {fileID: 671322361}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
