@@ -48,6 +48,18 @@ public class MusicExplorer : MonoBehaviour
         return musicLevel;
     }
 
+    public void SetGuitarSolo(bool solo)
+    {
+        if (solo)
+        {
+            music.RunActionPreset("UnmuteGuit");
+        }
+        else
+        {
+            music.RunActionPreset("MuteGuit");
+        }
+    }
+
     /// <summary>
     /// Evaluates and updates music as it changes
     /// </summary>
@@ -71,6 +83,7 @@ public class MusicExplorer : MonoBehaviour
     {
         music = GetComponent<EliasPlayer>();
         StartCoroutine(AffectExplore());
+        SetGuitarSolo(false);
     }
 
     public void ReturnToMenu()

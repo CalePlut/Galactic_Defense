@@ -345,11 +345,11 @@ public class GameManager : MonoBehaviour
         {
             if (stage == 1)
             {
-                affect.SetMood(OrdinalAffect.medium, OrdinalAffect.low, OrdinalAffect.medium);
+                affect.SetMood(OrdinalAffect.low, OrdinalAffect.low, OrdinalAffect.low);
             }
             else if (stage == 2)
             {
-                affect.SetMood(OrdinalAffect.medium, OrdinalAffect.medium, OrdinalAffect.medium);
+                affect.SetMood(OrdinalAffect.medium, OrdinalAffect.low, OrdinalAffect.medium);
             }
             else if (stage == 3)
             {
@@ -375,7 +375,7 @@ public class GameManager : MonoBehaviour
         {
             if (stage == 1)
             {
-                affect.SetMood(OrdinalAffect.medium, OrdinalAffect.low, OrdinalAffect.medium);
+                affect.SetMood(OrdinalAffect.medium, OrdinalAffect.low, OrdinalAffect.low);
             }
             else if (stage == 2)
             {
@@ -492,6 +492,7 @@ public class GameManager : MonoBehaviour
                 encounter++;
                 stageManager.setEncounterProgress(1);
                 AdvanceToNextWave();
+                music.RunActionPreset("UnmuteGuit");
             }
             //else if (encounter == 1)
             //{
@@ -517,6 +518,8 @@ public class GameManager : MonoBehaviour
                 stageManager.setEncounterProgress(1);
                 AdvanceToNextWave();
                 warpNext = false;
+
+                music.RunActionPreset("UnmuteGuit");
             }
             else
             {
