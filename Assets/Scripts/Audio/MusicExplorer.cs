@@ -48,6 +48,10 @@ public class MusicExplorer : MonoBehaviour
         return musicLevel;
     }
 
+    public void Test(bool testVal)
+    {
+    }
+
     public void SetGuitarSolo(bool solo)
     {
         if (solo)
