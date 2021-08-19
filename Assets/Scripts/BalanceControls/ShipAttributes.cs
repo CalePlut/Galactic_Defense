@@ -5,7 +5,6 @@ using UnityEngine;
 public class ShipAttributes : ScriptableObject
 {
     #region Basic Attributes
-
     [Header("Basic Attributes")]
     [Tooltip("Maximum health")]
     public float baseHealth;
@@ -13,23 +12,14 @@ public class ShipAttributes : ScriptableObject
     //public float level2Health, level3Health;
 
     [HideInInspector]
-    public float health(int level)
+    public float Health(int level)
     {
-<<<<<<< HEAD
         //switch (level)
         //{
         //    case 2: return level2Health;
         //    case 3: return level3Health;
         //    default:}
             return baseHealth;
-=======
-        return level switch
-        {
-            2 => level2Health,
-            3 => level3Health,
-            _ => baseHealth,
-        };
->>>>>>> parent of 6488396f (Unity Update/Upkeep)
     }
 
     [Tooltip("Shield health")]
@@ -40,7 +30,6 @@ public class ShipAttributes : ScriptableObject
     [HideInInspector]
     public float shield(int level)
     {
-<<<<<<< HEAD
        // switch (level)
         //{
             //case 2: return level2Shield;
@@ -48,14 +37,6 @@ public class ShipAttributes : ScriptableObject
             //default: 
                 return baseShield;
        // }
-=======
-        return level switch
-        {
-            2 => level2Shield,
-            3 => level3Shield,
-            _ => baseShield,
-        };
->>>>>>> parent of 6488396f (Unity Update/Upkeep)
     }
 
     [Range(0, 1)]
@@ -66,7 +47,6 @@ public class ShipAttributes : ScriptableObject
     [HideInInspector]
     public float armour(int level)
     {
-<<<<<<< HEAD
         //switch (level)
         //{
         //    case 2: return level2Armour;
@@ -74,14 +54,6 @@ public class ShipAttributes : ScriptableObject
             //default: 
             return baseArmour;
       //  }
-=======
-        return level switch
-        {
-            2 => level2Armour,
-            3 => level3Armour,
-            _ => baseArmour,
-        };
->>>>>>> parent of 6488396f (Unity Update/Upkeep)
     }
 
     [Tooltip("Auto-attack damage")]
@@ -91,7 +63,6 @@ public class ShipAttributes : ScriptableObject
     [HideInInspector]
     public float turretDamage(int level)
     {
-<<<<<<< HEAD
         //switch (level)
         //{
         //    case 2: return level2TurretDamage;
@@ -99,14 +70,6 @@ public class ShipAttributes : ScriptableObject
             //default: 
             return baseTurretDamage;
        // }
-=======
-        return level switch
-        {
-            2 => level2TurretDamage,
-            3 => level3TurretDamage,
-            _ => baseTurretDamage,
-        };
->>>>>>> parent of 6488396f (Unity Update/Upkeep)
     }
 
     [Tooltip("Shots in combo before beginning to fire continuously")]
@@ -116,7 +79,6 @@ public class ShipAttributes : ScriptableObject
     [HideInInspector]
     public int warmupShots(int level)
     {
-<<<<<<< HEAD
         //switch (level)
       //  {
           //  case 2: return level2WarmupShots;
@@ -124,14 +86,6 @@ public class ShipAttributes : ScriptableObject
            // default:
            return baseWarmupShots;
         //}
-=======
-        return level switch
-        {
-            2 => level2WarmupShots,
-            3 => level3WarmupShots,
-            _ => baseWarmupShots,
-        };
->>>>>>> parent of 6488396f (Unity Update/Upkeep)
     }
 
     [Tooltip("Total number of shots in combo")]
@@ -141,7 +95,6 @@ public class ShipAttributes : ScriptableObject
     [HideInInspector]
     public int MaxShots(int level)
     {
-<<<<<<< HEAD
         //switch (level)
         //{
         //    case 2:
@@ -151,14 +104,6 @@ public class ShipAttributes : ScriptableObject
         //    default:
                 return baseMaxShots;
         //}
-=======
-        return level switch
-        {
-            2 => level2MaxShots,
-            3 => level3MaxShots,
-            _ => baseMaxShots,
-        };
->>>>>>> parent of 6488396f (Unity Update/Upkeep)
     }
 
     [Header("Abilities")]
@@ -169,7 +114,6 @@ public class ShipAttributes : ScriptableObject
     [HideInInspector]
     public float heavyAttackDamage(int level)
     {
-<<<<<<< HEAD
         //switch (level)
         //{
         //    case 2:
@@ -179,14 +123,6 @@ public class ShipAttributes : ScriptableObject
         //    default:
                 return baseHeavyAttackDamage;
        // }
-=======
-        return level switch
-        {
-            2 => level2HeavyAttackDamage,
-            3 => level3HeavyAttackDamage,
-            _ => baseHeavyAttackDamage,
-        };
->>>>>>> parent of 6488396f (Unity Update/Upkeep)
     }
 
     public float baseHeavyAttackDelay;
@@ -195,7 +131,6 @@ public class ShipAttributes : ScriptableObject
     [HideInInspector]
     public float heavyAttackDelay(int level)
     {
-<<<<<<< HEAD
         //switch (level)
         //{
         //    case 2:
@@ -205,14 +140,6 @@ public class ShipAttributes : ScriptableObject
            // default:
                 return baseHeavyAttackDelay;
       //  }
-=======
-        return level switch
-        {
-            2 => level2HeavyAttackDelay,
-            3 => level3HeavyAttackDelay,
-            _ => baseHeavyAttackDelay,
-        };
->>>>>>> parent of 6488396f (Unity Update/Upkeep)
     }
 
     #endregion Basic Attributes
@@ -226,7 +153,6 @@ public class ShipAttributes : ScriptableObject
     [HideInInspector]
     public float parryFrame(int level)
     {
-<<<<<<< HEAD
         //switch (level)
         //{
         //    case 2: return level2ParryFrame;
@@ -234,14 +160,6 @@ public class ShipAttributes : ScriptableObject
         //    default:
             return baseParryFrame;
         //}
-=======
-        return level switch
-        {
-            2 => level2ParryFrame,
-            3 => level3ParryFrame,
-            _ => baseParryFrame,
-        };
->>>>>>> parent of 6488396f (Unity Update/Upkeep)
     }
 
     public float baseRetaliateDamage;
@@ -250,7 +168,6 @@ public class ShipAttributes : ScriptableObject
     [HideInInspector]
     public float retaliateDamage(int level)
     {
-<<<<<<< HEAD
         //switch (level)
         //{
         //    case 2:
@@ -260,14 +177,6 @@ public class ShipAttributes : ScriptableObject
         //    default:
                 return baseRetaliateDamage;
        // }
-=======
-        return level switch
-        {
-            2 => level2RetaliateDamage,
-            3 => level3RetaliateDamage,
-            _ => baseRetaliateDamage,
-        };
->>>>>>> parent of 6488396f (Unity Update/Upkeep)
     }
 
     [Tooltip("Disable duration on outgoing laser")]
@@ -277,7 +186,6 @@ public class ShipAttributes : ScriptableObject
     [HideInInspector]
     public float disableDuration(int level)
     {
-<<<<<<< HEAD
         //switch (level)
         //{
         //    case 2:
@@ -287,14 +195,6 @@ public class ShipAttributes : ScriptableObject
         //    default:
                 return baseDisableDuration;
       //  }
-=======
-        return level switch
-        {
-            2 => level2DisableDuration,
-            3 => level3DisableDuration,
-            _ => baseDisableDuration,
-        };
->>>>>>> parent of 6488396f (Unity Update/Upkeep)
     }
 
     [Range(0f, 1f)]
@@ -304,7 +204,6 @@ public class ShipAttributes : ScriptableObject
     [HideInInspector]
     public float healPercent(int level)
     {
-<<<<<<< HEAD
         //switch (level)
         //{
         //    case 2:
@@ -314,14 +213,6 @@ public class ShipAttributes : ScriptableObject
         //    default:
                 return baseHealPercent;
         //}
-=======
-        return level switch
-        {
-            2 => level2HealPercent,
-            3 => level3HealPercent,
-            _ => baseHealPercent,
-        };
->>>>>>> parent of 6488396f (Unity Update/Upkeep)
     }
 
     public float baseHealDelay;
@@ -330,7 +221,6 @@ public class ShipAttributes : ScriptableObject
     [HideInInspector]
     public float healDelay(int level)
     {
-<<<<<<< HEAD
         //switch (level)
         //{
         //    case 2:
@@ -340,14 +230,6 @@ public class ShipAttributes : ScriptableObject
         //    default:
                 return baseHealDelay;
         //}
-=======
-        return level switch
-        {
-            2 => level2HealDelay,
-            3 => level3HealDelay,
-            _ => baseHealDelay,
-        };
->>>>>>> parent of 6488396f (Unity Update/Upkeep)
     }
 
     #endregion Abilities

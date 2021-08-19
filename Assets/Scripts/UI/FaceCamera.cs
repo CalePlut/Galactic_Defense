@@ -16,7 +16,7 @@ public class FaceCamera : MonoBehaviour
     {
         if (cameraObj == null)
         {
-            cameraObj = GameObject.Find("Main Camera");
+            cameraObj = GameObject.Find("MainCamera");
         }
         transform.LookAt(cameraObj.transform.position);
     }

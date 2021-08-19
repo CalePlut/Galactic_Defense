@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 
@@ -9,7 +8,7 @@ public class MusicExplorer : MonoBehaviour
 {
     private OrdinalAffect valence, arousal, tension;
     private string VAT = "Mid-Mid-Mid";
-    private EliasPlayer music;
+    public EliasPlayer music;
 
     public TMP_Dropdown valenceMenu, arousalMenu, tensionMenu;
 
@@ -92,10 +91,12 @@ public class MusicExplorer : MonoBehaviour
     {
         while (gameObject.activeSelf)
         {
+            //Debug.Log(VAT);
             var VATLevels = GetMusicLevel();
             if (VAT != VATLevels)
             {
                 VAT = VATLevels;
+                //Debug.Log(VAT);
                 music.RunActionPreset(VAT);
             }
             yield return null;
@@ -105,9 +106,9 @@ public class MusicExplorer : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        music = GetComponent<EliasPlayer>();
+        //music = GetComponent<EliasPlayer>();
         StartCoroutine(AffectExplore());
-        SetGuitarSolo(false);
+        //SetGuitarSolo(false);
     }
 
     public void ReturnToMenu()

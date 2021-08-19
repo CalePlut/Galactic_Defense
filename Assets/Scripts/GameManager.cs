@@ -390,16 +390,14 @@ public class GameManager : MonoBehaviour
     {
         Player.StartCombat();
         inCombat = true;
+
+        EnemyCompositionSetup();
+
         StartCoroutine(CombatAffectUpdate());
         affect.StartCombat();
         music.RunActionPreset("StartCombat");
         SetMood();
 
-<<<<<<< HEAD
-=======
-        EnemyCompositionSetup();
-
->>>>>>> parent of 6488396f (Unity Update/Upkeep)
         void SetMood()
         {
             if (stage == 1)

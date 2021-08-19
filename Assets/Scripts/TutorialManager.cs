@@ -21,7 +21,7 @@ public class TutorialManager : MonoBehaviour
         var playerObj = GameObject.Find("Player Ship");
         player = playerObj.GetComponent<PlayerShip>();
 
-        var managerObj = GameObject.Find("Main Camera");
+        var managerObj = GameObject.Find("MainCamera");
         manager = managerObj.GetComponent<GameManager>();
         scene = managerObj.GetComponent<SceneControl>();
     }

@@ -1,0 +1,2 @@
+Due to the very large amount of different Android Architectures, our Unity plugin only contains a few of the ones we build for.
+We have many more located in our APK. If one or more architectures are missing that you are interested in, please contact us at support@eliassoftware.com

@@ -1,8 +1,9 @@
 using System;
-using System.Runtime.InteropServices;
 using System.Text;
-using UnityEngine;
+using System.Runtime.InteropServices;
 using elias_handle = System.IntPtr;
+using AOT;
+using UnityEngine;
 
 public class EliasWrapper
 {
@@ -26,191 +27,129 @@ public class EliasWrapper
 #endif
 
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate IntPtr elias_memory_functions_malloc(UIntPtr bytes, IntPtr user);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate void elias_memory_functions_free(IntPtr pointer, IntPtr user);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate IntPtr elias_memory_functions_realloc(IntPtr pointer, UIntPtr bytes, IntPtr user);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate IntPtr elias_data_reader_functions_create_instance(IntPtr memory_functions, IntPtr user);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate byte elias_data_reader_functions_open(IntPtr instance, string filename);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate void elias_data_reader_functions_close(IntPtr instance);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate int elias_data_reader_functions_read(IntPtr instance, byte[] buffer, int bytes_to_read, byte urgent);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate byte elias_data_reader_functions_seek(IntPtr instance, uint offset_in_bytes);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate uint elias_data_reader_functions_get_size(IntPtr instance);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate uint elias_data_reader_functions_get_position(IntPtr instance);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate void elias_data_reader_functions_free_instance(IntPtr instance, IntPtr memory_functions);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate IntPtr elias_decoder_create_instance(IntPtr memory_functions, IntPtr user);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate elias_result_codes elias_decoder_open(IntPtr instance, IntPtr reader_functions, IntPtr reader_instance);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate void elias_decoder_close(IntPtr instance);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate elias_result_codes elias_decoder_read(IntPtr instance, float[] buffer, uint[] frames);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate elias_result_codes elias_decoder_seek(IntPtr instance, uint frame);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate uint elias_decoder_get_position(IntPtr instance);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate uint elias_decoder_get_length(IntPtr instance);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate uint elias_decoder_get_sample_rate(IntPtr instance);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate byte elias_decoder_get_channels(IntPtr instance);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate void elias_decoder_free_instance(IntPtr instance, IntPtr memory_functions);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate byte elias_effect_info_versions_compatible(uint effect_version, IntPtr user);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate void elias_effect_info_get_parameter_descriptive_name(byte parameter_index, [In, Out] IntPtr name, IntPtr user);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate void elias_effect_info_get_parameter_value_unit_label(byte parameter_index, [In, Out] IntPtr unit, IntPtr user);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate uint elias_effect_info_get_parameter_type(byte parameter_index, IntPtr user);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate void elias_effect_info_get_double_parameter_range(byte parameter_index, out double min_value, out double max_value, IntPtr user);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate void elias_effect_info_get_int32_parameter_range(byte parameter_index, out int min_value, out int max_value, IntPtr user);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate void elias_effect_info_get_int32_option_parameter_descriptive_name(byte parameter_index, int value, [In, Out] IntPtr name, IntPtr user);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate void elias_effect_info_get_input_descriptive_name(byte input_index, [In, Out] IntPtr name, IntPtr user);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate byte elias_effect_info_supports_sample_rate(uint sample_rate, IntPtr user);
-
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate byte elias_effect_info_supports_channels(byte channels, IntPtr user);
-
     public enum elias_result_codes
     {
         elias_result_success = 0, /**< All is well. */
@@ -299,7 +238,6 @@ public class EliasWrapper
     {
         [MarshalAs(UnmanagedType.LPStr)]
         public string filename;
-
         public UInt16 start_bar;
         public UInt16 length_in_bars;
     }
@@ -309,10 +247,8 @@ public class EliasWrapper
     {
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
         public string theme;
-
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
         public string track;
-
         public int level;
         public int variation;
     }
@@ -334,7 +270,6 @@ public class EliasWrapper
     {
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 16)]
         public string decoder_name;
-
         public elias_decoder_create_instance create_instance;
         public elias_decoder_open open;
         public elias_decoder_close close;
@@ -353,10 +288,8 @@ public class EliasWrapper
     {
         [FieldOffset(0)]
         public double double_value;
-
         [FieldOffset(0)]
         public int int32_value;
-
         [FieldOffset(0)]
         public byte bool_value;
     }
@@ -366,7 +299,6 @@ public class EliasWrapper
     {
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
         public string effect_name;
-
         public uint effect_version;
         public elias_effect_info_versions_compatible versions_compatible;
         public byte parameter_count;
@@ -417,7 +349,6 @@ public class EliasWrapper
                 info_bridge.effect_name = value;
             }
         }
-
         public uint effect_version
         {
             get
@@ -429,7 +360,6 @@ public class EliasWrapper
                 info_bridge.effect_version = value;
             }
         }
-
         public byte parameter_count
         {
             get
@@ -441,7 +371,6 @@ public class EliasWrapper
                 info_bridge.parameter_count = value;
             }
         }
-
         public byte input_count
         {
             get
@@ -453,7 +382,6 @@ public class EliasWrapper
                 info_bridge.input_count = value;
             }
         }
-
         public IntPtr user
         {
             get
@@ -468,7 +396,6 @@ public class EliasWrapper
 
         // Delegates that are equal to info_bridge.<delegate_name>
         public elias_effect_info_versions_compatible versions_compatible;
-
         public elias_effect_info_get_parameter_type get_parameter_type;
         public elias_effect_info_get_double_parameter_range get_double_parameter_range;
         public elias_effect_info_get_int32_parameter_range get_int32_parameter_range;
@@ -502,13 +429,14 @@ public class EliasWrapper
                     // Free memory
                     Marshal.FreeHGlobal(out_name_b);
                 }
+
             }
             else
             {
                 Debug.LogError("Out of memeory");
             }
-        }
 
+        }
         public void get_parameter_value_unit_label(byte parameter_index, StringBuilder unit, IntPtr user)
         {
             // Set length of string that will be returned from C++ side
@@ -534,13 +462,13 @@ public class EliasWrapper
                     // Free memory
                     Marshal.FreeHGlobal(out_name_b);
                 }
+
             }
             else
             {
                 Debug.LogError("Out of memeory");
             }
         }
-
         public void get_int32_option_parameter_descriptive_name(byte parameter_index, int value, StringBuilder name, IntPtr user)
         {
             // Set length of string that will be returned from C++ side
@@ -566,13 +494,13 @@ public class EliasWrapper
                     // Free memory
                     Marshal.FreeHGlobal(out_name_b);
                 }
+
             }
             else
             {
                 Debug.LogError("Out of memeory");
             }
         }
-
         public void get_input_descriptive_name(byte input_index, StringBuilder name, IntPtr user)
         {
             // Set length of string that will be returned from C++ side
@@ -598,12 +526,14 @@ public class EliasWrapper
                     // Free memory
                     Marshal.FreeHGlobal(out_name_b);
                 }
+
             }
             else
             {
                 Debug.LogError("Out of memeory");
             }
         }
+
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -622,15 +552,15 @@ public class EliasWrapper
     }
 
 #if !UNITY_IOS || UNITY_EDITOR
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate void elias_audio_buffer_callback(elias_handle handle, IntPtr buffer, string bus_name, IntPtr user);
 
-    private static elias_audio_buffer_callback s_elias_audio_buffer_callback;
+
+    static elias_audio_buffer_callback s_elias_audio_buffer_callback;
 
     [AOT.MonoPInvokeCallback(typeof(elias_audio_buffer_callback))]
-    private static void call_elias_audio_buffer_callback(elias_handle handle, IntPtr buffer, string bus_name, IntPtr user)
+    static void call_elias_audio_buffer_callback(elias_handle handle, IntPtr buffer, string bus_name, IntPtr user)
     {
         if (s_elias_audio_buffer_callback != null)
             s_elias_audio_buffer_callback(handle, buffer, bus_name, user);
@@ -644,7 +574,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_initialize")]
     private static extern elias_handle elias_initialize(out elias_result_codes result_code, uint abi_version, IntPtr reader_functions, string base_path, uint sample_rate, byte channels, UInt16 frames_per_buffer, IntPtr memory_functions);
-
     public static elias_handle elias_initialize_wrapped(out elias_result_codes result_code, uint abi_version, elias_data_reader_functions? reader_functions, string base_path, uint sample_rate, byte channels, UInt16 frames_per_buffer, elias_memory_functions? memory_functions)
     {
         IntPtr reader_functions_ptr = IntPtr.Zero;
@@ -685,7 +614,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_source_count")]
     private static extern uint elias_get_source_count(elias_handle handle, IntPtr filter);
-
     public static uint elias_get_source_count_wrapped(elias_handle handle, elias_source_specifier? filter)
     {
         IntPtr filter_ptr = IntPtr.Zero;
@@ -704,7 +632,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_source_info")]
     private static extern elias_result_codes elias_get_source_info(elias_handle handle, IntPtr filter, uint index, out elias_source result);
-
     public static elias_result_codes elias_get_source_info_wrapped(elias_handle handle, elias_source_specifier? filter, uint index, out elias_source result)
     {
         IntPtr filter_ptr = IntPtr.Zero;
@@ -726,7 +653,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_set_transition_option_int32")]
     private static extern elias_result_codes elias_set_transition_option_int32(elias_handle handle, IntPtr filter, uint option_id, int value, string transition_preset, byte clear_children);
-
     public static elias_result_codes elias_set_transition_option_int32_wrapped(elias_handle handle, elias_source_specifier? filter, uint option_id, int value, string transition_preset, byte clear_children)
     {
         IntPtr filter_ptr = IntPtr.Zero;
@@ -745,7 +671,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_set_transition_option_double")]
     private static extern elias_result_codes elias_set_transition_option_double(elias_handle handle, IntPtr filter, uint option_id, double value, string transition_preset, byte clear_children);
-
     public static elias_result_codes elias_set_transition_option_double_wrapped(elias_handle handle, elias_source_specifier? filter, uint option_id, double value, string transition_preset, byte clear_children)
     {
         IntPtr filter_ptr = IntPtr.Zero;
@@ -764,7 +689,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_set_transition_option_bool")]
     private static extern elias_result_codes elias_set_transition_option_bool(elias_handle handle, IntPtr filter, uint option_id, byte value, string transition_preset, byte clear_children);
-
     public static elias_result_codes elias_set_transition_option_bool_wrapped(elias_handle handle, elias_source_specifier? filter, uint option_id, byte value, string transition_preset, byte clear_children)
     {
         IntPtr filter_ptr = IntPtr.Zero;
@@ -783,7 +707,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_set_transition_option_int32_array")]
     private static extern elias_result_codes elias_set_transition_option_int32_array(elias_handle handle, IntPtr filter, uint option_id, int[] elements, uint count, string transition_preset, byte clear_children);
-
     public static elias_result_codes elias_set_transition_option_int32_array_wrapped(elias_handle handle, elias_source_specifier? filter, uint option_id, int[] elements, uint count, string transition_preset, byte clear_children)
     {
         IntPtr filter_ptr = IntPtr.Zero;
@@ -802,7 +725,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_set_transition_option_double_array")]
     private static extern elias_result_codes elias_set_transition_option_double_array(elias_handle handle, IntPtr filter, uint option_id, double[] elements, uint count, string transition_preset, byte clear_children);
-
     public static elias_result_codes elias_set_transition_option_double_array_wrapped(elias_handle handle, elias_source_specifier? filter, uint option_id, double[] elements, uint count, string transition_preset, byte clear_children)
     {
         IntPtr filter_ptr = IntPtr.Zero;
@@ -821,7 +743,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_set_transition_option_bool_array")]
     private static extern elias_result_codes elias_set_transition_option_bool_array(elias_handle handle, IntPtr filter, uint option_id, byte[] elements, uint count, string transition_preset, byte clear_children);
-
     public static elias_result_codes elias_set_transition_option_bool_array_wrapped(elias_handle handle, elias_source_specifier? filter, uint option_id, byte[] elements, uint count, string transition_preset, byte clear_children)
     {
         IntPtr filter_ptr = IntPtr.Zero;
@@ -840,7 +761,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_remove_transition_options")]
     private static extern elias_result_codes elias_remove_transition_options(elias_handle handle, IntPtr filter, uint option_id, string transition_preset, byte find_exact);
-
     public static elias_result_codes elias_remove_transition_options_wrapped(elias_handle handle, elias_source_specifier? filter, uint option_id, string transition_preset, byte find_exact)
     {
         IntPtr filter_ptr = IntPtr.Zero;
@@ -859,7 +779,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_transition_option_int32")]
     private static extern elias_result_codes elias_get_transition_option_int32(elias_handle handle, IntPtr source, uint option_id, out int value, string transition_preset, byte find_exact);
-
     public static elias_result_codes elias_get_transition_option_int32_wrapped(elias_handle handle, elias_source_specifier? source, uint option_id, out int value, string transition_preset, byte find_exact)
     {
         IntPtr source_ptr = IntPtr.Zero;
@@ -878,7 +797,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_transition_option_double")]
     private static extern elias_result_codes elias_get_transition_option_double(elias_handle handle, IntPtr source, uint option_id, out double value, string transition_preset, byte find_exact);
-
     public static elias_result_codes elias_get_transition_option_double_wrapped(elias_handle handle, elias_source_specifier? source, uint option_id, out double value, string transition_preset, byte find_exact)
     {
         IntPtr source_ptr = IntPtr.Zero;
@@ -897,7 +815,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_transition_option_bool")]
     private static extern elias_result_codes elias_get_transition_option_bool(elias_handle handle, IntPtr source, uint option_id, out byte value, string transition_preset, byte find_exact);
-
     public static elias_result_codes elias_get_transition_option_bool_wrapped(elias_handle handle, elias_source_specifier? source, uint option_id, out byte value, string transition_preset, byte find_exact)
     {
         IntPtr source_ptr = IntPtr.Zero;
@@ -916,7 +833,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_transition_option_int32_array")]
     private static extern elias_result_codes elias_get_transition_option_int32_array(elias_handle handle, IntPtr source, uint option_id, int[] elements, out uint count, string transition_preset, byte find_exact);
-
     public static elias_result_codes elias_get_transition_option_int32_array_wrapped(elias_handle handle, elias_source_specifier? source, uint option_id, int[] elements, out uint count, string transition_preset, byte find_exact)
     {
         IntPtr source_ptr = IntPtr.Zero;
@@ -935,7 +851,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_transition_option_double_array")]
     private static extern elias_result_codes elias_get_transition_option_double_array(elias_handle handle, IntPtr source, uint option_id, double[] elements, out uint count, string transition_preset, byte find_exact);
-
     public static elias_result_codes elias_get_transition_option_double_array_wrapped(elias_handle handle, elias_source_specifier? source, uint option_id, double[] elements, out uint count, string transition_preset, byte find_exact)
     {
         IntPtr source_ptr = IntPtr.Zero;
@@ -954,7 +869,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_transition_option_bool_array")]
     private static extern elias_result_codes elias_get_transition_option_bool_array(elias_handle handle, IntPtr source, uint option_id, byte[] elements, out uint count, string transition_preset, byte find_exact);
-
     public static elias_result_codes elias_get_transition_option_bool_array_wrapped(elias_handle handle, elias_source_specifier? source, uint option_id, byte[] elements, out uint count, string transition_preset, byte find_exact)
     {
         IntPtr source_ptr = IntPtr.Zero;
@@ -973,7 +887,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_transition_option_count")]
     private static extern uint elias_get_transition_option_count(elias_handle handle, IntPtr filter, string transition_preset, byte find_exact);
-
     public static uint elias_get_transition_option_count_wrapped(elias_handle handle, elias_source_specifier? filter, string transition_preset, byte find_exact)
     {
         IntPtr filter_ptr = IntPtr.Zero;
@@ -992,7 +905,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_transition_option_info")]
     private static extern elias_result_codes elias_get_transition_option_info(elias_handle handle, IntPtr filter, uint option_index, string transition_preset, byte find_exact, out uint option_id, out uint option_data_type, [In, Out] IntPtr theme_name, [In, Out] IntPtr track_name, out int level, out int variation);
-
     public static elias_result_codes elias_get_transition_option_info_wrapped(elias_handle handle, elias_source_specifier? filter, uint option_index, string transition_preset, byte find_exact, out uint option_id, out uint option_data_type, out string theme_name, out string track_name, out int level, out int variation)
     {
         IntPtr filter_ptr = IntPtr.Zero;
@@ -1031,6 +943,7 @@ public class EliasWrapper
                 Marshal.FreeHGlobal(theme_name_b);
                 Marshal.FreeHGlobal(track_name_b);
             }
+
         }
         else
         {
@@ -1066,7 +979,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_transition_preset_name")]
     private static extern elias_result_codes elias_get_transition_preset_name(elias_handle handle, uint transition_preset_index, [In, Out] IntPtr out_name);
-
     public static elias_result_codes elias_get_transition_preset_name_wrapped(elias_handle handle, uint transition_preset_index, out string out_name)
     {
         // Set length of string that will be returned from C++ side
@@ -1094,6 +1006,7 @@ public class EliasWrapper
                 // Free memory
                 Marshal.FreeHGlobal(out_name_b);
             }
+
         }
         else
         {
@@ -1112,7 +1025,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_action_preset_name")]
     private static extern elias_result_codes elias_get_action_preset_name(elias_handle handle, uint action_preset_index, [In, Out] IntPtr out_name);
-
     public static elias_result_codes elias_get_action_preset_name_wrapped(elias_handle handle, uint action_preset_index, out string out_name)
     {
         // Set length of string that will be returned from C++ side
@@ -1140,6 +1052,7 @@ public class EliasWrapper
                 // Free memory
                 Marshal.FreeHGlobal(out_name_b);
             }
+
         }
         else
         {
@@ -1155,7 +1068,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_action_preset_required_initial_theme")]
     private static extern elias_result_codes elias_get_action_preset_required_initial_theme(elias_handle handle, string preset_name, [In, Out] IntPtr theme_name);
-
     public static elias_result_codes elias_get_action_preset_required_initial_theme_wrapped(elias_handle handle, string preset_name, out string theme_name)
     {
         // Set length of string that will be returned from C++ side
@@ -1183,6 +1095,7 @@ public class EliasWrapper
                 // Free memory
                 Marshal.FreeHGlobal(theme_name_b);
             }
+
         }
         else
         {
@@ -1198,7 +1111,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_theme_name")]
     private static extern elias_result_codes elias_get_theme_name(elias_handle handle, uint theme_index, [In, Out] IntPtr out_name);
-
     public static elias_result_codes elias_get_theme_name_wrapped(elias_handle handle, uint theme_index, out string out_name)
     {
         // Set length of string that will be returned from C++ side
@@ -1226,6 +1138,7 @@ public class EliasWrapper
                 // Free memory
                 Marshal.FreeHGlobal(out_name_b);
             }
+
         }
         else
         {
@@ -1244,7 +1157,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_track_name")]
     private static extern elias_result_codes elias_get_track_name(elias_handle handle, string theme_name, uint track_index, [In, Out] IntPtr out_name);
-
     public static elias_result_codes elias_get_track_name_wrapped(elias_handle handle, string theme_name, uint track_index, out string out_name)
     {
         // Set length of string that will be returned from C++ side
@@ -1272,6 +1184,7 @@ public class EliasWrapper
                 // Free memory
                 Marshal.FreeHGlobal(out_name_b);
             }
+
         }
         else
         {
@@ -1290,7 +1203,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_track_group_name")]
     private static extern elias_result_codes elias_get_track_group_name(elias_handle handle, uint track_group_index, [In, Out] IntPtr out_name);
-
     public static elias_result_codes elias_get_track_group_name_wrapped(elias_handle handle, uint track_group_index, out string out_name)
     {
         // Set length of string that will be returned from C++ side
@@ -1318,6 +1230,7 @@ public class EliasWrapper
                 // Free memory
                 Marshal.FreeHGlobal(out_name_b);
             }
+
         }
         else
         {
@@ -1332,7 +1245,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_track_group_theme")]
     private static extern elias_result_codes elias_get_track_group_theme(elias_handle handle, string group_name, [In, Out] IntPtr theme_name);
-
     public static elias_result_codes elias_get_track_group_theme_wrapped(elias_handle handle, string group_name, out string theme_name)
     {
         // Set length of string that will be returned from C++ side
@@ -1360,6 +1272,7 @@ public class EliasWrapper
                 // Free memory
                 Marshal.FreeHGlobal(theme_name_b);
             }
+
         }
         else
         {
@@ -1375,7 +1288,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_track_in_track_group")]
     private static extern elias_result_codes elias_get_track_in_track_group(elias_handle handle, string group_name, uint track_index, [In, Out] IntPtr track_name);
-
     public static elias_result_codes elias_get_track_in_track_group_wrapped(elias_handle handle, string group_name, uint track_index, out string track_name)
     {
         // Set length of string that will be returned from C++ side
@@ -1403,6 +1315,7 @@ public class EliasWrapper
                 // Free memory
                 Marshal.FreeHGlobal(track_name_b);
             }
+
         }
         else
         {
@@ -1435,11 +1348,10 @@ public class EliasWrapper
     public static extern elias_result_codes elias_deserialize(elias_handle handle, byte[] buffer, uint buffer_size, uint flags);
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_deserialize_from_file")]
-    public static extern elias_result_codes elias_deserialize_from_file(elias_handle handle, string filename, UInt32 flags);
+    public static extern elias_result_codes elias_deserialize_from_file(elias_handle handle, string filename, UInt32 flags );
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_register_custom_decoder")]
     private static extern elias_result_codes elias_register_custom_decoder(elias_handle handle, IntPtr decoder_implementation);
-
     public static elias_result_codes elias_register_custom_decoder_wrapped(elias_handle handle, elias_decoder? decoder_implementation)
     {
         IntPtr decoder_implementation_ptr = IntPtr.Zero;
@@ -1470,7 +1382,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_effect_info")]
     public static extern elias_result_codes elias_get_effect_info(elias_handle handle, uint effect_index, out elias_effect_info_wrapped info);
-
     public static elias_result_codes elias_get_effect_info_wrapped(elias_handle handle, uint effect_index, out elias_effect_info info)
     {
         // Declare structure
@@ -1490,9 +1401,9 @@ public class EliasWrapper
         return returnCode;
     }
 
+
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_effect_info_by_name")]
     public static extern elias_result_codes elias_get_effect_info_by_name(elias_handle handle, string effect_name, out elias_effect_info_wrapped info);
-
     public static elias_result_codes elias_get_effect_info_by_name_wrapped(elias_handle handle, string effect_name, out elias_effect_info info)
     {
         // Declare structure
@@ -1545,9 +1456,10 @@ public class EliasWrapper
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_midi_file_name")]
     public static extern string elias_get_midi_file_name(elias_handle handle, uint audio_file_index);
 
+
+
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_start")]
     private static extern elias_result_codes elias_start(elias_handle handle, IntPtr start_event);
-
     public static elias_result_codes elias_start_wrapped(elias_handle handle, elias_event_set_level start_event)
     {
         IntPtr start_event_ptr = IntPtr.Zero;
@@ -1559,8 +1471,7 @@ public class EliasWrapper
     }
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_start_background")]
-    private static extern elias_result_codes elias_start_background(elias_handle handle, IntPtr start_event, uint output_sample_rate, uint output_buffer_size);
-
+    private static extern elias_result_codes elias_start_background(elias_handle handle, IntPtr start_event, uint output_sample_rate, uint output_buffer_size );
     public static elias_result_codes elias_start_background_wrapped(elias_handle handle, elias_event_set_level start_event, uint output_sample_rate, uint output_buffer_size)
     {
         IntPtr start_event_ptr = IntPtr.Zero;
@@ -1582,7 +1493,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_queue_event")]
     private static extern elias_result_codes elias_queue_event(elias_handle handle, IntPtr @event);
-
     public static elias_result_codes elias_queue_event_wrapped(elias_handle handle, elias_event @event)
     {
         IntPtr event_ptr = IntPtr.Zero;
@@ -1622,7 +1532,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_render_buffer")]
     private static extern elias_result_codes elias_render_buffer(elias_handle handle, [MarshalAs(UnmanagedType.FunctionPtr)] elias_audio_buffer_callback callback, IntPtr user, uint flags);
-
     public static elias_result_codes elias_render_buffer_wrapped(elias_handle handle, elias_audio_buffer_callback callback, IntPtr user, uint flags)
     {
         s_elias_audio_buffer_callback = callback;
@@ -1635,7 +1544,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_bus_name")]
     private static extern elias_result_codes elias_get_bus_name(elias_handle handle, uint bus_index, [In, Out] IntPtr out_name);
-
     public static elias_result_codes elias_get_bus_name_wrapped(elias_handle handle, uint bus_index, out string out_name)
     {
         // Set length of string that will be returned from C++ side
@@ -1663,6 +1571,7 @@ public class EliasWrapper
                 // Free memory
                 Marshal.FreeHGlobal(out_name_b);
             }
+
         }
         else
         {
@@ -1687,7 +1596,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_send_destination_bus_info")]
     private static extern elias_result_codes elias_get_send_destination_bus_info(elias_handle handle, string bus_name, byte slot, [In, Out] IntPtr out_name, out byte destination_slot);
-
     public static elias_result_codes elias_get_send_destination_bus_info_wrapped(elias_handle handle, string bus_name, byte slot, out string out_name, out byte destination_slot)
     {
         // Set length of string that will be returned from C++ side
@@ -1715,6 +1623,7 @@ public class EliasWrapper
                 // Free memory
                 Marshal.FreeHGlobal(out_name_b);
             }
+
         }
         else
         {
@@ -1729,7 +1638,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_send_destination_effect_info")]
     private static extern elias_result_codes elias_get_send_destination_effect_info(elias_handle handle, string bus_name, byte slot, [In, Out] IntPtr out_effect_name, out byte destination_effect_input_index);
-
     public static elias_result_codes elias_get_send_destination_effect_info_wrapped(elias_handle handle, string bus_name, byte slot, out string out_effect_name, out byte destination_effect_input_index)
     {
         // Set length of string that will be returned from C++ side
@@ -1757,6 +1665,7 @@ public class EliasWrapper
                 // Free memory
                 Marshal.FreeHGlobal(out_effect_name_b);
             }
+
         }
         else
         {
@@ -1771,7 +1680,6 @@ public class EliasWrapper
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "elias_get_effect_name")]
     private static extern elias_result_codes elias_get_effect_name(elias_handle handle, string bus_name, byte slot, [In, Out] IntPtr out_effect_name);
-
     public static elias_result_codes elias_get_effect_name_wrapped(elias_handle handle, string bus_name, byte slot, out string out_effect_name)
     {
         // Set length of string that will be returned from C++ side
@@ -1799,6 +1707,7 @@ public class EliasWrapper
                 // Free memory
                 Marshal.FreeHGlobal(out_effect_name_b);
             }
+
         }
         else
         {

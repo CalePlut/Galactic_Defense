@@ -1,16 +1,14 @@
-﻿using System.Collections;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.PlayerLoop;
 using UnityEngine.UIElements;
 using UnityEngine.Analytics;
-
-public enum OrdinalAffect { low, medium, high }
 
 public class AffectManager : MonoBehaviour
 {
@@ -34,7 +32,6 @@ public class AffectManager : MonoBehaviour
     #endregion Events
 
     #region References
-
     public AffectBarText valenceDisplay, arousalDisplay, tensionDisplay;
     public AffectVariables affectVars;
     public PlayerShip Player;
@@ -79,7 +76,7 @@ public class AffectManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Used when wave is cleared. Clear all affective events and replace with single 5-second valence boost (essentially reset emotion)
+    /// Used when wave is cleared. Clear all affective events and replace with single n-second valence boost (essentially reset emotion)
     /// </summary>
     public void ClearWave()
     {
@@ -378,9 +375,9 @@ public class AffectManager : MonoBehaviour
             switch (change)
             {
                 case -2:
+                    return OrdinalAffect.low2;
                 case -1:
-                    return OrdinalAffect.low;
-
+                    return OrdinalAffect.low2;
                 case 1:
                     return OrdinalAffect.medium;
 
@@ -396,14 +393,14 @@ public class AffectManager : MonoBehaviour
             switch (change)
             {
                 case -2:
-
+                    return OrdinalAffect.low2;
                 case -1:
                     return OrdinalAffect.low;
 
                 case 1:
-
-                case 2:
                     return OrdinalAffect.high;
+                case 2:
+                    return OrdinalAffect.high2;
 
                 default: return mood;
             }
@@ -419,9 +416,9 @@ public class AffectManager : MonoBehaviour
                     return OrdinalAffect.medium;
 
                 case 1:
-
+                    return OrdinalAffect.high2;
                 case 2:
-                    return OrdinalAffect.high;
+                    return OrdinalAffect.high2;
 
                 default: return mood;
             }
@@ -440,7 +437,7 @@ public class AffectManager : MonoBehaviour
 public class AffectEvent
 {
     //private float maxValence, maxArousal, maxTension; //Maximum values of events, to be modified by time
-    public Emotion valence { get; protected set; } //Emotions are stored as Emotion and Value - Value is used to pass upstream, Emotion is used to process
+    public Emotion valence { get; protected set; }//Emotions are stored as Emotion and Value - Value is used to pass upstream, Emotion is used to process
 
     public Emotion arousal { get; protected set; }
     public Emotion tension { get; protected set; }
@@ -452,9 +449,7 @@ public class AffectEvent
 
     private float scalar;
 
-#nullable enable
-
-    public AffectEvent(Emotion? _valence, Emotion? _arousal, Emotion? _tension, float _duration, AffectManager _manager, float _multiplier = 1.0f)
+    public AffectEvent(Emotion _valence, Emotion _arousal, Emotion _tension, float _duration, AffectManager _manager, float _multiplier = 1.0f)
     {
         if (_valence != null)
         {
@@ -475,8 +470,6 @@ public class AffectEvent
         manager = _manager;
         multiplier = _multiplier;
     }
-
-#nullable disable
 
     /// <summary>
     /// Tracks scalar as a function of time, will be used for recall
@@ -649,3 +642,5 @@ public class Emotion
 }
 
 #endregion Emotions
+
+public enum OrdinalAffect { low2, low, medium, high, high2 }

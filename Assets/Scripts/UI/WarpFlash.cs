@@ -8,14 +8,21 @@ public class WarpFlash : MonoBehaviour
 
     public float flashTime;
 
-    private void Start()
+    bool flashing = false;
+
+    void Awake()
     {
         flashScreen = GetComponent<Image>();
     }
 
     public void flash()
     {
-        StartCoroutine(singleFlash(flashTime));
+        if (!flashing)
+        {
+            flashing = true;
+            //StartCoroutine(singleFlash(flashTime));
+        }
+
     }
 
     private IEnumerator singleFlash(float duration)
@@ -30,5 +37,6 @@ public class WarpFlash : MonoBehaviour
             remainingTime -= Time.deltaTime;
             yield return null;
         }
+        flashing = false;
     }
 }

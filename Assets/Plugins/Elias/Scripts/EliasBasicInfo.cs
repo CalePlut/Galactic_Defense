@@ -3,8 +3,8 @@
 /// </summary>
 public struct EliasBasicInfo
 {
-    public double initial_bpm;
-    public ushort initial_timesig_numerator;
-    public ushort initial_timesig_denominator;
-    public ushort bars;
+	public double initial_bpm;
+	public ushort initial_timesig_numerator;
+	public ushort initial_timesig_denominator;
+	public ushort bars;
 }

@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using AOT;
 
 /// <summary>
 /// Reads ELIAS' output and plays it via an AudioSource.
 /// </summary>
 public class EliasAudioReader
 {
-    protected EliasHelper elias;
+	protected EliasHelper elias;
     protected AudioSource audioSource;
     protected GCHandle gcHandle;
     protected float[] dataBuffer;
@@ -15,14 +16,15 @@ public class EliasAudioReader
     protected int bufferedLength;
     protected uint eliasFramesPerBufferExternal;
 
+
     public volatile AudioSpeakerMode unityChannelMode;
 
-    public EliasAudioReader(EliasHelper eliasHelper, uint eliasFramesPerBufferOut, AudioSource audioSourceTarget, bool useProceduralClip)
-    {
-        elias = eliasHelper;
+	public EliasAudioReader(EliasHelper eliasHelper, uint eliasFramesPerBufferOut, AudioSource audioSourceTarget, bool useProceduralClip)
+	{
+		elias = eliasHelper;
         eliasFramesPerBufferExternal = eliasFramesPerBufferOut;
         audioSource = audioSourceTarget;
-        dataBuffer = new float[eliasFramesPerBufferExternal * elias.ChannelCount];
+		dataBuffer = new float[eliasFramesPerBufferExternal * elias.ChannelCount];
         //This following part is normally only used when useHighLatencyMode in EliasPlayer is set to true.
         if (useProceduralClip)
         {
@@ -30,19 +32,19 @@ public class EliasAudioReader
             audioSource.clip = clip;
         }
         // By not having any audio clip, and making sure ELIAS is the first effect on the Audio Source, ELIAS is treated as the "source".
-        audioSource.loop = true;
-        gcHandle = GCHandle.Alloc(dataBuffer, GCHandleType.Pinned);
-    }
+		audioSource.loop = true;
+		gcHandle = GCHandle.Alloc(dataBuffer, GCHandleType.Pinned);
+	}
 
-    /// <summary>
-    /// Stops the AudioSource and disposes references. DOES NOT stop ELIAS!
-    /// </summary>
-    public void Dispose()
-    {
-        audioSource.Stop();
-        audioSource = null;
-        elias = null;
-        gcHandle.Free();
+	/// <summary>
+	/// Stops the AudioSource and disposes references. DOES NOT stop ELIAS!
+	/// </summary>
+	public void Dispose()
+	{
+		audioSource.Stop();
+		audioSource = null;
+		elias = null;
+		gcHandle.Free ();
     }
 
     protected void PCMReadCallback(float[] data)
@@ -50,39 +52,40 @@ public class EliasAudioReader
         ReadCallback(data, elias.ChannelCount);
     }
 
+
     public bool ReadCallback(float[] data, int unityChannelCount)
-    {
-        currentDataIndex = 0;
-        while (currentDataIndex < data.Length)
-        {
-            if (bufferedLength > 0 && elias.ChannelCount == unityChannelCount)
-            {
-                int length = Math.Min(data.Length - currentDataIndex, bufferedLength);
-                Array.Copy(dataBuffer, 0, data, currentDataIndex, length);
-                currentDataIndex += length;
-                bufferedLength -= length;
-                if (bufferedLength > 0)
-                {
-                    Array.Copy(dataBuffer, length, dataBuffer, 0, bufferedLength);
-                }
-            }
+	{
+		currentDataIndex = 0;
+		while (currentDataIndex < data.Length)
+		{
+			if (bufferedLength > 0 && elias.ChannelCount == unityChannelCount)
+			{
+				int length = Math.Min(data.Length - currentDataIndex, bufferedLength);
+				Array.Copy(dataBuffer, 0, data, currentDataIndex, length);
+				currentDataIndex += length;
+				bufferedLength -= length;
+				if (bufferedLength > 0)
+				{
+					Array.Copy(dataBuffer, length, dataBuffer, 0, bufferedLength);
+				}
+			}
             else if (bufferedLength > 0)
             {
                 copyConvertedData(data, unityChannelCount);
             }
             else
-            {
-                EliasWrapper.elias_result_codes r = EliasWrapper.elias_read_samples(elias.Handle, Marshal.UnsafeAddrOfPinnedArrayElement(dataBuffer, 0));
-                bufferedLength = (int)eliasFramesPerBufferExternal * elias.ChannelCount;
-                EliasHelper.LogResult(r, "Failed to render");
+			{
+				EliasWrapper.elias_result_codes r = EliasWrapper.elias_read_samples(elias.Handle, Marshal.UnsafeAddrOfPinnedArrayElement(dataBuffer, 0));
+				bufferedLength = (int)eliasFramesPerBufferExternal * elias.ChannelCount;
+				EliasHelper.LogResult(r, "Failed to render");
                 if (r != EliasWrapper.elias_result_codes.elias_result_success)
                 {
                     return false;
                 }
-            }
-        }
+			}
+		}
         return true;
-    }
+	}
 
     protected void copyConvertedData(float[] data, int unityChannelCount)
     {
@@ -103,6 +106,7 @@ public class EliasAudioReader
         {
             Debug.LogWarning("To downmix more then stereo, please set the Elias Players Channel count to match Unitys.");
         }
+
 
         if (bufferedLength > 0)
         {

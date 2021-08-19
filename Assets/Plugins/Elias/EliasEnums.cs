@@ -89,8 +89,8 @@ public enum elias_transition_options
     elias_transition_option_agility_beat_points, /* A double array in beats. */
     elias_transition_option_disable_smart_transitions, /* Boolean. */
     elias_transition_option_pickup_beats, /* Double in beats - will calculate beat lengths from right before the */
-    /* point at which the remainder of the audio starts, wherever it is triggered. This works because regular agility cannot */
-    /* be used in themes with time signature changes. */
+                                          /* point at which the remainder of the audio starts, wherever it is triggered. This works because regular agility cannot */
+                                          /* be used in themes with time signature changes. */
     elias_transition_option_level_selection_strategy, /* Int - corresponds to one of the constants in the elias_level_selection_strategies enum. */
     elias_transition_option_progression_mode, /* Int - corresponds to one of the constants in the elias_level_selection_modes enum. */
     elias_transition_option_stinger_selection_strategy /* Int - corresponds to one of the constants in the elias_stinger_selection_strategies enum. */

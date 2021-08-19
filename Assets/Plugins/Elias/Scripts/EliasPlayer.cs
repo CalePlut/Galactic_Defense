@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 /// <summary>
@@ -9,15 +10,15 @@ using UnityEngine;
 public class EliasPlayer : MonoBehaviour
 {
     //The file member matches the "Project" setting in the Inspector.
-    [HideInInspector]
-    public string file;
+	[HideInInspector]
+	public string file;
 
     //This is the index of a action preset. The inspector represents this as a list of strings.
-    [HideInInspector]
-    public int actionPreset = -1;
+	[HideInInspector]
+	public int actionPreset = -1;
 
-    [HideInInspector]
-    public EliasSetLevel customPreset;
+	[HideInInspector]
+	public EliasSetLevel customPreset;
 
     [HideInInspector]
     public int eliasFramesPerBuffer = 4096;
@@ -29,6 +30,7 @@ public class EliasPlayer : MonoBehaviour
     public int eliasCachePageSize = 4096;
 
     [HideInInspector]
+    //This is so that you can set what sample rate the Elias Project is meant to be run at. In the case that Unity uses a different sample rate, resampling will automatically occur.
     public int eliasSampleRate = -1;
 
     //Set this to 0 to allow Elias to run at the same sample rate as Unity.
@@ -46,6 +48,8 @@ public class EliasPlayer : MonoBehaviour
     [HideInInspector]
     public string customBasePath = "";
 
+
+
     /* WARNING: This member is used across multiple threads simultaneously!
      * The EliasHelper is used to setup the Elias Engine, as well as for Utility functionality such as getting indexes of themes from their names.
      */
@@ -62,13 +66,13 @@ public class EliasPlayer : MonoBehaviour
     protected volatile bool useHighLatencyMode = false;
 
     protected volatile bool shouldStop = false;
-
+    
     public EliasHelper Elias
-    {
-        get
-        {
-            return elias;
-        }
+	{
+		get
+		{
+			return elias;
+		}
     }
 
     /// <summary>
@@ -77,7 +81,7 @@ public class EliasPlayer : MonoBehaviour
     /// IMPORTANT: This function must never use thread unsafe calls, as it can be called from either the audio thread in case of failure to render, or the main thread, (game).
     /// </summary>
     public void Stop()
-    {
+	{
         shouldStop = false;
         isEliasStarted = false;
         if (elias.Handle != IntPtr.Zero)
@@ -85,83 +89,84 @@ public class EliasPlayer : MonoBehaviour
             EliasWrapper.elias_result_codes r = EliasWrapper.elias_stop(elias.Handle);
             EliasHelper.LogResult(r, "Problems stopping");
         }
-    }
+	}
 
-    /// <summary>
-    /// Lock and unlock the mixer in order to allow many changes to be made without the risk of running one or more buffers ahead in between your changes.
-    /// Note that multiple calls to elias_lock_mixer may be made in succession, as long as the same number of calls to elias_unlock_mixer are made (a recursive mutex, in other words).
-    /// If you forget to unlock the mixer, the music will stop and you will get deadlocks.
-    /// </summary>
-    public void LockMixer()
+	/// <summary>
+	/// Lock and unlock the mixer in order to allow many changes to be made without the risk of running one or more buffers ahead in between your changes.
+	/// Note that multiple calls to elias_lock_mixer may be made in succession, as long as the same number of calls to elias_unlock_mixer are made (a recursive mutex, in other words).
+	/// If you forget to unlock the mixer, the music will stop and you will get deadlocks.
+	/// </summary>
+	public void LockMixer()
     {
         if (elias.Handle == IntPtr.Zero)
             return;
 
         EliasWrapper.elias_result_codes r = EliasWrapper.elias_lock_mixer(elias.Handle);
-        EliasHelper.LogResult(r, "Problems locking the mixer");
-    }
+		EliasHelper.LogResult(r, "Problems locking the mixer");
+	}
 
-    /// <summary>
-    /// Lock and unlock the mixer in order to allow many changes to be made without the risk of running one or more buffers ahead in between your changes.
-    /// Note that multiple calls to elias_lock_mixer may be made in succession, as long as the same number of calls to elias_unlock_mixer are made (a recursive mutex, in other words).
-    /// If you forget to unlock the mixer, the music will stop and you will get deadlocks.
-    /// </summary>
-    public void UnlockMixer()
+	/// <summary>
+	/// Lock and unlock the mixer in order to allow many changes to be made without the risk of running one or more buffers ahead in between your changes.
+	/// Note that multiple calls to elias_lock_mixer may be made in succession, as long as the same number of calls to elias_unlock_mixer are made (a recursive mutex, in other words).
+	/// If you forget to unlock the mixer, the music will stop and you will get deadlocks.
+	/// </summary>
+	public void UnlockMixer()
     {
         if (elias.Handle == IntPtr.Zero)
             return;
 
         EliasWrapper.elias_result_codes r = EliasWrapper.elias_unlock_mixer(elias.Handle);
-        EliasHelper.LogResult(r, "Problems unlocking the mixer");
-    }
+		EliasHelper.LogResult(r, "Problems unlocking the mixer");
+	}
 
-    /// <summary>
-    /// Clear all queued events.
-    /// </summary>
-    public void ClearEvents()
+	/// <summary>
+	/// Clear all queued events.
+	/// </summary>
+	public void ClearEvents()
     {
         if (elias.Handle == IntPtr.Zero)
             return;
 
         EliasWrapper.elias_result_codes r = EliasWrapper.elias_clear_events(elias.Handle);
-        EliasHelper.LogResult(r, "Problems clearing events");
-    }
-
-    /// <summary>
-    /// Run an action preset.
-    /// </summary>
-    public void RunActionPreset(string preset, bool ignoreRequiredThemeMissmatch = false)
+		EliasHelper.LogResult(r, "Problems clearing events");
+	}
+		
+	/// <summary>
+	/// Run an action preset.
+	/// </summary>
+	public void RunActionPreset(string preset, bool ignoreRequiredThemeMissmatch = false)
     {
         if (elias.Handle == IntPtr.Zero)
             return;
 
         EliasWrapper.elias_result_codes r = EliasWrapper.elias_run_action_preset(elias.Handle, preset);
-        if (ignoreRequiredThemeMissmatch == false || r != EliasWrapper.elias_result_codes.elias_error_requiredthememismatch)
-        {
-            EliasHelper.LogResult(r, "Problems running an action preset");
-        }
-    }
+		if (ignoreRequiredThemeMissmatch == false || r != EliasWrapper.elias_result_codes.elias_error_requiredthememismatch)
+		{
+			EliasHelper.LogResult(r, "Problems running an action preset");
+		}
+	}
 
-    /// <summary>
-    /// Check whether the given action preset can be run at the current time.
-    /// </summary>
-    public bool CanRunActionPreset(string preset)
+	/// <summary>
+	/// Check whether the given action preset can be run at the current time.
+	/// </summary>
+	public bool CanRunActionPreset(string preset)
     {
         if (elias.Handle == IntPtr.Zero)
             return false;
 
         return EliasWrapper.elias_can_run_action_preset(elias.Handle, preset) == EliasWrapper.elias_result_codes.elias_result_success;
-    }
+	}
 
-    /// <summary>
-    /// Get the current theme.
-    /// </summary>
-    public string GetActiveTheme()
+	/// <summary>
+	/// Get the current theme.
+	/// </summary>
+	public string GetActiveTheme()
     {
         if (elias.Handle == IntPtr.Zero)
             return "";
 
         return elias.GetActiveTheme();
+
     }
 
     public bool CheckIfAnyActiveSourcesOrWaitingEvents()
@@ -180,10 +185,10 @@ public class EliasPlayer : MonoBehaviour
         return true;
     }
 
-    /// <summary>
-    /// Get greatest Level in theme. Returns -1 on error.
-    /// </summary>
-    public int GetGreatestLevelInTheme(string themeName)
+	/// <summary>
+	/// Get greatest Level in theme. Returns -1 on error.
+	/// </summary>
+	public int GetGreatestLevelInTheme(string themeName)
     {
         if (elias.Handle == IntPtr.Zero)
             return 0;
@@ -227,14 +232,14 @@ public class EliasPlayer : MonoBehaviour
                 "This may cause the speed of the audio to play at the wrong rate. Please set a sample rate for Unity in the Project settings.");
         }
         EliasWrapper.elias_result_codes r = EliasWrapper.elias_start_background_with_action_preset(elias.Handle, preset, AudioSettings.outputSampleRate != 0 ? (uint)AudioSettings.outputSampleRate : (uint)eliasSampleRate, (uint)eliasFramesPerBuffer);
-        EliasHelper.LogResult(r, preset);
-        return r == EliasWrapper.elias_result_codes.elias_result_success;
-    }
+		EliasHelper.LogResult(r, preset);
+		return r == EliasWrapper.elias_result_codes.elias_result_success;
+	}
 
-    /// <summary>
-    /// Start ELIAS with a elias_event_set_level event. This function must not be called from more than one thread at the same time.
-    /// </summary>
-    public bool StartTheme(elias_event_set_level setLevel)
+	/// <summary>
+	/// Start ELIAS with a elias_event_set_level event. This function must not be called from more than one thread at the same time.
+	/// </summary>
+	public bool StartTheme(elias_event_set_level setLevel)
     {
         if (elias.Handle == IntPtr.Zero)
             return false;
@@ -245,23 +250,23 @@ public class EliasPlayer : MonoBehaviour
                 "This may cause the speed of the audio to play at the wrong rate. Please set a sample rate for Unity in the Project settings.");
         }
         EliasWrapper.elias_result_codes r = EliasWrapper.elias_start_background_wrapped(elias.Handle, setLevel, AudioSettings.outputSampleRate != 0 ? (uint)AudioSettings.outputSampleRate : (uint)eliasSampleRate, (uint)eliasFramesPerBuffer);
-        EliasHelper.LogResult(r, setLevel.ToString());
-        return r == EliasWrapper.elias_result_codes.elias_result_success;
-    }
+		EliasHelper.LogResult(r, setLevel.ToString());
+        return r == EliasWrapper.elias_result_codes.elias_result_success; 
+	}
 
-    /// <summary>
-    /// Queue an elias_event.
-    /// </summary>
-    public void QueueEvent(elias_event @event)
+	/// <summary>
+	/// Queue an elias_event.
+	/// </summary>
+	public void QueueEvent(elias_event @event)
     {
         if (elias.Handle == IntPtr.Zero)
             return;
 
         EliasWrapper.elias_result_codes r = EliasWrapper.elias_queue_event_wrapped(elias.Handle, @event);
-        EliasHelper.LogResult(r, "Problems queing an event");
-    }
+		EliasHelper.LogResult(r, "Problems queing an event");
+	}
 
-    public void Awake()
+    public void Start()
     {
         if (elias == null)
         {
@@ -308,7 +313,7 @@ public class EliasPlayer : MonoBehaviour
             }
 #endif
 
-            if (customBasePath != "")
+            if (customBasePath != "") 
             {
                 basePath = customBasePath;
             }
@@ -321,11 +326,11 @@ public class EliasPlayer : MonoBehaviour
                 this.enabled = false;
             }
         }
-        if (playOnStart && deserializeProjectOnStart)
-        {
-            StartElias();
-        }
-    }
+		if (playOnStart && deserializeProjectOnStart) 
+		{
+			StartElias ();
+		}
+	}
 
     protected void OnDestroy()
     {
@@ -338,7 +343,7 @@ public class EliasPlayer : MonoBehaviour
         {
             audioReader.Dispose();
         }
-    }
+	}
 
     protected void Update()
     {
@@ -348,21 +353,21 @@ public class EliasPlayer : MonoBehaviour
         }
     }
 
-    public bool StartElias()
+	public bool StartElias()
     {
         if (elias.Handle == IntPtr.Zero)
             return false;
 
         bool startedSucessfully;
-        if (actionPreset >= 0)
-        {
-            startedSucessfully = StartWithActionPreset();
-        }
-        else
-        {
-            startedSucessfully = StartTheme(customPreset.CreateSetLevelEvent(elias));
-        }
-        if (startedSucessfully)
+		if (actionPreset >= 0)
+		{
+			startedSucessfully = StartWithActionPreset();
+		}
+		else
+		{
+			startedSucessfully = StartTheme(customPreset.CreateSetLevelEvent(elias));
+		}
+		if (startedSucessfully)
         {
             if (audioReader == null)
             {
@@ -371,10 +376,10 @@ public class EliasPlayer : MonoBehaviour
                 AudioSettings.OnAudioConfigurationChanged += OnAudioConfigurationChanged;
             }
             isEliasStarted = true;
-            GetComponent<AudioSource>().Play();
+            GetComponent<AudioSource> ().Play ();
         }
-        return startedSucessfully;
-    }
+		return startedSucessfully;
+	}
 
     public bool StartEliasWithActionPreset(string actionPreset)
     {
@@ -397,7 +402,7 @@ public class EliasPlayer : MonoBehaviour
             return startedSucessfully;
     }
 
-    private void OnAudioConfigurationChanged(bool deviceWasChanged)
+    void OnAudioConfigurationChanged(bool deviceWasChanged)
     {
         AudioConfiguration config = AudioSettings.GetConfiguration();
         if (audioReader != null)
@@ -412,28 +417,31 @@ public class EliasPlayer : MonoBehaviour
             return false;
 
         bool success;
-        string name;
-        EliasWrapper.elias_result_codes r = EliasWrapper.elias_get_action_preset_name_wrapped(elias.Handle, (uint)actionPreset, out name);
-        EliasHelper.LogResult(r, "Problems getting an action preset name");
-        string theme;
-        r = EliasWrapper.elias_get_action_preset_required_initial_theme_wrapped(elias.Handle, name, out theme);
-        EliasHelper.LogResult(r, "Problems with getting the required initial theme for an action preset");
-        success = StartWithActionPreset(name);
-        return success;
+		string name;
+		EliasWrapper.elias_result_codes r = EliasWrapper.elias_get_action_preset_name_wrapped(elias.Handle, (uint)actionPreset, out name);
+		EliasHelper.LogResult(r, "Problems getting an action preset name");
+		string theme;
+		r = EliasWrapper.elias_get_action_preset_required_initial_theme_wrapped(elias.Handle, name, out theme);
+		EliasHelper.LogResult(r, "Problems with getting the required initial theme for an action preset");
+		success = StartWithActionPreset(name);
+		return success;
     }
 
     //Due to some problems in Unity where they always pre-buffer 400ms of procedural audio, we use the OnAudioFilterRead to get close to no latency.
-    private void OnAudioFilterRead(float[] data, int channels)
+    void OnAudioFilterRead(float[] data, int channels)
     {
-        if (elias.Handle == IntPtr.Zero && audioReader != null)
-            return;
-
-        if (isEliasStarted && useHighLatencyMode == false)
+        if (elias != null)
         {
-            if (audioReader.ReadCallback(data, channels) == false)
+            if (elias.Handle == IntPtr.Zero && audioReader != null)
+                return;
+
+            if (isEliasStarted && useHighLatencyMode == false)
             {
-                //Note: We are not directly stopping here, as it seems to be causing crashes on some (ios) devices.
-                shouldStop = true;
+                if (audioReader.ReadCallback(data, channels) == false)
+                {
+                    //Note: We are not directly stopping here, as it seems to be causing crashes on some (ios) devices.
+                    shouldStop = true;
+                }
             }
         }
     }

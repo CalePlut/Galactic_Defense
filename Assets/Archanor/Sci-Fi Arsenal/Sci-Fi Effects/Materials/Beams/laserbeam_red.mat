@@ -31,13 +31,8 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: d11dd56859c121f48b9d8114f4800536, type: 3}
-<<<<<<< HEAD
         m_Scale: {x: 66.51785, y: 1}
         m_Offset: {x: -47002.516, y: 0}
-=======
-        m_Scale: {x: 65.833534, y: 1}
-        m_Offset: {x: -46993.133, y: 0}
->>>>>>> parent of 6488396f (Unity Update/Upkeep)
     m_Floats:
     - _BlendOp: 0
     - _BumpScale: 1

@@ -194,12 +194,8 @@ public class BasicShip : MonoBehaviour
         //Finds and assigns references
         SFX = GetComponent<AudioSource>();
 
-<<<<<<< HEAD
         var managerObj = GameObject.Find("MainCamera");
         //Debug.Log("Manger object found: " + managerObj);
-=======
-        var managerObj = GameObject.Find("Main Camera");
->>>>>>> parent of 6488396f (Unity Update/Upkeep)
         affect = managerObj.GetComponent<AffectManager>();
         manager = managerObj.GetComponent<GameManager>();
 
@@ -247,7 +243,7 @@ public class BasicShip : MonoBehaviour
     /// <param name="level"></param>
     public virtual void SetDefense(int level)
     {
-        maxHealth = attr.health(level);
+        maxHealth = attr.Health(level);
         maxShield = attr.shield(level);
         armour = attr.armour(level);
     }
@@ -433,43 +429,43 @@ public class BasicShip : MonoBehaviour
             }
             else { yield return null; }
         }
-        Vector3 AlternatePosition(ref turretPosition turret)
+        Vector3 AlternatePosition(ref turretPosition _turret)
         {
             Vector3 pos;
-            if (turret == turretPosition.fore)
+            if (_turret == turretPosition.fore)
             {
                 pos = foreTurret.position;
-                turret = turretPosition.aft;
+                _turret = turretPosition.aft;
             }
             else
             {
                 pos = aftTurret.position;
-                turret = turretPosition.fore;
+                _turret = turretPosition.fore;
             }
 
             return pos;
         }
 
-        void ExecuteFiringPattern(BasicShip target, int _warmupShots, int _totalShots, ref int takenShots, ref turretPosition turret, float damage, ref float firingDelay)
+        void ExecuteFiringPattern(BasicShip _target, int total_warmup_Shots, int total_shots_to_take, ref int shots_taken, ref turretPosition firing_turret, float damage, ref float firingDelay)
         {
-            if (target.alive)
+            if (_target.alive)
             {
-                if (takenShots < _warmupShots) //If we're warming up our shots, take single alternating shot
+                if (shots_taken < total_warmup_Shots) //If we're warming up our shots, take single alternating shot
                 {
                     //Calculate timing
-                    var remainingShots = _warmupShots - takenShots;
+                    var remainingShots = total_warmup_Shots - shots_taken;
                     firingDelay *= ((float)remainingShots * warmupRamp);
 
                     //Fire turret and track number of shots taken
-                    Vector3 pos = AlternatePosition(ref turret);
-                    FireTurret(target, damage, pos);
-                    takenShots++;
+                    Vector3 pos = AlternatePosition(ref firing_turret);
+                    FireTurret(_target, damage, pos);
+                    shots_taken++;
                 }
-                else if (takenShots < _totalShots) //Once we've hit our warmupTarget, we fire double broadsides until we've hit total shots.
+                else if (shots_taken < total_shots_to_take) //Once we've hit our warmupTarget, we fire double broadsides until we've hit total shots.
                 {
-                    FireTurret(target, damage, foreTurret.position);
-                    FireTurret(target, damage, aftTurret.position);
-                    takenShots++;
+                    FireTurret(_target, damage, foreTurret.position);
+                    FireTurret(_target, damage, aftTurret.position);
+                    shots_taken++;
                 }
                 else { FinishFiring(); } //If we complete all shots, finish firing.
             }
