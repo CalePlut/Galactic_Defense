@@ -57,6 +57,10 @@ public class GameManager : MonoBehaviour
 
     public List<GameObject> toHide;
     public GameObject upgradeMenu;
+    public upgradeButton upgrade_1, upgrade_2, upgrade_3; //3 slots for selecting possible upgrades
+    public TextMeshProUGUI upgradeCount_text; //Text for count of how many upgrades we've selected
+    private List<Upgrade> proposed_upgrades;
+    private int upgrades_selected = 0; //Actual count of how many upgrades we've selected
     public Transform playerWarpWindow;
     public Transform enemyWarpWindow;
 
@@ -243,8 +247,28 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1.0f);
         map.advanceStage(stage);
 
-        upgradeMenu.SetActive(true);
+        setupUpgrades();
     }
+
+    private void setupUpgrades()
+    {
+        proposed_upgrades = new List<Upgrade>();
+        proposed_upgrades = Player.upgradeManager.ProposeUpgrades();
+        upgrades_selected = 0;
+        upgradeCount_text.text = upgrades_selected + "/2";
+        upgradeMenu.SetActive(true);
+        upgrade_1.gameObject.SetActive(true);
+        upgrade_2.gameObject.SetActive(true);
+        upgrade_3.gameObject.SetActive(true);
+
+        upgrade_1.SetInfo(proposed_upgrades[0]);
+        upgrade_2.SetInfo(proposed_upgrades[1]);
+        upgrade_3.SetInfo(proposed_upgrades[2]);
+
+        upgradeCount_text.text = "0/2";
+    }
+
+
 
     /// <summary>
     /// Closes upgrade and stage clear menus and brigns up the map
@@ -258,31 +282,63 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Upgrades basic attack damage and speed
     /// </summary>
-    public void UpgradeAttack()
+    public void Select_Upgrade_1()
     {
-        Player.UpgradeAttack();
+        var selectedUpgrade = proposed_upgrades[0];
+        Player.upgradeManager.Select_Upgrade(selectedUpgrade);
+        //Player.UpgradeAttack();
         // AdjustShipStats();
-        ToMapMenu();
+
+        upgrades_selected++; //Increments selected upgrades
+        if (upgrades_selected < 2)
+        { //If we haven't selected both upgrades, just update text and deactivate button
+            upgrade_1.gameObject.SetActive(false);//Deactivate button
+            upgradeCount_text.text = upgrades_selected + "/2";
+        }
+        else //Otherwise, we return to map
+        {
+            ToMapMenu();
+        }
     }
 
     /// <summary>
     /// Upgrades health and reduces incoming damage
     /// </summary>
-    public void UpgradeDefense()
+    public void Select_Upgrade_2()
     {
-        Player.UpgradeDefense();
-        // AdjustShipStats();
-        ToMapMenu();
+        var selectedUpgrade = proposed_upgrades[1];
+        Player.upgradeManager.Select_Upgrade(selectedUpgrade);
+
+        upgrades_selected++; //Increments selected upgrades
+        if (upgrades_selected < 2)
+        { //If we haven't selected both upgrades, just update text and deactivate button
+            upgrade_2.gameObject.SetActive(false);//Deactivate button
+            upgradeCount_text.text = upgrades_selected + "/2";
+        }
+        else //Otherwise, we return to map
+        {
+            ToMapMenu();
+        }
     }
 
     /// <summary>
     /// Upgrades abilities
     /// </summary>
-    public void UpgradeSkills()
+    public void Select_Upgrade_3()
     {
-        Player.UpgradeSpecial();
-        //AdjustShipStats();
-        ToMapMenu();
+        var selectedUpgrade = proposed_upgrades[2];
+        Player.upgradeManager.Select_Upgrade(selectedUpgrade);
+
+        upgrades_selected++; //Increments selected upgrades
+        if (upgrades_selected < 2)
+        { //If we haven't selected both upgrades, just update text and deactivate button
+            upgrade_3.gameObject.SetActive(false);//Deactivate button
+            upgradeCount_text.text = upgrades_selected + "/2";
+        }
+        else //Otherwise, we return to map
+        {
+            ToMapMenu();
+        }
     }
 
     #endregion Hyperspace/Map Screen
@@ -339,8 +395,11 @@ public class GameManager : MonoBehaviour
         music.RunActionPreset("StartCombat");
         SetMood();
 
+<<<<<<< HEAD
+=======
         EnemyCompositionSetup();
 
+>>>>>>> parent of 6488396f (Unity Update/Upkeep)
         void SetMood()
         {
             if (stage == 1)
@@ -465,67 +524,59 @@ public class GameManager : MonoBehaviour
 
         void StageOneLogic()
         {
-            //if (encounter == 0)
-            //{
-            encounter = 0;
-            stage = 2;
-            EndCombat();
-            warpNext = true;
-            //}
-            //    encounter++;
-            //    stageManager.setEncounterProgress(1);
-            //    AdvanceToNextWave();
-            //}
-            //else
-            //{
-            //    encounter = 0;
-            //    stage = 2;
-            //    EndCombat();
-            //    warpNext = true;
-            //}
+            if (encounter == 0)
+            {
+                AdvanceWave();
+            }
+            else
+            {
+                FinalWave(2);
+            }
         }
 
         void StageTwoLogic()
         {
-            if (encounter == 0)
+            if (encounter == 0 || encounter ==1)
             {
-                encounter++;
-                stageManager.setEncounterProgress(1);
-                AdvanceToNextWave();
-                music.RunActionPreset("UnmuteGuit");
+                AdvanceWave();
             }
-            //else if (encounter == 1)
-            //{
-            //    encounter++;
-            //    stageManager.setEncounterProgress(2);
-            //    AdvanceToNextWave();
-            //    warpNext = false;
-            //}
             else
             {
-                encounter = 0;
-                stage = 3;
-                EndCombat();
-                warpNext = true;
+                FinalWave(3);
             }
         }
 
         void StageThreeLogic()
         {
-            if (encounter == 0)
+            if (encounter == 0 || encounter == 1)
             {
                 encounter++;
                 stageManager.setEncounterProgress(1);
                 AdvanceToNextWave();
                 warpNext = false;
-
-                music.RunActionPreset("UnmuteGuit");
             }
             else
             {
                 EndCombat();
             }
         }
+
+        void AdvanceWave()
+        {
+            encounter++;
+            stageManager.setEncounterProgress(encounter);
+            AdvanceToNextWave();
+            warpNext = false;
+        }
+
+        void FinalWave(int _stage)
+        {
+            encounter = 0;
+            stage = _stage;
+            EndCombat();
+            warpNext = true;
+        }
+
     }
 
     /// <summary>
@@ -552,30 +603,35 @@ public class GameManager : MonoBehaviour
 
         void StageOneEncounterLogic()
         {
-            //if (encounter == 0)
-            //  {
-            stageManager.setWaveLength(1);
-            stageManager.setText("Stage 1");
-            SpawnEnemy(enemyType.main, false);
-            //   }
-            //else
-            //{
-            //    stageManager.setText("1-2");
-            //    SpawnEnemy(enemyType.main, true);
-            //}
+            if (encounter == 0)
+            { 
+                stageManager.setWaveLength(2);
+                stageManager.setText("Stage 1");
+                SpawnEnemy(enemyType.main, false);
+            }
+            else
+            {
+                stageManager.setText("1-2");
+                SpawnEnemy(enemyType.main, true);
+            }
         }
 
         void StageTwoEncounterLogic()
         {
             if (encounter == 0)
             {
-                stageManager.setWaveLength(2);
+                stageManager.setWaveLength(3);
                 stageManager.setText("2-1");
+                SpawnEnemy(enemyType.main, false);
+            }
+            else if (encounter == 1)
+            {
+                stageManager.setText("2-2");
                 SpawnEnemy(enemyType.main, false);
             }
             else
             {
-                stageManager.setText("2-2");
+                stageManager.setText("2-3");
                 SpawnEnemy(enemyType.miniboss, true);
             }
             //else
@@ -589,8 +645,13 @@ public class GameManager : MonoBehaviour
         {
             if (encounter == 0)
             {
-                stageManager.setWaveLength(2);
+                stageManager.setWaveLength(3);
                 stageManager.setText("3-1");
+                SpawnEnemy(enemyType.main, false);
+            }
+            else if (encounter == 1)
+            {
+                stageManager.setText("3-2");
                 SpawnEnemy(enemyType.miniboss, false);
             }
             else
@@ -617,7 +678,10 @@ public class GameManager : MonoBehaviour
 
         //Instantiates wave, sets position, and gets reference
         var newEnemy = GameObject.Instantiate(enemyToInstantiate);
+        Debug.Log("Instantiating Enemy");
         newEnemy.transform.position = spawnPoint.transform.position;
+        newEnemy.SetActive(true);
+        Debug.Log("Enemy is activated!");
         currentEnemy = newEnemy.GetComponent<EnemyShip>();
         currentEnemy.ShipSetup();
         currentEnemy.ShieldsUp();
@@ -626,7 +690,9 @@ public class GameManager : MonoBehaviour
         affect.SetEnemy(currentEnemy);
         if (warp)
         {
+            Debug.Log("Telling enemy to warp in");
             StartCoroutine(currentEnemy.FlyIn());
+            Debug.Log("Is enemy still active?" + currentEnemy.isActiveAndEnabled);
         }
     }
 

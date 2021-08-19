@@ -57,8 +57,30 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
+    "com.unity.postprocessing": {
+      "version": "3.1.1",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.modules.physics": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.recorder": {
+      "version": "2.5.5",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.timeline": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.test-framework": {
+<<<<<<< HEAD
+      "version": "1.1.27",
+=======
       "version": "1.1.14",
+>>>>>>> parent of 6488396f (Unity Update/Upkeep)
       "depth": 0,
       "source": "registry",
       "dependencies": {

@@ -17,8 +17,8 @@ public class buttonManager : MonoBehaviour
 
     //public GameManager gm;
 
-    private bool onCooldown;
-    private float postCooldown;
+    //private bool onCooldown;
+    //private float postCooldown;
 
     public void globalCooldown() //Starts global cooldowns and begins clock for internal cooldown.
     {
@@ -81,15 +81,15 @@ public class buttonManager : MonoBehaviour
             totalCooldown += button.cooldown / button.myCD;
         }
 
-        postCooldown += Time.deltaTime;
+        //postCooldown += Time.deltaTime;
     }
 
     private IEnumerator ActionUsed()
     {
-        onCooldown = true;
+        //onCooldown = true;
         //affect.actionTrigger(postCooldown);
         yield return new WaitForSeconds(gcdValue);
-        onCooldown = false;
-        postCooldown = 0.0f;
+        //onCooldown = false;
+        //postCooldown = 0.0f;
     }
 }

@@ -12,30 +12,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba4d499d2b74c934fb549b6cc19ed65c, type: 3}
   m_Name: Enemy Attributes
   m_EditorClassIdentifier: 
-  baseHealth: 50
-  level2Health: 75
-  level3Health: 100
-  baseShield: 10
-  level2Shield: 15
-  level3Shield: 20
+  baseHealth: 25
+  level2Health: 50
+  level3Health: 75
+  baseShield: 5
+  level2Shield: 10
+  level3Shield: 15
   baseArmour: 1
   level2Armour: 0.9
   level3Armour: 0.75
   baseTurretDamage: 1
   level2TurretDamage: 1
-  level3TurretDamage: 2
+  level3TurretDamage: 1
   baseWarmupShots: 4
   level2WarmupShots: 3
   level3WarmupShots: 2
-  baseMaxShots: 8
-  level2MaxShots: 10
-  level3MaxShots: 15
-  baseHeavyAttackDamage: 25
-  level2HeavyAttackDamage: 50
-  level3HeavyAttackDamage: 75
-  baseHeavyAttackDelay: 1
-  level2HeavyAttackDelay: 0.75
-  level3HeavyAttackDelay: 0.5
+  baseMaxShots: 6
+  level2MaxShots: 7
+  level3MaxShots: 8
+  baseHeavyAttackDamage: 30
+  level2HeavyAttackDamage: 45
+  level3HeavyAttackDamage: 60
+  baseHeavyAttackDelay: 2
+  level2HeavyAttackDelay: 1.5
+  level3HeavyAttackDelay: 1
   baseParryFrame: 0.465
   level2ParryFrame: 0.93
   level3ParryFrame: 1.5
@@ -52,5 +52,5 @@ MonoBehaviour:
   level2HealDelay: 1.5
   level3HealDelay: 0.5
   heavyAttackShieldReduction: 0.2
-  shieldRechargeDelay: 0.5
+  shieldRechargeDelay: 1
   shieldBreakDelay: 7.5

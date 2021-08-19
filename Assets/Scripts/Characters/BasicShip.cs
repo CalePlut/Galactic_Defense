@@ -16,14 +16,14 @@ public class BasicShip : MonoBehaviour
     [Header("Attributes - Health and Damage")]
     public ShipAttributes attr;
 
-    protected float maxHealth, health;
-    protected float maxShield, shield;
+    public float maxHealth, health;
+    public float maxShield, shield;
     public float shieldRechargeRate = 0.25f;
     protected float armour;
 
-    protected float basicAttackDamage;
-    protected float heavyAttackDamage;
-    protected float heavyAttackDelay;
+    public float basicAttackDamage;
+    public float heavyAttackDamage;
+    public float heavyAttackDelay;
     protected float retaliateDamage;
 
     public bool alive { get; private set; } = true;
@@ -36,7 +36,7 @@ public class BasicShip : MonoBehaviour
 
     public float warmupRamp = 1.0f;
 
-    protected int warmupShots, totalShots;
+    public int warmupShots, totalShots;
 
     protected Coroutine attacking;
     private bool isAttacking;
@@ -57,7 +57,7 @@ public class BasicShip : MonoBehaviour
 
     #region Healing
 
-    protected float healPercent, healDelay;
+    public float healPercent, healDelay;
     public bool healing { get; private set; } = false;
 
     #endregion Healing
@@ -73,7 +73,7 @@ public class BasicShip : MonoBehaviour
 
     #region Other
 
-    protected float jamDuration;
+    public float jamDuration;
     protected float jamTimer;
     public int level = 1;
 
@@ -89,6 +89,7 @@ public class BasicShip : MonoBehaviour
     public healthBarAnimator healthBar;
     public shieldBarAnimator shieldBar;
     public AudioClip SFX_shieldActivate;
+
 
     #endregion UI references
 
@@ -142,7 +143,12 @@ public class BasicShip : MonoBehaviour
 
     public GameObject explosion;
     public AudioClip SFX_Explosion;
+    public AudioClip interrupt; 
+    public AudioClip[] SFX_Heavy_attack_windup;
+
     protected AudioSource SFX;
+
+
 
     #endregion Effect variables
 
@@ -174,6 +180,7 @@ public class BasicShip : MonoBehaviour
 
     protected ProspectiveEvent firingFinishEvent;
     protected ProspectiveEvent specialFiringEvent;
+    protected ProspectiveEvent healEvent;
 
     #endregion Affect references
 
@@ -187,7 +194,12 @@ public class BasicShip : MonoBehaviour
         //Finds and assigns references
         SFX = GetComponent<AudioSource>();
 
+<<<<<<< HEAD
+        var managerObj = GameObject.Find("MainCamera");
+        //Debug.Log("Manger object found: " + managerObj);
+=======
         var managerObj = GameObject.Find("Main Camera");
+>>>>>>> parent of 6488396f (Unity Update/Upkeep)
         affect = managerObj.GetComponent<AffectManager>();
         manager = managerObj.GetComponent<GameManager>();
 
@@ -526,41 +538,54 @@ public class BasicShip : MonoBehaviour
     private IEnumerator HeavyAttackFlare()
     {
         var timer = heavyAttackDelay;
+        var barTimer = 0.0f;
         while (timer > 0.0f)
         {
             timer -= Time.deltaTime;
+            barTimer += Time.deltaTime;
+            setChargeIndicator(barTimer, heavyAttackDelay);
             yield return null;
         }
         HeavyAttack(myTargetObject());
     }
 
-    public void InterruptHeavyAttack()
+    protected virtual void setChargeIndicator(float current, float max)
+    {
+
+    }
+
+    public virtual void InterruptHeavyAttack()
     {
         heavyAttackWindup = false;
-        ShieldsUp();
+        Destroy(warningFlareRuntimeObject);
+        SFX.PlayOneShot(interrupt);
+        //ShieldsUp();
     }
 
     /// <summary>
     /// Deals heavy damage to player ship and disables a part. If player ship is shielded, primes retaliation
     /// </summary>
-    public void HeavyAttack(GameObject targetObj)
+    public virtual void HeavyAttack(GameObject targetObj)
     {
-        if (heavyAttackWindup)
+        if (targetObj != null)
         {
-            heavyAttackWindup = false;
-            var emitter = laserEmitter.position;
-            var damage = heavyAttackDamage;
-            var target = targetObj.GetComponent<BasicShip>();
-
-            SpawnLaser(emitter, targetObj.transform.position);
-
-            if (target.absorbing)
+            if (heavyAttackWindup)
             {
-                target.SetRetaliate();
-            }
-            else
-            {
-                target.TakeHeavyDamage(damage, jamDuration);
+                heavyAttackWindup = false;
+                var emitter = laserEmitter.position;
+                var damage = heavyAttackDamage;
+                var target = targetObj.GetComponent<BasicShip>();
+
+                SpawnLaser(emitter, targetObj.transform.position);
+
+                if (target.absorbing)
+                {
+                    target.SetRetaliate();
+                }
+                else
+                {
+                    target.TakeHeavyDamage(damage, jamDuration);
+                }
             }
         }
         ShieldsUp();
@@ -591,9 +616,12 @@ public class BasicShip : MonoBehaviour
     {
         healing = true;
         var timer = healDelay;
+        var chargeTimer = 0.0f;
         while (timer > 0.0f)
         {
             timer -= Time.deltaTime;
+            chargeTimer += Time.deltaTime;
+            setChargeIndicator(chargeTimer, healDelay);
             yield return null;
         }
         Heal();
@@ -728,7 +756,7 @@ public class BasicShip : MonoBehaviour
     /// If we're not doing something else, we can bring shields up.
     /// IMPORTANT: Must be called AFTER changing value
     /// </summary>
-    public void ShieldsUp()
+    public virtual void ShieldsUp()
     {
         if (!isAttacking && !healing && !heavyAttackWindup && !absorbing && !shieldBroken)
         {
@@ -743,7 +771,7 @@ public class BasicShip : MonoBehaviour
     /// <summary>
     /// Turns off shield and sets recharge time
     /// </summary>
-    public void ShieldsDown()
+    public virtual void ShieldsDown()
     {
         shielded = false;
         shieldCharge = shieldCooldown;
@@ -818,6 +846,7 @@ public class BasicShip : MonoBehaviour
                     _damage *= 1.5f;
                 }
 
+
                 //Take damage
                 damage = _damage * armour;
                 health -= damage;
@@ -857,7 +886,7 @@ public class BasicShip : MonoBehaviour
                 if (heavyAttackWindup)
                 {
                     InterruptHeavyAttack();
-                    damage *= 1.5f;
+                    //damage *= 1.5f;
                 }
 
                 //Take damage
@@ -994,6 +1023,7 @@ public class BasicShip : MonoBehaviour
     /// </summary>
     protected virtual void die()
     {
+        Debug.Log("Death triggered");
         alive = false;
         myTarget().InterruptFiring();
 
@@ -1004,6 +1034,8 @@ public class BasicShip : MonoBehaviour
 
     private IEnumerator death()
     {
+        InterruptLaser();
+        InterruptFiring();
         yield return new WaitForSeconds(1.0f);
         doneDeath();
     }

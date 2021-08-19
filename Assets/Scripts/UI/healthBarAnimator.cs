@@ -18,19 +18,26 @@ public class healthBarAnimator : MonoBehaviour
     public float max { get; private set; }
     public float health { get; private set; }
 
-    private void Awake()
+    private void Start()
     {
-        healthBar = GetComponent<Slider>();
-        fillCol = fill.color;
+        Setup();
     }
 
     public void Refresh(float _max, float _value)
     {
+        if (healthBar == null) { Setup(); }
+
         max = _max;
         health = _value;
         healthBar.maxValue = _max;
 
         SetHealthColor(_value);
+    }
+
+    private void Setup()
+    {
+        healthBar = GetComponent<Slider>();
+        fillCol = fill.color;
     }
 
     public void deActivate()

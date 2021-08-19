@@ -378,23 +378,23 @@ public class EliasPlayer : MonoBehaviour
 
     public bool StartEliasWithActionPreset(string actionPreset)
     {
-        if (elias.Handle == IntPtr.Zero)
-            return false;
+            if (elias.Handle == IntPtr.Zero)
+                return false;
 
-        bool startedSucessfully;
-        startedSucessfully = StartWithActionPreset(actionPreset);
-        if (startedSucessfully)
-        {
-            if (audioReader == null)
+            bool startedSucessfully;
+            startedSucessfully = StartWithActionPreset(actionPreset);
+            if (startedSucessfully)
             {
-                audioReader = new EliasAudioReader(elias, (uint)eliasFramesPerBuffer, GetComponent<AudioSource>(), useHighLatencyMode);
-                audioReader.unityChannelMode = AudioSettings.speakerMode;
-                AudioSettings.OnAudioConfigurationChanged += OnAudioConfigurationChanged;
+                if (audioReader == null)
+                {
+                    audioReader = new EliasAudioReader(elias, (uint)eliasFramesPerBuffer, GetComponent<AudioSource>(), useHighLatencyMode);
+                    audioReader.unityChannelMode = AudioSettings.speakerMode;
+                    AudioSettings.OnAudioConfigurationChanged += OnAudioConfigurationChanged;
+                }
+                isEliasStarted = true;
+                GetComponent<AudioSource>().Play();
             }
-            isEliasStarted = true;
-            GetComponent<AudioSource>().Play();
-        }
-        return startedSucessfully;
+            return startedSucessfully;
     }
 
     private void OnAudioConfigurationChanged(bool deviceWasChanged)

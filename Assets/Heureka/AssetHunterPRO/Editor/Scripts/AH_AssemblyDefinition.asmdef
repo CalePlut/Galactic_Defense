@@ -1,0 +1,16 @@
+{
+    "name": "AH_AssemblyDefinition",
+    "references": [
+        "Heureka_GlobalAssemblyDefinition"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

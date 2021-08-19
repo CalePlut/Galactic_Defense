@@ -26,7 +26,7 @@ public class StatUI : MonoBehaviour
     private GameManager gm;
     private MusicManager music;
 
-    private bool caught = false;
+    //private bool caught = false;
 
     // Start is called before the first frame update
     private void Awake()

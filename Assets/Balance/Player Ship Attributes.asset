@@ -12,45 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba4d499d2b74c934fb549b6cc19ed65c, type: 3}
   m_Name: Player Ship Attributes
   m_EditorClassIdentifier: 
-  baseHealth: 50
-  level2Health: 75
-  level3Health: 100
-  baseShield: 10
-  level2Shield: 20
-  level3Shield: 35
+  baseHealth: 30
+  baseShield: 5
   baseArmour: 0.9
-  level2Armour: 0.75
-  level3Armour: 0.5
   baseTurretDamage: 1
-  level2TurretDamage: 1
-  level3TurretDamage: 2
   baseWarmupShots: 8
-  level2WarmupShots: 6
-  level3WarmupShots: 4
-  baseMaxShots: 15
-  level2MaxShots: 20
-  level3MaxShots: 25
-  baseHeavyAttackDamage: 20
-  level2HeavyAttackDamage: 40
-  level3HeavyAttackDamage: 80
-  baseHeavyAttackDelay: 2
-  level2HeavyAttackDelay: 1.5
-  level3HeavyAttackDelay: 0.924
-  baseParryFrame: 0.5
-  level2ParryFrame: 0.75
-  level3ParryFrame: 1
-  baseRetaliateDamage: 5
-  level2RetaliateDamage: 10
-  level3RetaliateDamage: 15
-  baseDisableDuration: 3.5
-  level2DisableDuration: 6
-  level3DisableDuration: 10
-  baseHealPercent: 0.5
-  level2HealPercent: 0.75
-  level3HealPercent: 0.9
-  baseHealDelay: 2
-  level2HealDelay: 1.25
-  level3HealDelay: 0.75
+  baseMaxShots: 12
+  baseHeavyAttackDamage: 15
+  baseHeavyAttackDelay: 3
+  baseParryFrame: 0.35
+  baseRetaliateDamage: 10
+  baseDisableDuration: 3
+  baseHealPercent: 0.4
+  baseHealDelay: 3
   heavyAttackShieldReduction: 0.2
-  shieldRechargeDelay: 0.462
-  shieldBreakDelay: 7.4
+  shieldRechargeDelay: 1
+  shieldBreakDelay: 5

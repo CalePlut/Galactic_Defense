@@ -2,8 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using SciFiArsenal;
+using UnityEngine.UI;
+using TMPro;
 using UnityEditor;
 using System;
+using Random = UnityEngine.Random;
 
 public class PlayerShip : BasicShip
 {
@@ -37,17 +40,22 @@ public class PlayerShip : BasicShip
     [Header("Effects and Weapons")]
     public GameObject absorbObject;
 
-    private float parryFrame;
+    public float parryFrame;
+    public bool short_HeavyCharge = false;
 
     public GameObject disableShotPrefab;
 
-    private int shots = 0;
+   // private int shots = 0;
     public comboTracker comboTracker;
 
     [Header("Ship-specific Audio")]
-    public AudioClip SFX_absorbAttack;//, SFX_retaliate;
+    //public AudioClip SFX_absorbAttack;//, SFX_retaliate;
 
     public AudioClip SFX_Heal;
+    public AudioClip SFX_begin_parry;
+    public AudioClip SFX_Parry;
+    public AudioClip SFX_Riposte;
+    public AudioClip SFX_Shield_hum;
 
     #endregion Effect  and weapon references
 
@@ -61,6 +69,12 @@ public class PlayerShip : BasicShip
     public basicButton heavyAttackButton;
     public buttonManager buttonManager;
 
+    public UpgradeManager upgradeManager;
+
+    public TextMeshProUGUI attackUI, defendUI, abilityUI;
+
+    public Slider chargeBar;
+
     #endregion Button references
 
     #region Mechanic and Attribute variables
@@ -69,7 +83,7 @@ public class PlayerShip : BasicShip
 
     private bool retaliate = false; //Variables for shield mechanics
 
-    private int attackLevel = 1, defenseLevel = 1, specialLevel = 1;
+   // private int attackLevel = 1, defenseLevel = 1, specialLevel = 1;
 
     #endregion Mechanic and Attribute variables
 
@@ -116,23 +130,26 @@ public class PlayerShip : BasicShip
         }
     }
 
-    public void UpgradeAttack()
-    {
-        attackLevel++;
-        SetAttack(attackLevel);
-    }
+    //public void UpgradeAttack()
+    //{
+    //    attackLevel++;
+    //    attackUI.text = attackLevel + "/3";
+    //    SetAttack(attackLevel);
+    //}
 
-    public void UpgradeDefense()
-    {
-        defenseLevel++;
-        SetDefense(defenseLevel);
-    }
+    //public void UpgradeDefense()
+    //{
+    //    defenseLevel++;
+    //    defendUI.text = defenseLevel + "/3";
+    //    SetDefense(defenseLevel);
+    //}
 
-    public void UpgradeSpecial()
-    {
-        specialLevel++;
-        SetSpecial(specialLevel);
-    }
+    //public void UpgradeSpecial()
+    //{
+    //    specialLevel++;
+    //    abilityUI.text = specialLevel + "/3";
+    //    SetSpecial(specialLevel);
+    //}
 
     protected override void doneDeath()
     {
@@ -224,6 +241,15 @@ public class PlayerShip : BasicShip
     public override void TakeDamage(float _damage)
     {
         base.TakeDamage(_damage);
+        //This was too powerful and didn't give any feedback on enemy.
+        if (!shielded)
+        {
+            //If we're winding up a heavy attack, it interrupts the attack
+            if (heavyAttackWindup)
+            {
+                InterruptHeavyAttack();
+            }
+        }
         ///Past events are moderately strong, because most of the modifiers will reduce them significantly
         var damageValence = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
         var damageTension = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
@@ -320,6 +346,7 @@ public class PlayerShip : BasicShip
             ShieldsDown();
         }
         TriggerGlobalCooldown();
+        SFX.PlayOneShot(SFX_begin_parry);
         absorbing = true;
         retaliate = false;
         var absorbEffect = Instantiate(absorbObject, this.transform);
@@ -366,7 +393,7 @@ public class PlayerShip : BasicShip
     /// </summary>
     public override void SetRetaliate()
     {
-        SFX.PlayOneShot(SFX_absorbAttack);
+        SFX.PlayOneShot(SFX_Parry);
         retaliate = true;
 
         //shieldStamina.AbsorbAttack();
@@ -396,6 +423,7 @@ public class PlayerShip : BasicShip
             retaliateEvent = null; //After firing, we clear our retaliateEvent
             target.Jam(jamDuration * 2);
             target.ShieldBreak();
+            SFX.PlayOneShot(SFX_Riposte);
         }
 
         buttonManager.RefreshAllCooldowns();
@@ -433,6 +461,7 @@ public class PlayerShip : BasicShip
         }
 
         ShieldsUp();
+        hideCharge();
     }
 
     /// <summary>
@@ -441,6 +470,7 @@ public class PlayerShip : BasicShip
     public override void HealTrigger()
     {
         base.HealTrigger();
+        activateCharge();
         if (attacking != null)
         {
             InterruptFiring();
@@ -449,7 +479,8 @@ public class PlayerShip : BasicShip
         {
             ShieldsDown();
         }
-        affect.AddUpcomingPlayerAttack(SpecialProspectiveEvent(healDelay));
+        healEvent = SpecialProspectiveEvent(healDelay);
+        affect.AddUpcomingPlayerAttack(healEvent);
         //ChargeShield(shieldCooldown);
         TriggerGlobalCooldown();
     }
@@ -469,17 +500,83 @@ public class PlayerShip : BasicShip
             heavyAttackButton.sendToButton(heavyAttackCooldown);
         }
     }
+    public override void InterruptHeavyAttack()
+    {
+        base.InterruptHeavyAttack();
+        if (specialFiringEvent != null)
+        {
+            affect.CullEvent(specialFiringEvent);
+            affect.CreatePastEvent(new Emotion(EmotionDirection.decrease, EmotionStrength.moderate), new Emotion(EmotionDirection.decrease, EmotionStrength.weak), null, 10.0f);
+        }
+    }
 
     public override void HeavyAttackTrigger()
     {
         base.HeavyAttackTrigger();
+        HeavyAttack_Sound();
         if (attacking != null) { InterruptFiring(); }
         specialFiringEvent = SpecialProspectiveEvent(heavyAttackDelay);
         affect.AddUpcomingPlayerAttack(specialFiringEvent);
         TriggerGlobalCooldown();
+        activateCharge();
+    }
+    public override void HeavyAttack(GameObject targetObj)
+    {
+        base.HeavyAttack(targetObj);
+        hideCharge();
+    }
+
+    protected override void setChargeIndicator(float current, float max)
+    {
+        base.setChargeIndicator(current, max);
+        var currentMax = chargeBar.maxValue;
+        if (max != currentMax)
+        {
+            chargeBar.maxValue = max;
+        }
+        chargeBar.value = current;
+    }
+
+    void activateCharge()
+    {
+        chargeBar.gameObject.SetActive(true);
+    }
+
+    void hideCharge()
+    {
+        chargeBar.gameObject.SetActive(false);
+    }
+
+    void HeavyAttack_Sound()
+    {
+        var clip = SFX_Heavy_attack_windup[0];
+        if (short_HeavyCharge)
+        {
+            clip = SFX_Heavy_attack_windup[2];
+        }
+        SFX.PlayOneShot(clip);
     }
 
     #endregion HeavyAttack
+
+    #region Shield_overrides
+    public override void ShieldsDown()
+    {
+        base.ShieldsDown();
+        if (SFX !=null && SFX.isPlaying)
+        {
+            SFX.Stop();
+        }
+    }
+    public override void ShieldsUp()
+    {
+        base.ShieldsUp();
+        SFX.clip = SFX_Shield_hum;
+        SFX.Play();
+    }
+
+
+    #endregion
 
     /// <summary>
     /// Override of Jam
@@ -506,10 +603,232 @@ public class PlayerShip : BasicShip
     private void Start()
     {
         ShipSetup();
+        upgradeManager = new UpgradeManager(this);
     }
 
     // Update is called once per frame
     private void Update()
     {
     }
+}
+
+public class UpgradeManager
+{
+    List<Upgrade> PossibleUpgrades;
+    List<Upgrade> ActiveUpgrades;
+    PlayerShip player;
+
+    public UpgradeManager(PlayerShip _player)
+    {
+        player = _player;
+        Setup();
+    }
+
+    //Unfortunately, at some point I just need to load all these possible upgrades into a list
+    #region Setup
+    public void Setup()
+    {
+        PossibleUpgrades = Populate_Upgrades();
+        ActiveUpgrades = new List<Upgrade>();
+    }
+
+    public List<Upgrade> ProposeUpgrades()
+    {
+        var proposed_upgrades = new List<Upgrade>();
+        for (int i = 0; i <3; i++)
+        {
+            var randUpg = Random.Range(0, PossibleUpgrades.Count);
+            var proposal = PossibleUpgrades[randUpg];
+            while (proposed_upgrades.Contains(proposal)) //Re-do if this would be a duplicate, until it's not a duplicate
+            {
+                randUpg = Random.Range(0, PossibleUpgrades.Count);
+                proposal = PossibleUpgrades[randUpg];
+            }
+
+            proposed_upgrades.Add(proposal);
+        }
+        return proposed_upgrades;
+    }
+
+    public void Select_Upgrade(Upgrade _selected)
+    {
+        if (PossibleUpgrades.Contains(_selected))
+        {
+            PossibleUpgrades.Remove(_selected);
+        }
+        else
+        {
+            Debug.Log("Possible upgrades didn't contain selected upgrade? " + _selected.Name());
+        }
+        ActiveUpgrades.Add(_selected);
+        _selected.Activate();
+    }
+
+
+    List<Upgrade> Populate_Upgrades()
+    {
+        var Upgrades = new List<Upgrade>();
+        var UpgradeCount = Enum.GetNames(typeof(Upgrade_Type)).Length;
+        for (int i = 0; i < UpgradeCount; i++)
+        {
+            var new_Upgrade = new Upgrade((Upgrade_Type)i, player);
+            Upgrades.Add(new_Upgrade);
+        }
+
+        return Upgrades;
+    }
+    #endregion
+
+}
+
+public class Upgrade
+{
+    Upgrade_Type type;
+    bool active = false;
+    string name = "No_Name";
+    string desc = "No Desc";
+    PlayerShip player;
+
+
+    public Upgrade(Upgrade_Type _type, PlayerShip _player)
+    {
+        type = _type;
+        active = false;
+        setInfo(_type);
+        player = _player;
+    }
+
+    public void Activate()
+    {
+        active = true;
+        SetPlayerAttribute();
+    }
+
+    public bool isActive()
+    {
+        return active;
+    }
+
+    public string Name()
+    {
+        return name;
+    }
+    public string Description()
+    {
+        return desc;
+    }
+
+    private void SetPlayerAttribute()
+    {
+        switch (type)
+        {
+            case Upgrade_Type.HeavyAttack_Charge:
+                player.heavyAttackDelay *= 0.5f;
+                player.short_HeavyCharge = true;
+                Debug.Log("New heavy attack charge = " + player.heavyAttackDelay);
+                break;
+            case Upgrade_Type.Heal_Charge:
+                player.healDelay *= 0.5f;
+                Debug.Log("New heal attack charge = " + player.healDelay);
+
+                break;
+            case Upgrade_Type.LightAttack_Charge:
+                player.warmupShots /= 2;
+                Debug.Log("New warmup shots = " + player.warmupShots);
+                break;
+            case Upgrade_Type.LightAttack_Damage:
+                player.basicAttackDamage *= 2;
+                Debug.Log("New attack damage = " + player.basicAttackDamage);
+                break;
+            case Upgrade_Type.Shield_Points:
+                player.maxShield *= 2;
+                Debug.Log("New max shield = " + player.maxShield);
+                break;
+            case Upgrade_Type.Health_Points:
+                player.maxHealth *= 2;
+                Debug.Log("New max health = " + player.maxHealth);
+                break;
+            case Upgrade_Type.HeavyAttack_Damage:
+                player.heavyAttackDamage *= 2;
+                Debug.Log("New heavy attack damage = " + player.heavyAttackDamage);
+                break;
+            case Upgrade_Type.Parry_Time:
+                player.parryFrame *= 2.0f;
+                Debug.Log("New parry frame = " + player.parryFrame);
+                break;
+            case Upgrade_Type.Parry_Disable:
+                player.jamDuration *= 2.0f;
+                Debug.Log("New jam duration = " + player.jamDuration);
+                break;
+            case Upgrade_Type.Heal_Strength:
+                player.healPercent = 0.9f;
+                Debug.Log("New heal percent = " + player.healPercent);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void setInfo(Upgrade_Type _type)
+    {
+        switch (_type)
+        {
+            case Upgrade_Type.HeavyAttack_Charge:
+                name = "Laser Supercharger";
+                desc = "Reduces charge time of Laser attack by 50%";
+                break;
+            case Upgrade_Type.Heal_Charge:
+                name = "Repair Supercharger";
+                desc = "Reduces charge time of Self-repair by 50%";
+                break;
+            case Upgrade_Type.LightAttack_Charge:
+                name = "Cannon Supercharger";
+                desc = "Fires both cannons 50% faster when attacking";
+                break;
+            case Upgrade_Type.LightAttack_Damage:
+                name = "Cannon focusing crystal";
+                desc = "Light attacks deal 2x damage";
+                break;
+            case Upgrade_Type.Shield_Points:
+                name = "Shield capacitor";
+                desc = "Doubles shield points";
+                break;
+            case Upgrade_Type.Health_Points:
+                name = "Reinforced Hull";
+                desc = "Doubles health points";
+                break;
+            case Upgrade_Type.HeavyAttack_Damage:
+                name = "Laser focusing crystal";
+                desc = "Laser attack deals 2x damage";
+                break;
+            case Upgrade_Type.Parry_Time:
+                name = "Absorbitive capacitor";
+                desc = "Increases timing window for absorbing incoming laser";
+                break;
+            case Upgrade_Type.Parry_Disable:
+                name = "Ion supercharger";
+                desc = "Increases disable time after absorbing incoming laser";
+                break;
+            case Upgrade_Type.Heal_Strength:
+                name = "Repair nanite swarm";
+                desc = "Self-repair now heals 90% of missing health";
+                break;
+            default:
+                break;
+        }
+    }
+
+}
+
+public enum Upgrade_Type { 
+    HeavyAttack_Charge, 
+    Heal_Charge, 
+    LightAttack_Charge,
+    LightAttack_Damage,
+    Shield_Points,
+    Health_Points,
+    HeavyAttack_Damage,
+    Parry_Time,
+    Parry_Disable,
+    Heal_Strength
 }

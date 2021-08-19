@@ -3,7 +3,11 @@
 --- !u!129 &1
 PlayerSettings:
   m_ObjectHideFlags: 0
+<<<<<<< HEAD
+  serializedVersion: 22
+=======
   serializedVersion: 21
+>>>>>>> parent of 6488396f (Unity Update/Upkeep)
   productGUID: 37ccf172b707deb479c52e826d31a071
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
@@ -151,6 +155,12 @@ PlayerSettings:
   applicationIdentifier: {}
   buildNumber:
     Standalone: 0.5
+<<<<<<< HEAD
+    iPhone: 0
+    tvOS: 0
+  overrideDefaultApplicationIdentifier: 0
+=======
+>>>>>>> parent of 6488396f (Unity Update/Upkeep)
   AndroidBundleVersionCode: 1
   AndroidMinSdkVersion: 19
   AndroidTargetSdkVersion: 0
@@ -222,6 +232,7 @@ PlayerSettings:
   iOSRequireARKit: 0
   iOSAutomaticallyDetectAndAddCapabilities: 1
   appleEnableProMotion: 0
+  shaderPrecisionModel: 0
   clonedFromGUID: a9ab45d651447274b98057940d1af953
   templatePackageId: com.unity.template.3dextra@4.0.5
   templateDefaultScene: Assets/Scenes/SampleScene.unity
@@ -486,6 +497,11 @@ PlayerSettings:
   switchNetworkInterfaceManagerInitializeEnabled: 1
   switchPlayerConnectionEnabled: 1
   switchUseNewStyleFilepaths: 0
+<<<<<<< HEAD
+  switchUseMicroSleepForYield: 1
+  switchMicroSleepForYieldTime: 25
+=======
+>>>>>>> parent of 6488396f (Unity Update/Upkeep)
   ps4NPAgeRating: 12
   ps4NPTitleSecret: 
   ps4NPTrophyPackPath: 
@@ -554,6 +570,12 @@ PlayerSettings:
   ps4disableAutoHideSplash: 0
   ps4videoRecordingFeaturesUsed: 0
   ps4contentSearchFeaturesUsed: 0
+<<<<<<< HEAD
+  ps4CompatibilityPS5: 0
+  ps4AllowPS5Detection: 0
+  ps4GPU800MHz: 1
+=======
+>>>>>>> parent of 6488396f (Unity Update/Upkeep)
   ps4attribEyeToEyeDistanceSettingVR: 0
   ps4IncludedModules: []
   ps4attribVROutputEnabled: 0
@@ -595,6 +617,12 @@ PlayerSettings:
     28: UNITY_POST_PROCESSING_STACK_V2
     29: UNITY_POST_PROCESSING_STACK_V2
     30: UNITY_POST_PROCESSING_STACK_V2
+<<<<<<< HEAD
+    32: UNITY_POST_PROCESSING_STACK_V2
+    33: UNITY_POST_PROCESSING_STACK_V2
+  additionalCompilerArguments: {}
+=======
+>>>>>>> parent of 6488396f (Unity Update/Upkeep)
   platformArchitecture: {}
   scriptingBackend:
     Standalone: 0
@@ -681,12 +709,17 @@ PlayerSettings:
     m_VersionCode: 1
     m_VersionName: 
   apiCompatibilityLevel: 6
+  activeInputHandler: 1
   cloudProjectId: da697c47-e295-4b01-8d88-4fcc55efc14c
   framebufferDepthMemorylessMode: 0
+  qualitySettingsNames: []
   projectName: Galactic Defense
   organizationId: cale-martin-plut
   cloudEnabled: 0
+<<<<<<< HEAD
+=======
   enableNativePlatformBackendsForNewInputSystem: 1
   disableOldInputManagerSupport: 0
+>>>>>>> parent of 6488396f (Unity Update/Upkeep)
   legacyClampBlendShapeWeights: 0
   virtualTexturingSupportEnabled: 0

@@ -7,7 +7,7 @@ public class menuManager : MonoBehaviour
 {
     public GameObject loadPanel;
 
-    public List<GameObject> toHide;
+    public GameObject button_Holder;
 
     public void Play(bool tutorial)
     {
@@ -33,10 +33,7 @@ public class menuManager : MonoBehaviour
 
     private IEnumerator loadingScreen(string sceneName)
     {
-        foreach (GameObject obj in toHide)
-        {
-            obj.SetActive(false);
-        }
+        button_Holder.SetActive(false);
         loadPanel.SetActive(true);
 
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);

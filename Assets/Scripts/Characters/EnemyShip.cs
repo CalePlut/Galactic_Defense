@@ -321,7 +321,30 @@ public class EnemyShip : BasicShip
 
     #endregion Combat AI
 
-    // Start is called before the first frame update
+    public override void HeavyAttackTrigger()
+    {
+        base.HeavyAttackTrigger();
+        HeavyAttack_Sound();
+    }
+
+    #region Effects and Overrides
+    void HeavyAttack_Sound()
+    {
+        var clip = SFX_Heavy_attack_windup[0];
+        if (level == 2)
+        {
+            clip = SFX_Heavy_attack_windup[1];
+        }
+        else if (level == 3)
+        {
+            clip = SFX_Heavy_attack_windup[2];
+        }
+        SFX.PlayOneShot(clip);
+    }
+
+        #endregion
+
+        // Start is called before the first frame update
     private void Start()
     {
     }
@@ -331,3 +354,4 @@ public class EnemyShip : BasicShip
     {
     }
 }
+

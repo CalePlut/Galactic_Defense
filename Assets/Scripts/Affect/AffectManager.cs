@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.PlayerLoop;
 using UnityEngine.UIElements;
+using UnityEngine.Analytics;
 
 public enum OrdinalAffect { low, medium, high }
 
@@ -263,15 +264,22 @@ public class AffectManager : MonoBehaviour
 
             ProcessEmotions(valenceValue, arousalValue, tensionValue);
 
+
+            yield return new WaitForSeconds(0.25000f);
+
+
             void emotionDebug()
             {
-                //   Grapher.Log(valenceValue, "Valence");
-                //  Grapher.Log(arousalValue, "Arousal");
-                //    Grapher.Log(tensionValue, "Tension");
+#if UNITY_EDITOR
+                Grapher.Log(valenceValue, "Valence");
+                Grapher.Log(arousalValue, "Arousal");
+                Grapher.Log(tensionValue, "Tension");
+#endif
             }
-            yield return null;
         }
     }
+
+
 
     /// <summary>
     /// Processes emotion values as derived from event processing, and updates music string if there is a change in emotion.
@@ -291,22 +299,41 @@ public class AffectManager : MonoBehaviour
     public string GetMusicLevel()
     {
         var musicLevel = ConvertToString(valence) + "-" + ConvertToString(arousal) + "-" + ConvertToString(tension);
+        if (strongAffect(valence, arousal, tension))
+        {
+            musicLevel += "-2";
+            //Debug.Log("Music Level = " + musicLevel);
+        }
+
         return musicLevel;
     }
 
     private string ConvertToString(OrdinalAffect affect)
     {
-        if (affect == OrdinalAffect.low)
+        if (affect == OrdinalAffect.low || affect==OrdinalAffect.low2)
         {
             return "Low";
         }
-        else if (affect == OrdinalAffect.high)
+        else if (affect == OrdinalAffect.high || affect==OrdinalAffect.high2)
         {
             return "High";
         }
         else
         {
             return "Mid";
+        }
+    }
+
+    private bool strongAffect(OrdinalAffect _valence, OrdinalAffect _arousal, OrdinalAffect _tension)
+    {
+        var allAffects = new List<OrdinalAffect>() { _valence, _arousal, _tension };
+        if (allAffects.Contains(OrdinalAffect.high2) || allAffects.Contains(OrdinalAffect.low2))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 
