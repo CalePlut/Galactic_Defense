@@ -134,6 +134,7 @@ public class EnemyShip : BasicShip
         }
     }
 
+
     protected override GameObject myTargetObject()
     {
         if (playerShipObj != null) { return playerShipObj; }

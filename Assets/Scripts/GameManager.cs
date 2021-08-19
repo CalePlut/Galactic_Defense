@@ -678,6 +678,7 @@ public class GameManager : MonoBehaviour
         var newEnemy = GameObject.Instantiate(enemyToInstantiate);
         Debug.Log("Instantiating Enemy");
         newEnemy.transform.position = spawnPoint.transform.position;
+        //newEnemy.transform.parent = spawnPoint.transform;
         newEnemy.SetActive(true);
         Debug.Log("Enemy is activated!");
         currentEnemy = newEnemy.GetComponent<EnemyShip>();

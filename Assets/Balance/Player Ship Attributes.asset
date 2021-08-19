@@ -13,18 +13,44 @@ MonoBehaviour:
   m_Name: Player Ship Attributes
   m_EditorClassIdentifier: 
   baseHealth: 30
+  level2Health: 30
+  level3Health: 30
   baseShield: 5
+  level2Shield: 5
+  level3Shield: 5
   baseArmour: 0.9
+  level2Armour: 0.9
+  level3Armour: 0.9
   baseTurretDamage: 1
+  level2TurretDamage: 1
+  level3TurretDamage: 1
   baseWarmupShots: 8
+  level2WarmupShots: 8
+  level3WarmupShots: 8
   baseMaxShots: 12
+  level2MaxShots: 12
+  level3MaxShots: 12
   baseHeavyAttackDamage: 15
+  level2HeavyAttackDamage: 15
+  level3HeavyAttackDamage: 15
   baseHeavyAttackDelay: 3
+  level2HeavyAttackDelay: 3
+  level3HeavyAttackDelay: 3
   baseParryFrame: 0.35
+  level2ParryFrame: 0.35
+  level3ParryFrame: 0.35
   baseRetaliateDamage: 10
+  level2RetaliateDamage: 10
+  level3RetaliateDamage: 10
   baseDisableDuration: 3
+  level2DisableDuration: 3
+  level3DisableDuration: 3
   baseHealPercent: 0.4
+  level2HealPercent: 0.4
+  level3HealPercent: 0.4
   baseHealDelay: 3
+  level2HealDelay: 3
+  level3HealDelay: 3
   heavyAttackShieldReduction: 0.2
   shieldRechargeDelay: 1
   shieldBreakDelay: 5

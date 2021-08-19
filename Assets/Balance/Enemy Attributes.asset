@@ -13,44 +13,44 @@ MonoBehaviour:
   m_Name: Enemy Attributes
   m_EditorClassIdentifier: 
   baseHealth: 25
-  level2Health: 50
-  level3Health: 75
+  level2Health: 35
+  level3Health: 50
   baseShield: 5
   level2Shield: 10
   level3Shield: 15
   baseArmour: 1
   level2Armour: 0.9
-  level3Armour: 0.75
+  level3Armour: 0.7
   baseTurretDamage: 1
   level2TurretDamage: 1
   level3TurretDamage: 1
   baseWarmupShots: 4
-  level2WarmupShots: 3
+  level2WarmupShots: 4
   level3WarmupShots: 2
   baseMaxShots: 6
-  level2MaxShots: 7
-  level3MaxShots: 8
-  baseHeavyAttackDamage: 30
-  level2HeavyAttackDamage: 45
-  level3HeavyAttackDamage: 60
-  baseHeavyAttackDelay: 2
-  level2HeavyAttackDelay: 1.5
-  level3HeavyAttackDelay: 1
+  level2MaxShots: 8
+  level3MaxShots: 10
+  baseHeavyAttackDamage: 20
+  level2HeavyAttackDamage: 25
+  level3HeavyAttackDamage: 30
+  baseHeavyAttackDelay: 3
+  level2HeavyAttackDelay: 0
+  level3HeavyAttackDelay: 2
   baseParryFrame: 0.465
-  level2ParryFrame: 0.93
-  level3ParryFrame: 1.5
+  level2ParryFrame: 0.5
+  level3ParryFrame: 0.5
   baseRetaliateDamage: 5
-  level2RetaliateDamage: 10
-  level3RetaliateDamage: 15
+  level2RetaliateDamage: 5
+  level3RetaliateDamage: 5
   baseDisableDuration: 2.5
-  level2DisableDuration: 5
-  level3DisableDuration: 10
+  level2DisableDuration: 2.5
+  level3DisableDuration: 2.5
   baseHealPercent: 0.5
-  level2HealPercent: 0.65
-  level3HealPercent: 0.8
+  level2HealPercent: 0.5
+  level3HealPercent: 0.5
   baseHealDelay: 2.5
-  level2HealDelay: 1.5
-  level3HealDelay: 0.5
+  level2HealDelay: 2.5
+  level3HealDelay: 2.5
   heavyAttackShieldReduction: 0.2
   shieldRechargeDelay: 1
   shieldBreakDelay: 7.5

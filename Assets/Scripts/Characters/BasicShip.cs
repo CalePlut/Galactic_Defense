@@ -46,6 +46,9 @@ public class BasicShip : MonoBehaviour
     #region Heavy Attack
 
     public bool heavyAttackWindup { get; protected set; } = false;
+    public AnimationCurve targetCurve;
+    public LineRenderer target1, target2;
+    public GameObject[] targetAnchors;
 
     #endregion Heavy Attack
 
@@ -220,6 +223,9 @@ public class BasicShip : MonoBehaviour
             FullHeal();
             healthBar.Refresh(maxHealth, health);
             shieldBar.Refresh(maxShield, shield);
+
+            target1.gameObject.SetActive(false);
+            target2.gameObject.SetActive(false);
         }
     }
 
@@ -535,14 +541,32 @@ public class BasicShip : MonoBehaviour
     {
         var timer = heavyAttackDelay;
         var barTimer = 0.0f;
+
+        var anchors = myTarget().targetBoxes();
+        foreach (GameObject anchor in anchors)
+        {
+            anchor.GetComponent<targetAnchor>().targetBegin(heavyAttackDelay);
+        }
+
+        target1.gameObject.SetActive(true);
+        target2.gameObject.SetActive(true);
+
         while (timer > 0.0f)
         {
+                target1.SetPosition(0, target1.transform.InverseTransformPoint(anchors[0].transform.position));
+                target1.SetPosition(2, target1.transform.InverseTransformPoint(anchors[1].transform.position));
+                target2.SetPosition(0, target2.transform.InverseTransformPoint(anchors[2].transform.position));
+                target2.SetPosition(2, target2.transform.InverseTransformPoint(anchors[3].transform.position));
+
             timer -= Time.deltaTime;
             barTimer += Time.deltaTime;
             setChargeIndicator(barTimer, heavyAttackDelay);
             yield return null;
         }
         HeavyAttack(myTargetObject());
+
+
+
     }
 
     protected virtual void setChargeIndicator(float current, float max)
@@ -555,7 +579,14 @@ public class BasicShip : MonoBehaviour
         heavyAttackWindup = false;
         Destroy(warningFlareRuntimeObject);
         SFX.PlayOneShot(interrupt);
+        target1.gameObject.SetActive(false);
+        target2.gameObject.SetActive(false);
         //ShieldsUp();
+    }
+
+    public GameObject[] targetBoxes()
+    {
+        return targetAnchors;
     }
 
     /// <summary>
@@ -571,6 +602,9 @@ public class BasicShip : MonoBehaviour
                 var emitter = laserEmitter.position;
                 var damage = heavyAttackDamage;
                 var target = targetObj.GetComponent<BasicShip>();
+
+                target1.gameObject.SetActive(false);
+                target2.gameObject.SetActive(false);
 
                 SpawnLaser(emitter, targetObj.transform.position);
 

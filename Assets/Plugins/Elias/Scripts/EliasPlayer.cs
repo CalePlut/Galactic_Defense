@@ -433,15 +433,18 @@ public class EliasPlayer : MonoBehaviour
     //Due to some problems in Unity where they always pre-buffer 400ms of procedural audio, we use the OnAudioFilterRead to get close to no latency.
     void OnAudioFilterRead(float[] data, int channels)
     {
-        if (elias.Handle == IntPtr.Zero && audioReader != null)
-            return;
-
-        if (isEliasStarted && useHighLatencyMode == false)
+        if (elias!=null)
         {
-            if (audioReader.ReadCallback(data, channels) == false)
+            if (elias.Handle == IntPtr.Zero && audioReader != null)
+                return;
+
+            if (isEliasStarted && useHighLatencyMode == false)
             {
-                //Note: We are not directly stopping here, as it seems to be causing crashes on some (ios) devices.
-                shouldStop = true;
+                if (audioReader.ReadCallback(data, channels) == false)
+                {
+                    //Note: We are not directly stopping here, as it seems to be causing crashes on some (ios) devices.
+                    shouldStop = true;
+                }
             }
         }
     }
