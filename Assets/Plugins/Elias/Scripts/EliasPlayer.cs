@@ -224,16 +224,17 @@ public class EliasPlayer : MonoBehaviour
     public bool StartWithActionPreset(string preset)
     {
         if (elias.Handle == IntPtr.Zero)
-            return false;
+                return false;
 
-        if (AudioSettings.outputSampleRate == 0)
-        {
-            Debug.LogError("Unity's AudioSettings.outputSampleRate is reporting 0, so the Elias Plugin is unable to determine what sample rate would be correct to use! " +
-                "This may cause the speed of the audio to play at the wrong rate. Please set a sample rate for Unity in the Project settings.");
-        }
-        EliasWrapper.elias_result_codes r = EliasWrapper.elias_start_background_with_action_preset(elias.Handle, preset, AudioSettings.outputSampleRate != 0 ? (uint)AudioSettings.outputSampleRate : (uint)eliasSampleRate, (uint)eliasFramesPerBuffer);
-		EliasHelper.LogResult(r, preset);
-		return r == EliasWrapper.elias_result_codes.elias_result_success;
+            if (AudioSettings.outputSampleRate == 0)
+            {
+                Debug.LogError("Unity's AudioSettings.outputSampleRate is reporting 0, so the Elias Plugin is unable to determine what sample rate would be correct to use! " +
+                    "This may cause the speed of the audio to play at the wrong rate. Please set a sample rate for Unity in the Project settings.");
+            }
+            EliasWrapper.elias_result_codes r = EliasWrapper.elias_start_background_with_action_preset(elias.Handle, preset, AudioSettings.outputSampleRate != 0 ? (uint)AudioSettings.outputSampleRate : (uint)eliasSampleRate, (uint)eliasFramesPerBuffer);
+            EliasHelper.LogResult(r, preset);
+            return r == EliasWrapper.elias_result_codes.elias_result_success;
+        
 	}
 
 	/// <summary>
@@ -319,6 +320,7 @@ public class EliasPlayer : MonoBehaviour
             }
 
             elias = new EliasHelper(Path.Combine(basePath, file), Path.GetDirectoryName(Path.Combine(basePath, file)), (ushort)internalEliasBufferSize, (byte)eliasChannelCount, (uint)sampleRateToUse, null, null, eliasCachePageCount, eliasCachePageSize, deserializeProjectOnStart);
+            //Debug.Log("starting elias");
 
             if (elias.Handle == IntPtr.Zero)
             {
@@ -383,23 +385,24 @@ public class EliasPlayer : MonoBehaviour
 
     public bool StartEliasWithActionPreset(string actionPreset)
     {
-        if (elias.Handle == IntPtr.Zero)
-            return false;
+            if (elias.Handle == IntPtr.Zero)
+                return false;
 
-        bool startedSucessfully;
-        startedSucessfully = StartWithActionPreset(actionPreset);
-        if (startedSucessfully)
-        {
-            if (audioReader == null)
+            bool startedSucessfully;
+            startedSucessfully = StartWithActionPreset(actionPreset);
+            if (startedSucessfully)
             {
-                audioReader = new EliasAudioReader(elias, (uint)eliasFramesPerBuffer, GetComponent<AudioSource>(), useHighLatencyMode);
-                audioReader.unityChannelMode = AudioSettings.speakerMode;
-                AudioSettings.OnAudioConfigurationChanged += OnAudioConfigurationChanged;
+                if (audioReader == null)
+                {
+                    audioReader = new EliasAudioReader(elias, (uint)eliasFramesPerBuffer, GetComponent<AudioSource>(), useHighLatencyMode);
+                    audioReader.unityChannelMode = AudioSettings.speakerMode;
+                    AudioSettings.OnAudioConfigurationChanged += OnAudioConfigurationChanged;
+                }
+                isEliasStarted = true;
+                GetComponent<AudioSource>().Play();
             }
-            isEliasStarted = true;
-            GetComponent<AudioSource>().Play();
-        }
-        return startedSucessfully;
+            return startedSucessfully;
+
     }
 
     void OnAudioConfigurationChanged(bool deviceWasChanged)

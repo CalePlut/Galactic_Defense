@@ -1340,7 +1340,7 @@ MonoBehaviour:
   eliasCachePageSize: 4096
   eliasSampleRate: 44100
   eliasChannelCount: 0
-  playOnStart: 1
+  playOnStart: 0
   deserializeProjectOnStart: 1
   customBasePath: 
 --- !u!82 &1334726104
