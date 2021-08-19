@@ -383,23 +383,23 @@ public class EliasPlayer : MonoBehaviour
 
     public bool StartEliasWithActionPreset(string actionPreset)
     {
-            if (elias.Handle == IntPtr.Zero)
-                return false;
+        if (elias.Handle == IntPtr.Zero)
+            return false;
 
-            bool startedSucessfully;
-            startedSucessfully = StartWithActionPreset(actionPreset);
-            if (startedSucessfully)
+        bool startedSucessfully;
+        startedSucessfully = StartWithActionPreset(actionPreset);
+        if (startedSucessfully)
+        {
+            if (audioReader == null)
             {
-                if (audioReader == null)
-                {
-                    audioReader = new EliasAudioReader(elias, (uint)eliasFramesPerBuffer, GetComponent<AudioSource>(), useHighLatencyMode);
-                    audioReader.unityChannelMode = AudioSettings.speakerMode;
-                    AudioSettings.OnAudioConfigurationChanged += OnAudioConfigurationChanged;
-                }
-                isEliasStarted = true;
-                GetComponent<AudioSource>().Play();
+                audioReader = new EliasAudioReader(elias, (uint)eliasFramesPerBuffer, GetComponent<AudioSource>(), useHighLatencyMode);
+                audioReader.unityChannelMode = AudioSettings.speakerMode;
+                AudioSettings.OnAudioConfigurationChanged += OnAudioConfigurationChanged;
             }
-            return startedSucessfully;
+            isEliasStarted = true;
+            GetComponent<AudioSource>().Play();
+        }
+        return startedSucessfully;
     }
 
     void OnAudioConfigurationChanged(bool deviceWasChanged)
@@ -430,18 +430,15 @@ public class EliasPlayer : MonoBehaviour
     //Due to some problems in Unity where they always pre-buffer 400ms of procedural audio, we use the OnAudioFilterRead to get close to no latency.
     void OnAudioFilterRead(float[] data, int channels)
     {
-        if (elias != null)
-        {
-            if (elias.Handle == IntPtr.Zero && audioReader != null)
-                return;
+        if (elias.Handle == IntPtr.Zero && audioReader != null)
+            return;
 
-            if (isEliasStarted && useHighLatencyMode == false)
+        if (isEliasStarted && useHighLatencyMode == false)
+        {
+            if (audioReader.ReadCallback(data, channels) == false)
             {
-                if (audioReader.ReadCallback(data, channels) == false)
-                {
-                    //Note: We are not directly stopping here, as it seems to be causing crashes on some (ios) devices.
-                    shouldStop = true;
-                }
+                //Note: We are not directly stopping here, as it seems to be causing crashes on some (ios) devices.
+                shouldStop = true;
             }
         }
     }
