@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DataProvider : MonoBehaviour
 {
-#if UNITY_EDITOR
+
     // Ignore this line.
     public float t = 0;
 
@@ -72,5 +72,4 @@ public class DataProvider : MonoBehaviour
     {
         bird, horse, alien
     }
-#endif
 }

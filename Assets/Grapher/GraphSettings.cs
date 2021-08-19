@@ -35,7 +35,6 @@ namespace NWH
 
         public static float autoScalePercent = 0.9f;
 
-#if UNITY_EDITOR
         public static float HorizontalResolution
         {
             get
@@ -152,7 +151,6 @@ namespace NWH
                 U8322qzf2MLhWlqTJa3OSqprVVqaULReoSjJdM9GRO7kiLiP13iaUuqtS/VVSmmiTaTX8aJGbUqpCw+xGRF3ahTURzQul9pwXVWsyNVSjfIGltFdbENyiU+37
                 IPy44jcNPPFQQ/m5Gp5VmRdrrzuIjNyc45W8VqNin7cwuWSwWpx8AOBQxgsUV/AS9yNiM0GrHYvWuH0pJ1hNyjPonU7w24jIrZbYuw/mf+/g7/+5GhqtHt1wg
                 AAAABJRU5ErkJggg==";
-#endif
     }
 
 }

@@ -5,10 +5,8 @@ using UnityEngine;
 
 namespace NWH
 {
-
     public class Channel
     {
-#if UNITY_EDITOR
         public Grapher g;
         public List<Sample> rawSampleList;
 
@@ -196,7 +194,5 @@ namespace NWH
             timeScale = GraphSettings.HorizontalResolution;
             verticalResolution = GraphSettings.DefaultVerticalResolution;
         }
-
-#endif
     }
 }

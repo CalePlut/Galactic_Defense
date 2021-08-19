@@ -8,7 +8,6 @@ using System;
 
 using NWH;
 
-#if UNITY_EDITOR
 [ExecuteInEditMode]
 public partial class Grapher : EditorWindow
 {
@@ -126,21 +125,21 @@ public partial class Grapher : EditorWindow
         // Get mouse state and position
         mousePosition = Event.current.mousePosition;
 
-        //// Determine LMB click state
+        // Determine LMB click state
         //if (Event.current.type == EventType.MouseUp || Input.GetMouseButtonUp(0))
         //    mouseState = MouseState.Up;
         //else if (Event.current.type == EventType.MouseDown || Input.GetMouseButtonDown(0))
         //    mouseState = MouseState.Down;
 
-        //// Check if mouse inside graph
-        //if (graphRect.Contains(mousePosition) && mousePosition.x < graphRect.width)
-        //{
-        //    mouseInside = true;
-        //}
-        //else
-        //{
-        //    mouseInside = false;
-        //}
+        // Check if mouse inside graph
+        if (graphRect.Contains(mousePosition) && mousePosition.x < graphRect.width)
+        {
+            mouseInside = true;
+        }
+        else
+        {
+            mouseInside = false;
+        }
 
         // Draw GUI
         Handles.BeginGUI();
@@ -474,4 +473,3 @@ public partial class Grapher : EditorWindow
         }
     }
 }
-#endif

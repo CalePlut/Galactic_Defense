@@ -7,7 +7,6 @@ using UnityEngine;
 
 namespace NWH
 {
-#if UNITY_EDITOR
     public static class FileHandler
     {
 
@@ -114,5 +113,4 @@ namespace NWH
             return Path.GetInvalidFileNameChars().Aggregate(fileName, (current, c) => current.Replace(c.ToString(), string.Empty)).Replace(" ", "");
         }
     }
-#endif
 }

@@ -5,7 +5,6 @@ using System;
 
 using NWH;
 
-#if UNITY_EDITOR
 public partial class Grapher : EditorWindow
 {
     private static Rect graphRect;
@@ -639,4 +638,3 @@ public partial class Grapher : EditorWindow
         return res;
     }
 }
-#endif

@@ -4,7 +4,6 @@ using UnityEditor;
 
 using NWH;
 
-#if UNITY_EDITOR
 // Replay
 public partial class Grapher : EditorWindow
 {
@@ -104,4 +103,3 @@ public partial class Grapher : EditorWindow
         }
     }
 }
-#endif

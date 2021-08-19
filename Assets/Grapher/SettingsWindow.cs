@@ -3,13 +3,12 @@ using UnityEngine;
 
 namespace NWH
 {
-#if UNITY_EDITOR
     public class SettingsWindow : EditorWindow
     {
         [MenuItem("Window/Grapher Settings")]
         public static void Init()
         {
-            SettingsWindow window = (SettingsWindow)GetWindow(typeof(SettingsWindow));
+            SettingsWindow window = (SettingsWindow)EditorWindow.GetWindow(typeof(SettingsWindow));
             window.Show();
         }
 
@@ -74,5 +73,4 @@ namespace NWH
             return Mathf.Clamp(result, min, max);
         }
     }
-#endif
 }
