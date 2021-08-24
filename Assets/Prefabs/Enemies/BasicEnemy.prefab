@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 441732483359724240}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 100, z: 100}
+  m_LocalPosition: {x: 0, y: 250, z: 250}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8255030829264262465}
@@ -92,7 +92,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 660967062426200385}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -100, z: 100}
+  m_LocalPosition: {x: 0, y: -250, z: 250}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8255030829264262465}
@@ -740,7 +740,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1987313812176779079}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 100, z: -100}
+  m_LocalPosition: {x: 0, y: 250, z: -250}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8255030829264262465}
@@ -2196,6 +2196,7 @@ MonoBehaviour:
   fullColor: {r: 0, g: 0, b: 1, a: 1}
   emptyColor: {r: 0.5882353, g: 0, b: 0.5882353, a: 1}
   textDisplay: 0
+  broken: {r: 1, g: 0.5764706, b: 0, a: 0}
 --- !u!114 &8493439155309013176
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3502,6 +3503,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attr: {fileID: 11400000, guid: 5beabbb60e8bf5a4c9cfbeac9bbc2a80, type: 2}
+  affectVariables: {fileID: 11400000, guid: 7c4e9f82f00b83a40a9b13b9e5432be3, type: 2}
   maxHealth: 0
   health: 0
   maxShield: 0
@@ -3563,8 +3565,9 @@ MonoBehaviour:
   warningFlareSize: 30
   healEffect: {fileID: 1077433979050930671, guid: 34aa31306c70ebb4998f88abfaa20681,
     type: 3}
-  shieldPrefab: {fileID: 151800, guid: 49d88577872e4c74a94c95b308f94e04, type: 3}
-  shieldSize: 2
+  shieldPrefab: {fileID: 6634287159862165552, guid: a1ca1f27fbd601745b328cd319c2c060,
+    type: 3}
+  shieldSize: 4
   jamFirePrefab: {fileID: 119147845428083974, guid: 85971c99144656b46a7d90520d914b49,
     type: 3}
   nearDeathFirePrefab: {fileID: 1343497475418638690, guid: 17a7cdde987eeb545a021d46d0cfd42b,
@@ -3584,7 +3587,7 @@ MonoBehaviour:
   textureScrollSpeed: 8
   textureLengthScale: 3
   manager: {fileID: 0}
-  affect: {fileID: 0}
+  PreGLAM: {fileID: 0}
   globalCooldown: 2.5
   specialSyncDelay: 0.6
   specialAttackFrameLength: 1.5
@@ -3732,7 +3735,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8973084771829761793}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -100, z: -100}
+  m_LocalPosition: {x: 0, y: -250, z: -250}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8255030829264262465}

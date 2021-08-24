@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba4d499d2b74c934fb549b6cc19ed65c, type: 3}
   m_Name: Enemy Attributes
   m_EditorClassIdentifier: 
-  baseHealth: 25
-  level2Health: 35
-  level3Health: 50
+  baseHealth: 30
+  level2Health: 45
+  level3Health: 60
   baseShield: 5
   level2Shield: 10
   level3Shield: 15
@@ -34,7 +34,7 @@ MonoBehaviour:
   level2HeavyAttackDamage: 25
   level3HeavyAttackDamage: 30
   baseHeavyAttackDelay: 3
-  level2HeavyAttackDelay: 0
+  level2HeavyAttackDelay: 2.5
   level3HeavyAttackDelay: 2
   baseParryFrame: 0.465
   level2ParryFrame: 0.5

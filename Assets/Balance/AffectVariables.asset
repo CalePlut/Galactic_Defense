@@ -12,24 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a9e0dcc33807b34abc31aa40336adff, type: 3}
   m_Name: AffectVariables
   m_EditorClassIdentifier: 
-  resetSpeed: 0.05
-  changeThreshold: 1.5
-  strongThreshold: 2.5
-  V11: 35
-  A11: 35
-  T11: 20
-  V21: 30
-  A21: 30
-  T21: 20
-  V22: 30
-  A22: 30
-  T22: 30
-  V31: 40
-  A31: 40
-  T31: 20
-  V32: 40
-  A32: 40
-  T32: 30
-  V33: 50
-  A33: 50
-  T33: 35
+  positiveThreshold: 2
+  negativeThreshold: -2
+  strongThreshold: 6
+  strongNegativeThreshold: -6
+  stage1Mood: {x: -3, y: -3, z: -3}
+  stage2Mood: {x: 0, y: 0, z: 0}
+  stage3Mood: {x: 0, y: 2, z: 2}
+  P_attack: {x: 1, y: 1}
+  P_heavy: {x: 1, y: 1}
+  E_attack: {x: -1, y: 1}
+  E_heavy: {x: -1, y: 1}
+  P_shield_down: {x: -2, y: 2}
+  E_shield_down: {x: 2, y: 2}
+  P_exploit: {x: 3, y: 2}
+  P_death: {x: -3, y: 3}
+  E_death: {x: 3, y: 3}
+  P_heal: {x: 2, y: 2}
+  E_heal: {x: -2, y: 2}

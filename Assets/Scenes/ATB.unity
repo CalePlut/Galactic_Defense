@@ -1889,6 +1889,7 @@ MonoBehaviour:
   fullColor: {r: 0, g: 0, b: 1, a: 1}
   emptyColor: {r: 0.5882353, g: 0, b: 0.5882353, a: 1}
   textDisplay: 0
+  broken: {r: 1, g: 0.57594675, b: 0, a: 0.49019608}
 --- !u!114 &146460377
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3201,18 +3202,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 224265175}
   m_CullTransparentMesh: 1
---- !u!114 &231688344 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7411581884655697157, guid: e788db6f9a98ecb4d9efbfff3cd42ec0,
-    type: 3}
-  m_PrefabInstance: {fileID: 1015122699}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dbbeec4850c56444ebe1896b7fc1e4d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &235449377
 GameObject:
   m_ObjectHideFlags: 0
@@ -5573,9 +5562,9 @@ GameObject:
   - component: {fileID: 405267433}
   - component: {fileID: 405267438}
   - component: {fileID: 405267432}
-  - component: {fileID: 405267437}
   - component: {fileID: 405267440}
   - component: {fileID: 405267441}
+  - component: {fileID: 405267437}
   m_Layer: 0
   m_Name: MainCamera
   m_TagString: MainCamera
@@ -5787,15 +5776,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 405267431}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e338202456408d2469d003e54dfca8a6, type: 3}
+  m_Script: {fileID: 11500000, guid: 9009a79eaf7ba4a48a5c8592e36cf9ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  valenceDisplay: {fileID: 231688344}
-  arousalDisplay: {fileID: 1486207656}
-  tensionDisplay: {fileID: 431759817}
-  affectVars: {fileID: 11400000, guid: 7c4e9f82f00b83a40a9b13b9e5432be3, type: 2}
-  Player: {fileID: 1478765750860414}
-  Enemy: {fileID: 0}
+  affectVariables: {fileID: 11400000, guid: 7c4e9f82f00b83a40a9b13b9e5432be3, type: 2}
 --- !u!114 &405267438
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6167,18 +6151,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 431028508}
   m_CullTransparentMesh: 0
---- !u!114 &431759817 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7411581884655697157, guid: e788db6f9a98ecb4d9efbfff3cd42ec0,
-    type: 3}
-  m_PrefabInstance: {fileID: 1060484052}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dbbeec4850c56444ebe1896b7fc1e4d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &437227124
 GameObject:
   m_ObjectHideFlags: 0
@@ -6345,7 +6317,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &449271928
 Transform:
   m_ObjectHideFlags: 0
@@ -9457,7 +9429,6 @@ MonoBehaviour:
   - {fileID: 2100624343}
   - {fileID: 1406448387}
   - {fileID: 1476275547}
-  affect: {fileID: 0}
   ultimateFromStart: 1
 --- !u!114 &671322363
 MonoBehaviour:
@@ -15271,7 +15242,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1167978479
 Transform:
   m_ObjectHideFlags: 0
@@ -19576,18 +19547,6 @@ MonoBehaviour:
       m_Groups: 
       m_Action: Press
       m_Flags: 0
---- !u!114 &1486207656 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7411581884655697157, guid: e788db6f9a98ecb4d9efbfff3cd42ec0,
-    type: 3}
-  m_PrefabInstance: {fileID: 1209363548}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dbbeec4850c56444ebe1896b7fc1e4d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1487536124
 GameObject:
   m_ObjectHideFlags: 0
@@ -28095,6 +28054,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attr: {fileID: 11400000, guid: 002c0366a3d4cfb45ab30c6a59d5585a, type: 2}
+  affectVariables: {fileID: 11400000, guid: 7c4e9f82f00b83a40a9b13b9e5432be3, type: 2}
   maxHealth: 0
   health: 0
   maxShield: 0
@@ -28176,7 +28136,7 @@ MonoBehaviour:
   textureScrollSpeed: 8
   textureLengthScale: 3
   manager: {fileID: 405267438}
-  affect: {fileID: 405267437}
+  PreGLAM: {fileID: 0}
   attackCooldown: 0.924
   healCooldown: 5
   heavyAttackCooldown: 10

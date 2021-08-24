@@ -27,21 +27,21 @@ MonoBehaviour:
   baseWarmupShots: 8
   level2WarmupShots: 8
   level3WarmupShots: 8
-  baseMaxShots: 12
-  level2MaxShots: 12
-  level3MaxShots: 12
-  baseHeavyAttackDamage: 15
-  level2HeavyAttackDamage: 15
-  level3HeavyAttackDamage: 15
+  baseMaxShots: 10
+  level2MaxShots: 10
+  level3MaxShots: 10
+  baseHeavyAttackDamage: 10
+  level2HeavyAttackDamage: 10
+  level3HeavyAttackDamage: 10
   baseHeavyAttackDelay: 3
   level2HeavyAttackDelay: 3
   level3HeavyAttackDelay: 3
   baseParryFrame: 0.35
   level2ParryFrame: 0.35
   level3ParryFrame: 0.35
-  baseRetaliateDamage: 10
-  level2RetaliateDamage: 10
-  level3RetaliateDamage: 10
+  baseRetaliateDamage: 5
+  level2RetaliateDamage: 5
+  level3RetaliateDamage: 5
   baseDisableDuration: 3
   level2DisableDuration: 3
   level3DisableDuration: 3

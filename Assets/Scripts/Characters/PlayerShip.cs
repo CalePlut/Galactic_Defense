@@ -199,40 +199,52 @@ public class PlayerShip : BasicShip
     #region Affect
 
     /// <summary>
-    /// finishes PredictAttack by adding to affectmanager lists
+    /// Predicts attacks, and checks whether attack would be lethal
     /// </summary>
     protected override void PredictAttacks()
     {
         base.PredictAttacks();
-        affect.AddUpcomingPlayerAttack(firingFinishEvent);
+
+        var firingTime = attackPatternFinishTime(warmupShots, totalShots);
+        var totalDamage = attackPattern_total_damage(warmupShots, totalShots, basicAttackDamage);
+        var magnitude = 1.0f + (1.0f / enemyShip.shieldPercent());
+        PreGLAM.Queue_event(new Likely_event(affectVariables.P_attack.x, affectVariables.P_attack.y, magnitude, firingTime, likely_type.player_attack));
+
+        if (totalDamage > enemyShip.health && !enemyShip.shielded)
+        {
+            var v = affectVariables.E_death.x;
+            var t = affectVariables.E_death.y;
+            magnitude = 1.0f + enemyShip.shieldCooldown;
+            PreGLAM.Queue_event(new Likely_event(v, t, magnitude, firingTime, likely_type.enemy_death));
+        }
     }
 
-    /// <summary>
-    /// Overrides attack pattern valence to provide player values
-    /// </summary>
-    /// <returns></returns>
-    protected override Emotion attackPatternValence()
-    {
-        return new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
-    }
+    ///// <summary>
+    ///// Overrides attack pattern valence to provide player values
+    ///// </summary>
+    ///// <returns></returns>
+    //protected override Emotion attackPatternValence()
+    //{
+    //    return new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+    //}
 
-    /// <summary>
-    /// Overrides attack pattern arousal to provide player values
-    /// </summary>
-    /// <returns></returns>
-    protected override Emotion attackPatternArousal()
-    {
-        return new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
-    }
+    ///// <summary>
+    ///// Overrides attack pattern arousal to provide player values
+    ///// </summary>
+    ///// <returns></returns>
+    //protected override Emotion attackPatternArousal()
+    //{
+    //    return new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+    //}
 
-    /// <summary>
-    /// Overrides attack pattern tension to provide player values
-    /// </summary>
-    /// <returns></returns>
-    protected override Emotion attackPatternTension()
-    {
-        return new Emotion(EmotionDirection.increase, EmotionStrength.weak);
-    }
+    ///// <summary>
+    ///// Overrides attack pattern tension to provide player values
+    ///// </summary>
+    ///// <returns></returns>
+    //protected override Emotion attackPatternTension()
+    //{
+    //    return new Emotion(EmotionDirection.increase, EmotionStrength.weak);
+    //}
 
     /// <summary>
     /// Player overrides TakeDamage to add affect
@@ -250,32 +262,33 @@ public class PlayerShip : BasicShip
                 InterruptHeavyAttack();
             }
         }
-        ///Past events are moderately strong, because most of the modifiers will reduce them significantly
-        var damageValence = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
-        var damageTension = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
-
-        affect.CreatePastEvent(damageValence, null, damageTension, 45.0f);
+        //PreGLAM.Create_event(new Past_event(-5f, 1.0f + (1.0f/shieldPercent()), PreGLAM));
     }
 
     public override void TakeHeavyDamage(float _damage, float _jamLength)
     {
         base.TakeHeavyDamage(_damage, _jamLength);
 
-        ///Past events are moderately strong, because most of the modifiers will reduce them significantly
-        var damageValence = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
-        var damageTension = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
-
-        affect.CreatePastEvent(damageValence, null, damageTension, 45.0f);
+        //PreGLAM.Create_event(new Past_event(-10f, 1.0f + (1.0f / healthPercent()), PreGLAM));
     }
 
-    public override ProspectiveEvent SpecialProspectiveEvent(float estimatedTime)
+    public override void ShieldBreak()
     {
-        var specialValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
-        var specialArousal = new Emotion(EmotionDirection.increase, EmotionStrength.strong);
-        var specialTension = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
+        base.ShieldBreak();
+        var v = affectVariables.P_shield_down.x;
+        var magnitude = 1.0f + shieldPercent();
 
-        return new ProspectiveEvent(specialValence, specialArousal, specialTension, estimatedTime, true, affect);
+        PreGLAM.Queue_event(new Past_event(v, magnitude, PreGLAM));
     }
+
+    //public override ProspectiveEvent SpecialProspectiveEvent(float estimatedTime)
+    //{
+    //    var specialValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+    //    var specialArousal = new Emotion(EmotionDirection.increase, EmotionStrength.strong);
+    //    var specialTension = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
+
+    //    return new ProspectiveEvent(specialValence, specialArousal, specialTension, estimatedTime, true, affect);
+    //}
 
     #endregion Affect
 
@@ -307,12 +320,17 @@ public class PlayerShip : BasicShip
 
         //Debug.Log("Player finishing firing, trying to release attack button");
         attackButton.ReleaseButton();
+        PreGLAM.Queue_prospective_cull(likely_type.player_attack);
+        PreGLAM.Queue_prospective_cull(likely_type.enemy_death);
+        PreGLAM.Queue_event(new Past_event(affectVariables.P_attack.x, 1.0f + (enemyShip.shieldPercent()), PreGLAM));
         TriggerGlobalCooldown();
     }
 
     public override void InterruptFiring()
     {
         base.InterruptFiring();
+        PreGLAM.Queue_prospective_cull(likely_type.player_attack);
+        PreGLAM.Queue_prospective_cull(likely_type.enemy_death);
         attackButton.ReleaseButton();
     }
 
@@ -380,7 +398,7 @@ public class PlayerShip : BasicShip
         {
             if (retaliateEvent != null) //If we bring down shields without retaliating and we have a retaliate event, destroy it
             {
-                affect.CullEvent(retaliateEvent);
+                //affect.CullEvent(retaliateEvent);
                 retaliateEvent = null;
             }
         }
@@ -398,10 +416,10 @@ public class PlayerShip : BasicShip
 
         //shieldStamina.AbsorbAttack();
 
-        var parryValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
-        var parryArousal = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
-        var parryTension = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
-        affect.CreatePastEvent(parryValence, parryArousal, parryTension, 10.0f);
+        //var parryValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+       // var parryArousal = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+       // var parryTension = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
+        //affect.CreatePastEvent(parryValence, parryArousal, parryTension, 10.0f);
     }
 
     /// <summary>
@@ -419,7 +437,7 @@ public class PlayerShip : BasicShip
             cannon.transform.SetParent(retaliateCannon);
             cannon.gameObject.tag = tag;
             cannon.layer = 9;
-            cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, enemyShip, affect);
+            cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, enemyShip);
             retaliateEvent = null; //After firing, we clear our retaliateEvent
             target.Jam(jamDuration * 2);
             target.ShieldBreak();
@@ -447,7 +465,7 @@ public class PlayerShip : BasicShip
     }
 
     /// <summary>
-    /// Overrides heal with affect and fires two shots from aft cannon
+    /// Overrides heal with affect
     /// </summary>
     public override void Heal()
     {
@@ -455,9 +473,11 @@ public class PlayerShip : BasicShip
 
         if (healing)
         {
-            var healValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
-            var healTension = new Emotion(EmotionDirection.decrease, EmotionStrength.weak);
-            affect.CreatePastEvent(healValence, null, healTension, 10.0f);
+            PreGLAM.Queue_prospective_cull(likely_type.player_heal);
+            PreGLAM.Queue_prospective_cull(likely_type.player_death);
+            var v = affectVariables.P_heal.x;
+            var magnitude = 1.0f + (1.0f - healthPercent());
+            PreGLAM.Queue_event(new Past_event(v, magnitude, PreGLAM));
         }
 
         ShieldsUp();
@@ -479,10 +499,27 @@ public class PlayerShip : BasicShip
         {
             ShieldsDown();
         }
-        healEvent = SpecialProspectiveEvent(healDelay);
-        affect.AddUpcomingPlayerAttack(healEvent);
+        //healEvent = SpecialProspectiveEvent(healDelay);
+        //affect.AddUpcomingPlayerAttack(healEvent);
         //ChargeShield(shieldCooldown);
+        var v = affectVariables.E_heal.x;
+        var t = affectVariables.E_heal.y;
+        var magnitude = 1.0f + (1.0f - healthPercent());
+        PreGLAM.Queue_event(new Likely_event(v, t, magnitude, healDelay, likely_type.enemy_heal));
         TriggerGlobalCooldown();
+    }
+
+    public override void HealInterrupt()
+    {
+
+        base.HealInterrupt();
+        if (healing)
+        {
+            PreGLAM.Queue_prospective_cull(likely_type.player_heal);
+            var v = affectVariables.P_heal.x;
+            var magnitude = 1.0f + (1.0f - healthPercent());
+            PreGLAM.Queue_event(new Past_event(-v, magnitude, PreGLAM));
+        }
     }
 
     #endregion Heal
@@ -503,11 +540,11 @@ public class PlayerShip : BasicShip
     public override void InterruptHeavyAttack()
     {
         base.InterruptHeavyAttack();
-        if (specialFiringEvent != null)
-        {
-            affect.CullEvent(specialFiringEvent);
-            affect.CreatePastEvent(new Emotion(EmotionDirection.decrease, EmotionStrength.moderate), new Emotion(EmotionDirection.decrease, EmotionStrength.weak), null, 10.0f);
-        }
+        PreGLAM.Queue_prospective_cull(likely_type.player_attack);
+        var v = affectVariables.P_heavy.x;
+
+        var magnitude = 1.0f + (1.0f - enemyShip.shieldPercent());
+        PreGLAM.Queue_event(new Past_event(-v, magnitude, PreGLAM));
     }
 
     public override void HeavyAttackTrigger()
@@ -515,14 +552,47 @@ public class PlayerShip : BasicShip
         base.HeavyAttackTrigger();
         HeavyAttack_Sound();
         if (attacking != null) { InterruptFiring(); }
-        specialFiringEvent = SpecialProspectiveEvent(heavyAttackDelay);
-        affect.AddUpcomingPlayerAttack(specialFiringEvent);
+        //We assume normal heavy attack
+        var magnitude = 1.0f + (1.0f - enemyShip.shieldPercent());
+        var valence = affectVariables.P_heavy.x;
+        var tension = affectVariables.P_heavy.y;
+
+        if (enemyShip.isJammed)
+        {
+            valence = affectVariables.P_exploit.x;
+            tension = affectVariables.P_exploit.y;
+        }
+
+        PreGLAM.Queue_event(new Likely_event(valence, tension, magnitude, heavyAttackDelay, likely_type.player_attack));
+
+        if (heavyAttackDamage > enemyShip.health && !enemyShip.shielded)
+        {
+            var v = affectVariables.E_death.x;
+            var t = affectVariables.E_death.y;
+            magnitude = 1.0f + enemyShip.shieldCooldown;
+            PreGLAM.Queue_event(new Likely_event(v, t, magnitude, heavyAttackDelay, likely_type.enemy_death));
+        }
+
+        //specialFiringEvent = SpecialProspectiveEvent(heavyAttackDelay);
+        //affect.AddUpcomingPlayerAttack(specialFiringEvent);
         TriggerGlobalCooldown();
         activateCharge();
     }
     public override void HeavyAttack(GameObject targetObj)
     {
         base.HeavyAttack(targetObj);
+        PreGLAM.Queue_prospective_cull(likely_type.player_attack);
+        PreGLAM.Queue_prospective_cull(likely_type.enemy_death);
+        var v = affectVariables.P_heavy.x;
+        var magnitude = 1.0f + (1.0f - enemyShip.shieldPercent());
+
+        if (enemyShip.isJammed) { v = affectVariables.P_exploit.x;
+            magnitude = 1.0f + (1.0f - enemyShip.healthPercent());
+        }
+
+
+        PreGLAM.Queue_event(new Past_event(v, magnitude, PreGLAM));
+
         hideCharge();
     }
 

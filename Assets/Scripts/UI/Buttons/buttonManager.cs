@@ -8,7 +8,7 @@ public class buttonManager : MonoBehaviour
 
     public List<basicButton> buttons;
 
-    public AffectManager affect;
+    //public AffectManager affect;
 
     public bool ultimateFromStart = false;
 
@@ -66,7 +66,7 @@ public class buttonManager : MonoBehaviour
 
     public void RefreshAllCooldowns()
     {
-        Debug.Log("Clearing Cooldowns");
+        //Debug.Log("Clearing Cooldowns");
         foreach (basicButton button in buttons)
         {
             button.ClearCooldown();

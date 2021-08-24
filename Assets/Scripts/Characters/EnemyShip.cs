@@ -30,6 +30,7 @@ public class EnemyShip : BasicShip
 
     private bool comboHeal;
     private bool executeFinisher;
+    private bool isHeavyQueued;
 
     //private CombatAI CombatAI;
 
@@ -154,53 +155,56 @@ public class EnemyShip : BasicShip
     protected override void PredictAttacks()
     {
         base.PredictAttacks();
-        affect.AddUpcomingEnemyAttack(firingFinishEvent);
+        var firingTime = attackPatternFinishTime(warmupShots, totalShots);
+        PreGLAM.Queue_event(new Known_event(affectVariables.E_attack.x, affectVariables.E_attack.y, 1.0f+playerShip.shieldPercent(), firingTime));
+        var totalDamage = attackPattern_total_damage(warmupShots, totalShots, basicAttackDamage);
+
+        if (totalDamage > playerShip.health && !playerShip.shielded)
+        {
+            var v = affectVariables.P_death.x;
+            var t = affectVariables.P_death.y;
+            var magnitude = 1.0f + playerShip.shieldCooldown;
+            PreGLAM.Queue_event(new Likely_event(v, t, magnitude, firingTime, likely_type.player_death));
+        }
     }
 
-    protected override Emotion attackPatternValence()
-    {
-        return new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
-    }
+    //protected override Emotion attackPatternValence()
+    //{
+    //    return new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
+    //}
 
-    protected override Emotion attackPatternArousal()
-    {
-        return new Emotion(EmotionDirection.none, EmotionStrength.none);
-    }
+    //protected override Emotion attackPatternArousal()
+    //{
+    //    return new Emotion(EmotionDirection.none, EmotionStrength.none);
+    //}
 
-    protected override Emotion attackPatternTension()
-    {
-        return new Emotion(EmotionDirection.increase, EmotionStrength.weak);
-    }
+    //protected override Emotion attackPatternTension()
+    //{
+    //    return new Emotion(EmotionDirection.increase, EmotionStrength.weak);
+    //}
 
     public override void TakeDamage(float _damage)
     {
         base.TakeDamage(_damage);
-        //Set base levels - the first few shots aren't actually important to the strength of the emotion
-        var damageValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
-        var damageArousal = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
-        var damageTension = new Emotion(EmotionDirection.increase, EmotionStrength.weak);
-
-        affect.CreatePastEvent(damageValence, damageArousal, damageTension, 45.0f);
+       //PreGLAM.Create_event(new Past_event(5.0f, 1.0f+shieldPercent(), PreGLAM));
+        //affect.CreatePastEvent(damageValence, damageArousal, damageTension, 45.0f);
     }
 
     public override void TakeHeavyDamage(float _damage, float _jamLength)
     {
         base.TakeHeavyDamage(_damage, _jamLength);
         //Set base levels - the first few shots aren't actually important to the strength of the emotion
-        var damageValence = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
-        var damageArousal = new Emotion(EmotionDirection.increase, EmotionStrength.strong);
-        var damageTension = new Emotion(EmotionDirection.decrease, EmotionStrength.weak);
-
-        affect.CreatePastEvent(damageValence, damageArousal, damageTension, 45.0f);
+        
+       //PreGLAM.Create_event(new Past_event(10.0f, 1.0f+healthPercent(), PreGLAM));
     }
 
-    public override ProspectiveEvent SpecialProspectiveEvent(float estimatedTime)
+    public override void ShieldBreak()
     {
-        var specialValence = new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
-        var specialArousal = new Emotion(EmotionDirection.decrease, EmotionStrength.weak);
-        var specialTension = new Emotion(EmotionDirection.increase, EmotionStrength.moderate);
+        base.ShieldBreak();
+        var v = affectVariables.E_shield_down.x;
+        var magnitude = 1.0f + shieldPercent();
 
-        return new ProspectiveEvent(specialValence, specialArousal, specialTension, estimatedTime, true, affect);
+        PreGLAM.Queue_event(new Past_event(v, magnitude, PreGLAM));
     }
 
     #endregion Affect
@@ -230,8 +234,8 @@ public class EnemyShip : BasicShip
     /// </summary>
     private void ComboSetup()
     {
-        var shieldPercent = shield / maxShield; //Chance of triggering healing increases as health decreases
-        comboHeal = Random.value > shieldPercent;
+        var hpPercent = health / maxHealth; //Chance of triggering healing increases as health decreases
+        comboHeal = Random.value > hpPercent;
 
         if (alive)
         {
@@ -273,19 +277,37 @@ public class EnemyShip : BasicShip
             executeFinisher = Random.value > 0.5f; //Coin flip for whether we'll do the finisher or not
             if (executeFinisher)
             {
-                specialFiringEvent = SpecialProspectiveEvent(attackPatternFinishTime(comboWarmup, comboTotalShots)); //If we're going to execute a finisher, start building up now
+                var delay = attackPatternFinishTime(comboWarmup, comboTotalShots) + heavyAttackDelay;
+
+                var v = affectVariables.E_heavy.x;
+                var t = affectVariables.E_heavy.y;
+                var magnitude = 1.0f + (1.0f - playerShip.healthPercent());
+
+                PreGLAM.Queue_event(new Known_event(v, t, magnitude, delay));
             }
             AttackToggle();
         }
         else
         {
-            var toWait = Random.Range(comboStartDelayMinimum, comboStartDelayMaximum);
+            if (isHeavyQueued == false)
+            {
+                var toWait = Random.Range(comboStartDelayMinimum, comboStartDelayMaximum);
 
-            specialFiringEvent = SpecialProspectiveEvent(heavyAttackDelay + toWait);
-            if (comboHeal) { HealTrigger(); }
-            else { HeavyAttackTrigger(); }
+                var v = affectVariables.E_heavy.x;
+                var t = affectVariables.E_heavy.y;
+                var magnitude = 1.0f + (1.0f - playerShip.healthPercent());
 
-            StartCoroutine(ComboInitialWait(toWait));
+
+
+                if (comboHeal) { HealTrigger(); }
+                else {
+                    PreGLAM.Queue_event(new Known_event(v, t, magnitude, toWait));
+                    HeavyAttackTrigger();
+
+                }
+
+                StartCoroutine(ComboInitialWait(toWait));
+            }
         }
     }
 
@@ -301,6 +323,7 @@ public class EnemyShip : BasicShip
             StartCoroutine(SpecialSyncDelay());
         }
         StartCoroutine(ComboInitialWait(Random.Range(comboStartDelayMinimum, comboStartDelayMaximum)));
+        PreGLAM.Queue_prospective_cull(likely_type.player_death);
     }
 
     /// <summary>
@@ -324,8 +347,52 @@ public class EnemyShip : BasicShip
 
     public override void HeavyAttackTrigger()
     {
+        isHeavyQueued = true;
         base.HeavyAttackTrigger();
+
         HeavyAttack_Sound();
+
+        if (heavyAttackDamage > playerShip.health && !playerShip.shielded)
+        {
+            var v = affectVariables.E_death.x;
+            var t = affectVariables.E_death.y;
+            var magnitude = 1.0f + playerShip.shieldCooldown;
+            PreGLAM.Queue_event(new Likely_event(v, t, magnitude, heavyAttackDelay, likely_type.player_death));
+        }
+    }
+
+    public override void HeavyAttack(GameObject targetObj)
+    {
+        isHeavyQueued = false;
+        base.HeavyAttack(targetObj);
+        PreGLAM.Queue_prospective_cull(likely_type.player_death);
+    }
+
+    public override void HealTrigger()
+    {
+        base.HealTrigger();
+        var v = affectVariables.E_heal.x;
+        var t = affectVariables.E_heal.y;
+        var magnitude = 1.0f + (1.0f-healthPercent());
+        PreGLAM.Queue_event(new Likely_event(v, t, magnitude, healDelay, likely_type.enemy_heal));
+    }
+
+    public override void HealInterrupt()
+    {
+        base.HealInterrupt();
+        PreGLAM.Queue_prospective_cull(likely_type.enemy_heal);
+        var v = affectVariables.E_heal.x;
+        var magnitude = 1.0f + (1.0f - healthPercent());
+        PreGLAM.Queue_event(new Past_event(-v, magnitude, PreGLAM));
+    }
+    public override void Heal()
+    {
+        base.Heal();
+        PreGLAM.Queue_prospective_cull(likely_type.enemy_heal);
+        PreGLAM.Queue_prospective_cull(likely_type.enemy_death); //This probably isn't necessary, but it makes me feel safe
+        var v = affectVariables.E_heal.x;
+        var magnitude = 1.0f + (1.0f - healthPercent());
+        PreGLAM.Queue_event(new Past_event(v, magnitude, PreGLAM));
     }
 
     #region Effects and Overrides

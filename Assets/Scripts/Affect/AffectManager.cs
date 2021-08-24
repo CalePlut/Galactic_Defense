@@ -10,6 +10,10 @@ using UnityEngine.PlayerLoop;
 using UnityEngine.UIElements;
 using UnityEngine.Analytics;
 
+/// <summary>
+/// Old Affect Manager. Isn't connected to anything anymore.
+/// </summary>
+
 public class AffectManager : MonoBehaviour
 {
     #region Mechanical variables

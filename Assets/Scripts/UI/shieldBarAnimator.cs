@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class shieldBarAnimator : healthBarAnimator
 {
-    private bool fullRecharge = false; //Tracks
+    private bool fullRecharge = false; //Tracks fully depleted shield
+    private bool jam = false; //Tacks jamming
+    public Color broken;
 
     protected override void Evaluate()
     {
@@ -13,10 +15,23 @@ public class shieldBarAnimator : healthBarAnimator
         {
             OverrideHealthColor(Color.red);
         }
+        if (jam)
+        {
+            OverrideHealthColor(broken);
+        }
         else
         {
             SetHealthColor(health);
         }
+    }
+
+    public void Jam()
+    {
+        jam = true;
+    }
+    public void endJam()
+    {
+        jam = false;
     }
 
     public void ShieldBreak()

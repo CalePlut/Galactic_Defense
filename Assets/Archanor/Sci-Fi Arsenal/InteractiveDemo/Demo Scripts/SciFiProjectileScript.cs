@@ -36,12 +36,12 @@ namespace SciFiArsenal
             }
         }
 
-        public void CannonSetup(float _damage, BasicShip _target, AffectManager affectManager)
+        public void CannonSetup(float _damage, BasicShip _target)
         {
             damage = _damage;
             target = _target;
             targetPos = target.transform.position;
-            affect = affectManager;
+            //affect = affectManager;
             //GetComponent<Collider>().enabled = false;
             StartCoroutine(cannonDelay());
         }

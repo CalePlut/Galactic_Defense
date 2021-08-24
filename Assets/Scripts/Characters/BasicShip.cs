@@ -15,6 +15,7 @@ public class BasicShip : MonoBehaviour
 
     [Header("Attributes - Health and Damage")]
     public ShipAttributes attr;
+    public AffectVariables affectVariables;
 
     public float maxHealth, health;
     public float maxShield, shield;
@@ -40,6 +41,7 @@ public class BasicShip : MonoBehaviour
 
     protected Coroutine attacking;
     private bool isAttacking;
+    public bool isJammed { get; private set; }
 
     #endregion Attack
 
@@ -146,7 +148,7 @@ public class BasicShip : MonoBehaviour
 
     public GameObject explosion;
     public AudioClip SFX_Explosion;
-    public AudioClip interrupt; 
+    public AudioClip interrupt;
     public AudioClip[] SFX_Heavy_attack_windup;
 
     protected AudioSource SFX;
@@ -175,15 +177,16 @@ public class BasicShip : MonoBehaviour
     [Header("Other")]
     public GameManager manager;
 
-    public AffectManager affect;
+    //public AffectManager affect;
+    public PreGLAM PreGLAM;
 
     #endregion Manager references
 
     #region Affect references
 
-    protected ProspectiveEvent firingFinishEvent;
-    protected ProspectiveEvent specialFiringEvent;
-    protected ProspectiveEvent healEvent;
+    //protected ProspectiveEvent firingFinishEvent;
+    //  protected ProspectiveEvent specialFiringEvent;
+    // protected ProspectiveEvent healEvent;
 
     #endregion Affect references
 
@@ -199,7 +202,8 @@ public class BasicShip : MonoBehaviour
 
         var managerObj = GameObject.Find("MainCamera");
         //Debug.Log("Manger object found: " + managerObj);
-        affect = managerObj.GetComponent<AffectManager>();
+        PreGLAM = managerObj.GetComponent<PreGLAM>();
+        //affect = managerObj.GetComponent<AffectManager>();
         manager = managerObj.GetComponent<GameManager>();
 
         bulletParent = GameObject.Find("BulletParent").transform;
@@ -311,10 +315,6 @@ public class BasicShip : MonoBehaviour
     protected virtual void PredictAttacks()
     {
         var firingTime = attackPatternFinishTime(warmupShots, totalShots);
-        var valence = attackPatternValence();
-        var arousal = attackPatternArousal();
-        var tension = attackPatternTension();
-        firingFinishEvent = new ProspectiveEvent(valence, arousal, tension, firingTime, true, affect);
     }
 
     /// <summary>
@@ -368,6 +368,14 @@ public class BasicShip : MonoBehaviour
         //Once we've simulated the warmup, we can pretty easily calculate the rest - each shot after this takes the standard delay
         totalTime += (_totalShots - _warmupShots) * stockFiringDelay;
         return totalTime;
+    }
+
+    protected float attackPattern_total_damage(int _warmupShots, int _totalShots, float damage)
+    {
+        var totalDamage = 0f;
+        totalDamage += damage * _warmupShots;
+        totalDamage += damage * (_totalShots - _warmupShots) * 2;
+        return totalDamage;
     }
 
     #endregion Affect
@@ -484,7 +492,7 @@ public class BasicShip : MonoBehaviour
         var cannon = Instantiate(basicTurretShot, pos, Quaternion.identity, bulletParent);
         cannon.gameObject.tag = tag;
         cannon.layer = 9;
-        cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, target, affect);
+        cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, target);
         var toLook = target.transform.position - transform.position;
         cannon.transform.LookAt(target.transform);
         cannon.GetComponent<Rigidbody>().AddForce(toLook * 5);
@@ -500,9 +508,10 @@ public class BasicShip : MonoBehaviour
         {
             StopCoroutine(attacking);
             attacking = null;
-            affect.CullEvent(firingFinishEvent);
+            //affect.CullEvent(firingFinishEvent);
             ShieldsUp();
         }
+
     }
 
     /// <summary>
@@ -515,7 +524,9 @@ public class BasicShip : MonoBehaviour
         {
             StopCoroutine(attacking);
             attacking = null;
-            affect.CullEvent(firingFinishEvent);
+            // affect.CullEvent(firingFinishEvent);
+
+            //PreGLAM.Cull_likely_event(likely_type.death);
             ShieldsUp();
         }
     }
@@ -532,41 +543,51 @@ public class BasicShip : MonoBehaviour
         SpecialIndicator(Color.red, heavyAttackDelay);
     }
 
-    public virtual ProspectiveEvent SpecialProspectiveEvent(float estimatedTime)
-    {
-        return new ProspectiveEvent(null, null, null, estimatedTime, true, affect);
-    }
+    //public virtual ProspectiveEvent SpecialProspectiveEvent(float estimatedTime)
+    //{
+    //    return new ProspectiveEvent(null, null, null, estimatedTime, true, affect);
+    //}
 
-    private IEnumerator HeavyAttackFlare()
+    private IEnumerator HeavyAttackFlare() ///Also fires the heavy attack
     {
         var timer = heavyAttackDelay;
         var barTimer = 0.0f;
-
         var anchors = myTarget().targetBoxes();
+
         foreach (GameObject anchor in anchors)
         {
             anchor.GetComponent<targetAnchor>().targetBegin(heavyAttackDelay);
         }
 
+        var endCol = new Color(1.0f, 0, 0, 0);
+
         target1.gameObject.SetActive(true);
         target2.gameObject.SetActive(true);
-
-        while (timer > 0.0f)
+        while (timer > 0.0f && myTarget() != null)
         {
-                target1.SetPosition(0, target1.transform.InverseTransformPoint(anchors[0].transform.position));
-                target1.SetPosition(2, target1.transform.InverseTransformPoint(anchors[1].transform.position));
-                target2.SetPosition(0, target2.transform.InverseTransformPoint(anchors[2].transform.position));
-                target2.SetPosition(2, target2.transform.InverseTransformPoint(anchors[3].transform.position));
+            target1.SetPosition(0, target1.transform.InverseTransformPoint(anchors[0].transform.position));
+            target1.SetPosition(2, target1.transform.InverseTransformPoint(anchors[1].transform.position));
+            target2.SetPosition(0, target2.transform.InverseTransformPoint(anchors[2].transform.position));
+            target2.SetPosition(2, target2.transform.InverseTransformPoint(anchors[3].transform.position));
+
+            endCol.a += Time.deltaTime;
+            target1.endColor = endCol;
+            target2.endColor=endCol;
+
 
             timer -= Time.deltaTime;
             barTimer += Time.deltaTime;
             setChargeIndicator(barTimer, heavyAttackDelay);
             yield return null;
         }
-        HeavyAttack(myTargetObject());
 
+        target1.gameObject.SetActive(false);
+        target2.gameObject.SetActive(false);
 
-
+        if (myTargetObject() != null)
+        {
+            HeavyAttack(myTargetObject());
+        }
     }
 
     protected virtual void setChargeIndicator(float current, float max)
@@ -594,6 +615,7 @@ public class BasicShip : MonoBehaviour
     /// </summary>
     public virtual void HeavyAttack(GameObject targetObj)
     {
+
         if (targetObj != null)
         {
             if (heavyAttackWindup)
@@ -602,9 +624,6 @@ public class BasicShip : MonoBehaviour
                 var emitter = laserEmitter.position;
                 var damage = heavyAttackDamage;
                 var target = targetObj.GetComponent<BasicShip>();
-
-                target1.gameObject.SetActive(false);
-                target2.gameObject.SetActive(false);
 
                 SpawnLaser(emitter, targetObj.transform.position);
 
@@ -660,7 +679,7 @@ public class BasicShip : MonoBehaviour
     /// <summary>
     /// Interrupts heal, destroys warning flare.
     /// </summary>
-    public void HealInterrupt()
+    public virtual void HealInterrupt()
     {
         healing = false;
         Destroy(warningFlareRuntimeObject);
@@ -788,7 +807,7 @@ public class BasicShip : MonoBehaviour
     /// </summary>
     public virtual void ShieldsUp()
     {
-        if (!isAttacking && !healing && !heavyAttackWindup && !absorbing && !shieldBroken)
+        if (!isAttacking && !healing && !heavyAttackWindup && !absorbing && !shieldBroken && !isJammed)
         {
             shielded = true;
         }
@@ -831,7 +850,7 @@ public class BasicShip : MonoBehaviour
     /// <summary>
     /// ShieldBreak sets shield break and
     /// </summary>
-    public void ShieldBreak()
+    public virtual void ShieldBreak()
     {
         ShieldsDown();
         shieldBroken = true;
@@ -1002,6 +1021,8 @@ public class BasicShip : MonoBehaviour
             }
             else
             {
+                isJammed = false;
+                shieldBar.endJam();
                 if (jamEffect != null)
                 {
                     Destroy(jamEffect);
@@ -1017,6 +1038,8 @@ public class BasicShip : MonoBehaviour
     /// <param name="duration">Duration of Jam</param>
     public virtual void Jam(float duration)
     {
+        isJammed = true;
+        shieldBar.Jam();
         jamTimer = duration;
     }
 
@@ -1053,7 +1076,7 @@ public class BasicShip : MonoBehaviour
     /// </summary>
     protected virtual void die()
     {
-        Debug.Log("Death triggered");
+        //Debug.Log("Death triggered");
         alive = false;
         myTarget().InterruptFiring();
 

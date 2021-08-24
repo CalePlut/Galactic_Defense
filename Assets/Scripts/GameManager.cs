@@ -27,7 +27,8 @@ public class GameManager : MonoBehaviour
 
     #region Managers
 
-    private AffectManager affect;
+    //private AffectManager affect;
+    private PreGLAM PreGLAM;
     private EliasPlayer music;
     private environmentAudio gmAudio;
 
@@ -390,29 +391,9 @@ public class GameManager : MonoBehaviour
     {
         Player.StartCombat();
         inCombat = true;
-
         EnemyCompositionSetup();
-
-        StartCoroutine(CombatAffectUpdate());
-        affect.StartCombat();
         music.RunActionPreset("StartCombat");
-        SetMood();
-
-        void SetMood()
-        {
-            if (stage == 1)
-            {
-                affect.SetMood(OrdinalAffect.low, OrdinalAffect.low, OrdinalAffect.low);
-            }
-            else if (stage == 2)
-            {
-                affect.SetMood(OrdinalAffect.medium, OrdinalAffect.low, OrdinalAffect.medium);
-            }
-            else if (stage == 3)
-            {
-                affect.SetMood(OrdinalAffect.medium, OrdinalAffect.high, OrdinalAffect.medium);
-            }
-        }
+        PreGLAM.Set_Mood(stage);
     }
 
     /// <summary>
@@ -422,27 +403,12 @@ public class GameManager : MonoBehaviour
     {
         inCombat = true;
         StartCoroutine(CombatAffectUpdate());
-        affect.StartCombat();
+        //affect.StartCombat();
+        //PreGLAM.Begin_Emotion_Process();
         music.RunActionPreset("StartCombat");
-        SetMood();
+        PreGLAM.Set_Mood(stage);
 
         tutorialEnemyCompositionSetup();
-
-        void SetMood()
-        {
-            if (stage == 1)
-            {
-                affect.SetMood(OrdinalAffect.medium, OrdinalAffect.low, OrdinalAffect.low);
-            }
-            else if (stage == 2)
-            {
-                affect.SetMood(OrdinalAffect.medium, OrdinalAffect.medium, OrdinalAffect.medium);
-            }
-            else if (stage == 3)
-            {
-                affect.SetMood(OrdinalAffect.medium, OrdinalAffect.high, OrdinalAffect.medium);
-            }
-        }
     }
 
     /// <summary>
@@ -453,7 +419,7 @@ public class GameManager : MonoBehaviour
     {
         while (inCombat)
         {
-            var VATLevels = affect.GetMusicLevel();
+            var VATLevels = PreGLAM.VATLevel();
             if (VAT != VATLevels)
             {
                 VAT = VATLevels;
@@ -469,7 +435,7 @@ public class GameManager : MonoBehaviour
     private void EndCombat()
     {
         inCombat = false;
-        affect.EndCombat();
+        PreGLAM.Queue_prospective_cull(); //Removes all future events, as they can no longer happen.
         stageManager.RemoveUI();
         Player.EndCombat();
 
@@ -494,7 +460,7 @@ public class GameManager : MonoBehaviour
 
     public void EnemyDie() //If we aren't at the boss, we continue playing. Otherwise, we've won!
     {
-        affect.ClearWave(); //Calls the clearWave void, resetting emotions
+        //affect.ClearWave(); //Calls the clearWave void, resetting emotions
         if (!atBoss)
         {
             StageLogic();
@@ -551,11 +517,10 @@ public class GameManager : MonoBehaviour
                 encounter++;
                 stageManager.setEncounterProgress(1);
                 AdvanceToNextWave();
-                warpNext = false;
             }
             else
             {
-                EndCombat();
+                win();
             }
         }
 
@@ -564,7 +529,6 @@ public class GameManager : MonoBehaviour
             encounter++;
             stageManager.setEncounterProgress(encounter);
             AdvanceToNextWave();
-            warpNext = false;
         }
 
         void FinalWave(int _stage)
@@ -572,7 +536,6 @@ public class GameManager : MonoBehaviour
             encounter = 0;
             stage = _stage;
             EndCombat();
-            warpNext = true;
         }
 
     }
@@ -606,11 +569,13 @@ public class GameManager : MonoBehaviour
                 stageManager.setWaveLength(2);
                 stageManager.setText("Stage 1");
                 SpawnEnemy(enemyType.main, false);
+                warpNext = true;
             }
             else
             {
                 stageManager.setText("1-2");
                 SpawnEnemy(enemyType.main, true);
+                warpNext = false;
             }
         }
 
@@ -621,16 +586,19 @@ public class GameManager : MonoBehaviour
                 stageManager.setWaveLength(3);
                 stageManager.setText("2-1");
                 SpawnEnemy(enemyType.main, false);
+                warpNext = true;
             }
             else if (encounter == 1)
             {
                 stageManager.setText("2-2");
-                SpawnEnemy(enemyType.main, false);
+                SpawnEnemy(enemyType.main, true);
+                warpNext = true;
             }
             else
             {
                 stageManager.setText("2-3");
                 SpawnEnemy(enemyType.miniboss, true);
+                warpNext = false;
             }
             //else
             //{
@@ -646,11 +614,13 @@ public class GameManager : MonoBehaviour
                 stageManager.setWaveLength(3);
                 stageManager.setText("3-1");
                 SpawnEnemy(enemyType.main, false);
+                warpNext = true;
             }
             else if (encounter == 1)
             {
                 stageManager.setText("3-2");
-                SpawnEnemy(enemyType.miniboss, false);
+                SpawnEnemy(enemyType.miniboss, true);
+                warpNext = true;
             }
             else
             {
@@ -676,22 +646,22 @@ public class GameManager : MonoBehaviour
 
         //Instantiates wave, sets position, and gets reference
         var newEnemy = GameObject.Instantiate(enemyToInstantiate);
-        Debug.Log("Instantiating Enemy");
+       // Debug.Log("Instantiating Enemy");
         newEnemy.transform.position = spawnPoint.transform.position;
         //newEnemy.transform.parent = spawnPoint.transform;
         newEnemy.SetActive(true);
-        Debug.Log("Enemy is activated!");
+      //  Debug.Log("Enemy is activated!");
         currentEnemy = newEnemy.GetComponent<EnemyShip>();
         currentEnemy.ShipSetup();
         currentEnemy.ShieldsUp();
 
         Player.SetEnemyReference(newEnemy);
-        affect.SetEnemy(currentEnemy);
+        //affect.SetEnemy(currentEnemy);
         if (warp)
         {
-            Debug.Log("Telling enemy to warp in");
+            //Debug.Log("Telling enemy to warp in");
             StartCoroutine(currentEnemy.FlyIn());
-            Debug.Log("Is enemy still active?" + currentEnemy.isActiveAndEnabled);
+           // Debug.Log("Is enemy still active?" + currentEnemy.isActiveAndEnabled);
         }
     }
 
@@ -707,7 +677,7 @@ public class GameManager : MonoBehaviour
         currentEnemy.ShieldsUp();
 
         Player.SetEnemyReference(newEnemy);
-        affect.SetEnemy(currentEnemy);
+        //affect.SetEnemy(currentEnemy);
         GameObject.Find("Tutorial").GetComponent<TutorialManager>().SetTutorialEnemy(currentEnemy);
     }
 
@@ -740,7 +710,9 @@ public class GameManager : MonoBehaviour
         anim = GetComponent<Animator>();
         music = GetComponent<EliasPlayer>();
         sky = GetComponent<skyboxManager>();
-        affect = GetComponent<AffectManager>();
+       // affect = GetComponent<AffectManager>();
+        PreGLAM = GetComponent<PreGLAM>();
+        PreGLAM.Start_PreGLAM();
 
         EnterHyperspace();
         if (tutorial) { tutorialManager.StartTutorial(); }
