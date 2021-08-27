@@ -28,6 +28,7 @@ public class TutorialManager : MonoBehaviour
 
     public void StartTutorial()
     {
+
         firstSlide.SetActive(true);
 
         foreach (Button button in hotbar)
@@ -70,7 +71,7 @@ public class TutorialManager : MonoBehaviour
         currentSlide.SetActive(false);
         enemy.HeavyAttackTrigger();
 
-        StartCoroutine(ParryWait(0.6f, next));
+        StartCoroutine(ParryWait(2.65f, next));
         currentSlide = next;
     }
 

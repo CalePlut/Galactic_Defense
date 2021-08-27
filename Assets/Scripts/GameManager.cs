@@ -52,6 +52,10 @@ public class GameManager : MonoBehaviour
     public GameObject lossMenu;
     public TextMeshProUGUI gameOverText;
     public GameObject mapMenu;
+    public GameObject timeWindow;
+    float requiredTime = 1200.0f;
+    bool timeComplete = false;
+
 
     //public pauseButton pauseButton;
     public GameObject pauseText;
@@ -751,7 +755,16 @@ public class GameManager : MonoBehaviour
         {
             pauseLogic();
         }
+
+        //Debug.Log("Time.time = " + Time.time);
+        if (Time.time >= requiredTime &&!timeComplete)
+        {
+            timeComplete = true;
+            studyTimer();
+        }
     }
+
+    
 
     #region menuNavigation
 
@@ -768,6 +781,20 @@ public class GameManager : MonoBehaviour
     public void restartGame()
     {
         StartCoroutine(loadingScreen(SceneManager.GetActiveScene().name));
+    }
+
+    void studyTimer()
+    {
+        timeWindow.SetActive(true);
+        Time.timeScale = 0.05f;
+    }
+
+    public void ContinueGame()
+    {
+        Time.timeScale = 1.0f;
+        //Debug.Log("Continuing game");
+        timeWindow.SetActive(false);
+
     }
 
     private IEnumerator loadingScreen(string sceneName)

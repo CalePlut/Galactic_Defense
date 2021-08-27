@@ -368,6 +368,7 @@ public class PlayerShip : BasicShip
         absorbing = true;
         retaliate = false;
         var absorbEffect = Instantiate(absorbObject, this.transform);
+        absorbEffect.transform.localScale = new Vector3(7.5f, 7.5f, 7.5f);
         StartCoroutine(AbsorbFrame(parryFrame, absorbEffect));
     }
 
