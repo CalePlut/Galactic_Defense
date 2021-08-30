@@ -36,9 +36,9 @@ MonoBehaviour:
   baseHeavyAttackDelay: 2.5
   level2HeavyAttackDelay: 2.5
   level3HeavyAttackDelay: 2.5
-  baseParryFrame: 0.33
-  level2ParryFrame: 0.33
-  level3ParryFrame: 0.33
+  baseParryFrame: 0.35
+  level2ParryFrame: 0.35
+  level3ParryFrame: 0.35
   baseRetaliateDamage: 5
   level2RetaliateDamage: 5
   level3RetaliateDamage: 5
