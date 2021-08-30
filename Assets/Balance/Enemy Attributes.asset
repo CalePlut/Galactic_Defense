@@ -15,7 +15,7 @@ MonoBehaviour:
   baseHealth: 20
   level2Health: 30
   level3Health: 40
-  baseShield: 5
+  baseShield: 7.5
   level2Shield: 10
   level3Shield: 15
   baseArmour: 1

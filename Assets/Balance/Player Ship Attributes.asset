@@ -15,21 +15,21 @@ MonoBehaviour:
   baseHealth: 30
   level2Health: 30
   level3Health: 30
-  baseShield: 5
-  level2Shield: 5
-  level3Shield: 5
+  baseShield: 7.5
+  level2Shield: 7.5
+  level3Shield: 7.5
   baseArmour: 0.9
   level2Armour: 0.9
   level3Armour: 0.9
-  baseTurretDamage: 1
-  level2TurretDamage: 1
-  level3TurretDamage: 1
-  baseWarmupShots: 8
-  level2WarmupShots: 8
-  level3WarmupShots: 8
-  baseMaxShots: 10
-  level2MaxShots: 10
-  level3MaxShots: 10
+  baseTurretDamage: 2
+  level2TurretDamage: 2
+  level3TurretDamage: 2
+  baseWarmupShots: 6
+  level2WarmupShots: 6
+  level3WarmupShots: 6
+  baseMaxShots: 8
+  level2MaxShots: 8
+  level3MaxShots: 8
   baseHeavyAttackDamage: 10
   level2HeavyAttackDamage: 10
   level3HeavyAttackDamage: 10

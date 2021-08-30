@@ -27,6 +27,8 @@ public class BasicShip : MonoBehaviour
     public float heavyAttackDelay;
     protected float retaliateDamage;
 
+    bool is_taking_action = false;
+
     public bool alive { get; private set; } = true;
 
     #endregion Health and Damage varaibles
@@ -410,6 +412,7 @@ public class BasicShip : MonoBehaviour
     {
         ShieldsDown();
         isAttacking = true;
+        is_taking_action = true;
         if (attacking == null)
         {
             attacking = StartCoroutine(AutoAttack(myTarget(), warmupShots, totalShots));
@@ -539,6 +542,7 @@ public class BasicShip : MonoBehaviour
     public virtual void HeavyAttackTrigger()
     {
         ShieldsDown();
+        is_taking_action = true;
         heavyAttackWindup = true;
         StartCoroutine(HeavyAttackFlare());
         SpecialIndicator(Color.red, heavyAttackDelay);
@@ -659,6 +663,7 @@ public class BasicShip : MonoBehaviour
     /// </summary>
     public virtual void HealTrigger()
     {
+        is_taking_action = true;
         StartCoroutine(HealDelay());
         SpecialIndicator(Color.green, healDelay);
     }
@@ -744,9 +749,8 @@ public class BasicShip : MonoBehaviour
                 if (shield >= maxShield) //If we have enough shields to bring them up, we do so
                 {
                     shield = maxShield;
-
                     
-                    if(!isAttacking && !heavyAttackWindup &&!absorbing && !healing && !isJammed) {  //If we're doing something, wait until we're not to change status, to allow for shields to raise
+                    if(!is_taking_action && !isJammed) {  //If we're doing something, wait until we're not to change status, to allow for shields to raise
                         shieldBroken = false;
                         shieldBar.ShieldRestore();
                         shielded = true;
@@ -842,6 +846,7 @@ public class BasicShip : MonoBehaviour
     //Every day I realize that the ship stuff should have been an interface
     protected virtual void finishAction()
     {
+        is_taking_action = false;
         ShieldsUp();
     }
 
