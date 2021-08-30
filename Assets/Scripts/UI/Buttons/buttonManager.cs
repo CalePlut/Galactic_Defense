@@ -7,6 +7,7 @@ public class buttonManager : MonoBehaviour
     public float gcdValue = 2.5f;
 
     public List<basicButton> buttons;
+    public basicButton attackButton;
 
     //public AffectManager affect;
 
@@ -22,6 +23,7 @@ public class buttonManager : MonoBehaviour
 
     public void globalCooldown() //Starts global cooldowns and begins clock for internal cooldown.
     {
+        //Debug.Log("Starting Global Cooldowns");
         foreach (basicButton button in buttons)
         {
             if (button.gameObject.activeSelf)
@@ -29,9 +31,6 @@ public class buttonManager : MonoBehaviour
                 button.StartCooldown(gcdValue);
             }
         }
-
-        //  gm.resumeGame();
-        StartCoroutine(ActionUsed());
     }
 
     public void globalCooldown(float _customCD) //Starts global cooldowns and begins clock for internal cooldown.
@@ -46,6 +45,20 @@ public class buttonManager : MonoBehaviour
 
         //  gm.resumeGame();
         StartCoroutine(ActionUsed());
+    }
+
+    public void limitedGlobalCooldown() //Used so that player can immediately interrupt attack
+    {
+        foreach (basicButton button in buttons)
+        {
+            if (button.gameObject.activeSelf)
+            {
+                if (button != attackButton) //Skip attack button
+                {
+                    button.StartCooldown(gcdValue);
+                }
+            }
+        }
     }
 
     public void ActionHappening()

@@ -16,6 +16,7 @@ using UnityEngine.Analytics;
 
 public class AffectManager : MonoBehaviour
 {
+    /*
     #region Mechanical variables
 
     private OrdinalAffect valenceMood = OrdinalAffect.low, arousalMood = OrdinalAffect.low, tensionMood = OrdinalAffect.low; //Underlying mood values that emotions can alter
@@ -431,6 +432,7 @@ public class AffectManager : MonoBehaviour
     }
 
     #endregion Event updates and maintenance
+    */
 }
 
 #region Events
@@ -440,6 +442,7 @@ public class AffectManager : MonoBehaviour
 /// </summary>
 public class AffectEvent
 {
+    /*
     //private float maxValence, maxArousal, maxTension; //Maximum values of events, to be modified by time
     public Emotion valence { get; protected set; }//Emotions are stored as Emotion and Value - Value is used to pass upstream, Emotion is used to process
 
@@ -513,6 +516,7 @@ public class AffectEvent
         var value = tension.GetScaledEmotion(scalar);
         return value * multiplier;
     }
+    */
 }
 
 /// <summary>
@@ -520,6 +524,7 @@ public class AffectEvent
 /// </summary>
 public class PastEvent : AffectEvent
 {
+    /*
     public PastEvent(Emotion _valence, Emotion _arousal, Emotion _tension, float _duration, AffectManager _manager) : base(_valence, _arousal, _tension, _duration, _manager)
     {
         timer = _duration;
@@ -542,14 +547,14 @@ public class PastEvent : AffectEvent
             //If we are no longer altering emotion, cull selves
             manager.CullEvent(this);
         }
-    }
+    }*/
 }
 
 /// <summary>
 /// Event that has not yet happened - may be determinate (known end point) or indeterminate (max 60 seconds)
 /// </summary>
 public class ProspectiveEvent : AffectEvent
-{
+{/*
     private float safetyTimer;
 
     public ProspectiveEvent(Emotion _valence, Emotion _arousal, Emotion _tension, float _duration, bool _determinate, AffectManager _manager) : base(_valence, _arousal, _tension, _duration, _manager)
@@ -594,7 +599,7 @@ public class ProspectiveEvent : AffectEvent
     public void setMultiplier(float _multiplier)
     {
         multiplier = _multiplier;
-    }
+    }*/
 }
 
 #endregion Events
@@ -643,6 +648,7 @@ public class Emotion
         var unscaledEmotion = (float)direction * (float)strength;
         return unscaledEmotion * scalar;
     }
+    
 }
 
 #endregion Emotions

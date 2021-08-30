@@ -33,24 +33,24 @@ MonoBehaviour:
   baseHeavyAttackDamage: 10
   level2HeavyAttackDamage: 10
   level3HeavyAttackDamage: 10
-  baseHeavyAttackDelay: 3
-  level2HeavyAttackDelay: 3
-  level3HeavyAttackDelay: 3
-  baseParryFrame: 0.35
-  level2ParryFrame: 0.35
-  level3ParryFrame: 0.35
+  baseHeavyAttackDelay: 2.5
+  level2HeavyAttackDelay: 2.5
+  level3HeavyAttackDelay: 2.5
+  baseParryFrame: 0.33
+  level2ParryFrame: 0.33
+  level3ParryFrame: 0.33
   baseRetaliateDamage: 5
   level2RetaliateDamage: 5
   level3RetaliateDamage: 5
-  baseDisableDuration: 3
-  level2DisableDuration: 3
-  level3DisableDuration: 3
-  baseHealPercent: 0.4
-  level2HealPercent: 0.4
-  level3HealPercent: 0.4
-  baseHealDelay: 3
-  level2HealDelay: 3
-  level3HealDelay: 3
-  heavyAttackShieldReduction: 0.2
+  baseDisableDuration: 1.5
+  level2DisableDuration: 1.5
+  level3DisableDuration: 1.5
+  baseHealPercent: 0.45
+  level2HealPercent: 0.45
+  level3HealPercent: 0.45
+  baseHealDelay: 2
+  level2HealDelay: 2
+  level3HealDelay: 2
+  heavyAttackShieldReduction: 0.5
   shieldRechargeDelay: 1
   shieldBreakDelay: 5

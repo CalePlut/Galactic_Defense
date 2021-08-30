@@ -312,6 +312,7 @@ public class PlayerShip : BasicShip
     {
         base.BeginAttack();
         attackButton.HoldButton();
+        limitedGlobalCooldown();
     }
 
     protected override void FinishFiring()
@@ -323,7 +324,7 @@ public class PlayerShip : BasicShip
         PreGLAM.Queue_prospective_cull(likely_type.player_attack);
         PreGLAM.Queue_prospective_cull(likely_type.enemy_death);
         PreGLAM.Queue_event(new Past_event(affectVariables.P_attack.x, 1.0f + (enemyShip.shieldPercent()), PreGLAM));
-        TriggerGlobalCooldown();
+        //TriggerGlobalCooldown();
     }
 
     public override void InterruptFiring()
@@ -441,7 +442,7 @@ public class PlayerShip : BasicShip
             cannon.GetComponent<SciFiProjectileScript>().CannonSetup(damage, enemyShip);
             retaliateEvent = null; //After firing, we clear our retaliateEvent
             target.Jam(jamDuration * 2);
-            target.ShieldBreak();
+            //target.ShieldBreak();
             SFX.PlayOneShot(SFX_Riposte);
         }
 
@@ -666,6 +667,12 @@ public class PlayerShip : BasicShip
     private void TriggerGlobalCooldown()
     {
         buttonManager.globalCooldown();
+    }
+
+    //Used with basic attack to avoid having that button fire
+    private void limitedGlobalCooldown()
+    {
+        buttonManager.limitedGlobalCooldown();
     }
 
     #endregion Attack and Abilities

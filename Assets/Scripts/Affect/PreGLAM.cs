@@ -119,6 +119,11 @@ public class PreGLAM : MonoBehaviour
 
     void Cull_events()
     {
+        if (to_cull.Count > 0)
+        {
+            //Debug.Log("Culling " + to_cull.Count + " events");
+        }
+
         foreach(Emotion_event _event in to_cull)
         {
             if (events.Contains(_event))
@@ -152,6 +157,7 @@ public class PreGLAM : MonoBehaviour
     {
         while (is_active)
         {
+            //Debug.Log("# of events (pre-cull):" + events.Count);
             //Spawns any new events since last loop
             Spawn_events();
 
@@ -166,6 +172,7 @@ public class PreGLAM : MonoBehaviour
 
             //Culls any events that expired this loop
             Cull_events();
+            //Debug.Log("# of events (post-cull):" + events.Count);
 
             yield return null;
         }
@@ -226,7 +233,7 @@ public class PreGLAM : MonoBehaviour
 
     bool is_strong_music_change()
     {
-        var threshold = 45.0f;
+        var threshold = affectVariables.strongThreshold;
 
         if (Mathf.Abs(valence) > threshold) { return true; }
         else if (Mathf.Abs(arousal) > threshold) { return true; }
@@ -236,8 +243,8 @@ public class PreGLAM : MonoBehaviour
 
     string level(float value)
     {
-        if (value < -15.0f) { return "Low"; }
-        else if (value < 15.0f) { return "Medium"; }
+        if (value < affectVariables.negativeThreshold) { return "Low"; }
+        else if (value < affectVariables.positiveThreshold) { return "Mid"; }
         else return "High";
     }
 }
@@ -344,7 +351,7 @@ public class Known_event : Emotion_event
         }
         else
         {
-            timer_percent = remaining_time_until / time_until;
+            timer_percent = 1.0f-(remaining_time_until / time_until);
         }
     }
 
@@ -396,8 +403,17 @@ public class Likely_event : Emotion_event
     //Likely events don't have to worry about being culled by time, because they just go forever if un-culled by type.
     public void Tick(float deltaTime)
     {
-        remaining_time_until -= deltaTime;
-        timer_percent = remaining_time_until / time_until;
+        if (remaining_time_until > 0.0f)
+        {
+            remaining_time_until -= deltaTime;
+        }
+        else
+        {
+            remaining_time_until = 0.0f;
+            //Debug.Log("Waiting to cull event of type " + type);
+        }
+        
+        timer_percent = 1.0f-(remaining_time_until / time_until);
     }
 
     //Valence returns the valence value as modified by modifier and time

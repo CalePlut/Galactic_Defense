@@ -398,6 +398,7 @@ public class GameManager : MonoBehaviour
         EnemyCompositionSetup();
         music.RunActionPreset("StartCombat");
         PreGLAM.Set_Mood(stage);
+        StartCoroutine(CombatAffectUpdate());
     }
 
     /// <summary>
@@ -424,8 +425,10 @@ public class GameManager : MonoBehaviour
         while (inCombat)
         {
             var VATLevels = PreGLAM.VATLevel();
+            //Debug.Log("Vat levels: " + VATLevels);
             if (VAT != VATLevels)
             {
+                //Debug.Log("Change in Vat Levels. New VAT Levels = " + VATLevels);
                 VAT = VATLevels;
                 music.RunActionPreset(VAT);
             }

@@ -2420,8 +2420,8 @@ MonoBehaviour:
   globalCooldown: 2
   specialSyncDelay: 0.5
   specialAttackFrameLength: 1.5
-  comboStartDelayMinimum: 0.75
-  comboStartDelayMaximum: 5
+  comboStartDelayMinimum: 1
+  comboStartDelayMaximum: 4
   warpEffect: {fileID: 138802, guid: a8565406c64107841a9c18dc24ba9dc4, type: 3}
 --- !u!95 &2645079919187418856
 Animator:

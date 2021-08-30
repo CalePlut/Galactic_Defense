@@ -1646,7 +1646,10 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Now let''s try some target practice. Lower your shields and begin an <color=purple>attack
     pattern</color><sprite=0> by pressing the "Q" key on your keyboard or <color=blue>X</color>
-    on a gamepad
+    on a gamepad.
+
+
+    Using any ability makes places all other abilities on cooldown
 
 '
   m_isRightToLeft: 0
@@ -6240,7 +6243,23 @@ MonoBehaviour:
     m_Id: 6657aa8c-3545-4a34-9120-849b407bd87d
     m_Processors: 
     m_Interactions: 
-    m_SingletonActionBindings: []
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: a8286b04-46ad-4eea-bf96-f89c39c9a0b4
+      m_Path: <Keyboard>/p
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Pause
+      m_Flags: 0
+    - m_Name: 
+      m_Id: f4ce78ba-ae01-42c4-a0ce-711d4df79620
+      m_Path: <Gamepad>/start
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Pause
+      m_Flags: 0
   focusToggle:
     m_Name: Focus Toggle
     m_Type: 0
@@ -9935,12 +9954,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b00040d53d76b14fbbefb73cd03968a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gcdValue: 1.848
+  gcdValue: 5
   buttons:
   - {fileID: 4715089}
   - {fileID: 2100624343}
   - {fileID: 1406448387}
   - {fileID: 1476275547}
+  attackButton: {fileID: 4715089}
   ultimateFromStart: 1
 --- !u!114 &671322363
 MonoBehaviour:
@@ -18543,7 +18563,7 @@ MonoBehaviour:
       m_Flags: 0
     - m_Name: 
       m_Id: 390827f7-4573-4dfe-85c7-ead0fe71d3f2
-      m_Path: <XInputController>/buttonSouth
+      m_Path: <Gamepad>/buttonSouth
       m_Interactions: 
       m_Processors: 
       m_Groups: 
@@ -19720,7 +19740,7 @@ MonoBehaviour:
       m_Flags: 0
     - m_Name: 
       m_Id: 1c27d318-9ce3-44e3-b8f1-41a44ae4bdbf
-      m_Path: <XInputController>/buttonNorth
+      m_Path: <Gamepad>/buttonNorth
       m_Interactions: 
       m_Processors: 
       m_Groups: 
@@ -21598,7 +21618,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
+    rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -24282,7 +24302,7 @@ MonoBehaviour:
       m_Action: Controller
       m_Flags: 0
   kbamPrompt: {fileID: 21300000, guid: 8f2a398ccefc88945ba9cd08ff35e1e3, type: 3}
-  controllerPrompt: {fileID: 21300000, guid: b47ef543d7ce18543a1c00f059288c53, type: 3}
+  controllerPrompt: {fileID: 21300000, guid: a1a7f9ec30b21694db7dee0b563a6e00, type: 3}
 --- !u!1 &1806520871
 GameObject:
   m_ObjectHideFlags: 0
@@ -28703,7 +28723,7 @@ MonoBehaviour:
       m_Flags: 0
     - m_Name: 
       m_Id: db8c0bc1-fd99-45e1-814f-b03d7a08c2e4
-      m_Path: <XInputController>/buttonEast
+      m_Path: <Gamepad>/buttonEast
       m_Interactions: 
       m_Processors: 
       m_Groups: 

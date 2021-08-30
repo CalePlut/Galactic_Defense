@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a9e0dcc33807b34abc31aa40336adff, type: 3}
   m_Name: AffectVariables
   m_EditorClassIdentifier: 
-  positiveThreshold: 2
-  negativeThreshold: -2
-  strongThreshold: 6
-  strongNegativeThreshold: -6
+  positiveThreshold: 5
+  negativeThreshold: -5
+  strongThreshold: 10
+  strongNegativeThreshold: -10
   stage1Mood: {x: -3, y: -3, z: -3}
   stage2Mood: {x: 0, y: 0, z: 0}
   stage3Mood: {x: 0, y: 2, z: 2}

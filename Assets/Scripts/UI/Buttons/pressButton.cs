@@ -2,6 +2,7 @@
 {
     protected override void Behaviour()
     {
+        base.Behaviour();
         if (!GameManager.tutorial)
         {
             //This checks whether the hotkey has been pressed, and acts as though clicked.
@@ -10,6 +11,6 @@
                 activateButton();
             }
         }
-        base.Behaviour();
+
     }
 }

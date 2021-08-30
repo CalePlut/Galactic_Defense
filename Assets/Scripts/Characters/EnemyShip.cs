@@ -20,7 +20,7 @@ public class EnemyShip : BasicShip
 
     public float specialAttackFrameLength;
 
-    public float comboStartDelayMinimum = 3f, comboStartDelayMaximum = 5f;
+    public float comboStartDelayMinimum = 2f, comboStartDelayMaximum = 4f;
 
     private GameObject playerShipObj;
     private PlayerShip playerShip;
@@ -29,7 +29,7 @@ public class EnemyShip : BasicShip
     #region Combat AI variables
 
     private bool comboHeal;
-    private bool executeFinisher;
+    private bool finish_with_heavy;
     private bool isHeavyQueued;
 
     //private CombatAI CombatAI;
@@ -168,35 +168,6 @@ public class EnemyShip : BasicShip
         }
     }
 
-    //protected override Emotion attackPatternValence()
-    //{
-    //    return new Emotion(EmotionDirection.decrease, EmotionStrength.moderate);
-    //}
-
-    //protected override Emotion attackPatternArousal()
-    //{
-    //    return new Emotion(EmotionDirection.none, EmotionStrength.none);
-    //}
-
-    //protected override Emotion attackPatternTension()
-    //{
-    //    return new Emotion(EmotionDirection.increase, EmotionStrength.weak);
-    //}
-
-    public override void TakeDamage(float _damage)
-    {
-        base.TakeDamage(_damage);
-       //PreGLAM.Create_event(new Past_event(5.0f, 1.0f+shieldPercent(), PreGLAM));
-        //affect.CreatePastEvent(damageValence, damageArousal, damageTension, 45.0f);
-    }
-
-    public override void TakeHeavyDamage(float _damage, float _jamLength)
-    {
-        base.TakeHeavyDamage(_damage, _jamLength);
-        //Set base levels - the first few shots aren't actually important to the strength of the emotion
-        
-       //PreGLAM.Create_event(new Past_event(10.0f, 1.0f+healthPercent(), PreGLAM));
-    }
 
     public override void ShieldBreak()
     {
@@ -234,9 +205,6 @@ public class EnemyShip : BasicShip
     /// </summary>
     private void ComboSetup()
     {
-        var hpPercent = health / maxHealth; //Chance of triggering healing increases as health decreases
-        comboHeal = Random.value > hpPercent;
-
         if (alive)
         {
             var toWait = Random.Range(comboStartDelayMaximum, comboStartDelayMaximum);
@@ -251,6 +219,10 @@ public class EnemyShip : BasicShip
     /// <returns></returns>
     private IEnumerator ComboInitialWait(float time)
     {
+        var hpPercent = health / maxHealth; //Chance of triggering healing increases as health decreases
+        comboHeal = Random.value > hpPercent;
+        //Debug.Log("Combo heal = " + comboHeal);
+
         var timer = time;
         while (timer > 0.0f)
         {
@@ -269,13 +241,14 @@ public class EnemyShip : BasicShip
     /// </summary>
     protected void SelectAttack()
     {
-        var combo = Random.value > 0.5f;
+       // Debug.Log("Enemy selecting attack");
+        var combo = Random.value > 0.5f; //The combo attack is most common, and fires attack combos before possibly ending with heavy attack
         if (combo)
         {
             var comboTotalShots = Random.Range(warmupShots, totalShots);
             var comboWarmup = Random.Range(warmupShots, comboTotalShots);
-            executeFinisher = Random.value > 0.5f; //Coin flip for whether we'll do the finisher or not
-            if (executeFinisher)
+            finish_with_heavy = Random.value > 0.5f; //Coin flip for whether we'll do the finisher or not
+            if (finish_with_heavy)
             {
                 var delay = attackPatternFinishTime(comboWarmup, comboTotalShots) + heavyAttackDelay;
 
@@ -297,19 +270,19 @@ public class EnemyShip : BasicShip
                 var t = affectVariables.E_heavy.y;
                 var magnitude = 1.0f + (1.0f - playerShip.healthPercent());
 
-
-
-                if (comboHeal) { HealTrigger(); }
+                if (comboHeal) {
+                    HealTrigger();
+                }
                 else {
                     PreGLAM.Queue_event(new Known_event(v, t, magnitude, toWait));
                     HeavyAttackTrigger();
-
                 }
-
-                StartCoroutine(ComboInitialWait(toWait));
             }
         }
     }
+
+
+
 
     /// <summary>
     /// Keeps track of how many shots have been fired, to properly end combo.
@@ -317,31 +290,18 @@ public class EnemyShip : BasicShip
     protected override void FinishFiring()
     {
         base.FinishFiring();
-        // Debug.Log("Finished firing");
-        if (executeFinisher)
-        {
-            StartCoroutine(SpecialSyncDelay());
-        }
-        StartCoroutine(ComboInitialWait(Random.Range(comboStartDelayMinimum, comboStartDelayMaximum)));
-        PreGLAM.Queue_prospective_cull(likely_type.player_death);
+        PreGLAM.Queue_prospective_cull(likely_type.player_death); //If we haven't killed the player with this attack by the end of a combo, we no longer think we might
     }
 
     /// <summary>
-    /// Used to sync up
+    /// Called whenever an action is finished. Selects next action after a short delay.
     /// </summary>
-    /// <returns></returns>
-    private IEnumerator SpecialSyncDelay()
+    protected override void finishAction()
     {
-        yield return new WaitForSeconds(specialSyncDelay);
-        if (comboHeal)
-        {
-            HealTrigger();
-        }
-        else
-        {
-            HeavyAttackTrigger();
-        }
+        base.finishAction();
+        StartCoroutine(ComboInitialWait(Random.Range(comboStartDelayMinimum, comboStartDelayMaximum)));
     }
+
 
     #endregion Combat AI
 
@@ -370,6 +330,8 @@ public class EnemyShip : BasicShip
 
     public override void HealTrigger()
     {
+        Debug.Log("Enemy healing");
+        ShieldsDown();
         base.HealTrigger();
         var v = affectVariables.E_heal.x;
         var t = affectVariables.E_heal.y;
@@ -379,6 +341,7 @@ public class EnemyShip : BasicShip
 
     public override void HealInterrupt()
     {
+        Debug.Log("Enemy heal interrupted");
         base.HealInterrupt();
         PreGLAM.Queue_prospective_cull(likely_type.enemy_heal);
         var v = affectVariables.E_heal.x;
@@ -387,6 +350,7 @@ public class EnemyShip : BasicShip
     }
     public override void Heal()
     {
+        Debug.Log("Enemy healed");
         base.Heal();
         PreGLAM.Queue_prospective_cull(likely_type.enemy_heal);
         PreGLAM.Queue_prospective_cull(likely_type.enemy_death); //This probably isn't necessary, but it makes me feel safe
@@ -394,6 +358,9 @@ public class EnemyShip : BasicShip
         var magnitude = 1.0f + (1.0f - healthPercent());
         PreGLAM.Queue_event(new Past_event(v, magnitude, PreGLAM));
     }
+
+
+
 
     #region Effects and Overrides
     void HeavyAttack_Sound()

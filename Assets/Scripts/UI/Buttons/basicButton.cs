@@ -158,10 +158,10 @@ public class basicButton : MonoBehaviour
     //Cooldown functions are called by the player ship and check whether the button is activatable
     public void StartCooldown(float time)
     {
+        //Debug.Log("Starting cooldown with duration " + time);
         if (cooldown < time)
         {
-            cooldownSlider.maxValue = time;
-            cooldown = time;
+            alterCooldown(time);
         }
     }
 
