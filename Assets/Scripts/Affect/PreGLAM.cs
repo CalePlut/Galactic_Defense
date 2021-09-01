@@ -32,7 +32,7 @@ public class PreGLAM : MonoBehaviour
         to_spawn = new List<Emotion_event>();
         Begin_Emotion_Process();
         Begin_Emotion_Log();
-        Debug.Log("PreGLAM Started");
+        //Debug.Log("PreGLAM Started");
     }
 
     public void Set_Mood(int stage)

@@ -400,7 +400,22 @@ public class GameManager : MonoBehaviour
         Player.StartCombat();
         inCombat = true;
         EnemyCompositionSetup();
-        music.RunActionPreset("StartCombat");
+        if (condition == Condition.Generative)
+        {
+            music.RunActionPreset("StartCombat");
+        }
+        else if (condition == Condition.Adaptive)
+        {
+            music.RunActionPreset("Adaptive_StartCombat");
+        }
+        else if (condition == Condition.Linear)
+        {
+            music.RunActionPreset("Linear_StartCombat");
+        }
+        else
+        {
+            music.Stop();
+        }
         PreGLAM.Set_Mood(stage);
         StartCoroutine(CombatAffectUpdate());
     }
@@ -433,8 +448,21 @@ public class GameManager : MonoBehaviour
             if (VAT != VATLevels)
             {
                 //Debug.Log("Change in Vat Levels. New VAT Levels = " + VATLevels);
-                VAT = VATLevels;
-                music.RunActionPreset(VAT);
+                switch (condition)
+                {
+                    case Condition.None:
+                        break;
+                    case Condition.Linear:
+                        break;
+                    case Condition.Adaptive:
+                        VAT = "Adaptive_" + VATLevels;
+                        music.RunActionPreset(VAT);
+                        break;
+                    case Condition.Generative:
+                        VAT = VATLevels;
+                        music.RunActionPreset(VAT);
+                        break;
+                }
             }
             yield return null;
         }
