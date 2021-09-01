@@ -16,9 +16,9 @@ MonoBehaviour:
   negativeThreshold: -5
   strongThreshold: 10
   strongNegativeThreshold: -10
-  stage1Mood: {x: -3, y: -3, z: -3}
-  stage2Mood: {x: 0, y: 0, z: 0}
-  stage3Mood: {x: 0, y: 2, z: 2}
+  stage1Mood: {x: -6, y: -8, z: -8}
+  stage2Mood: {x: -3, y: -6, z: -6}
+  stage3Mood: {x: 0, y: 0, z: 0}
   P_attack: {x: 1, y: 1}
   P_heavy: {x: 1, y: 1}
   E_attack: {x: -1, y: 1}

@@ -31,6 +31,27 @@ public class menuManager : MonoBehaviour
         else { GameManager.tutorial = false; }
     }
 
+    public void Set_Condition(int condition)
+    {
+        switch (condition)
+        {
+            case 0:
+                GameManager.condition = Condition.Generative;
+                break;
+            case 1:
+                GameManager.condition = Condition.Adaptive;
+                break;
+            case 2:
+                GameManager.condition = Condition.Linear;
+                break;
+            case 3:
+                GameManager.condition = Condition.None;
+                break;
+            default:
+                Debug.Log("Condition out of range");
+                break;
+        }
+    }
     private IEnumerator loadingScreen(string sceneName)
     {
         button_Holder.SetActive(false);

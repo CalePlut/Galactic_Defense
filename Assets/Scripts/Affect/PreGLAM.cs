@@ -54,7 +54,9 @@ public class PreGLAM : MonoBehaviour
 
     public void Begin_Emotion_Log()
     {
-        StartCoroutine(Log_Emotions());
+        //StartCoroutine(Log_Emotions());
+        Debug.Log("Starting log");
+        InvokeRepeating("Log_Emotions", 0.0f, 0.25f);
     }
 
     public void Begin_Emotion_Process()
@@ -178,17 +180,13 @@ public class PreGLAM : MonoBehaviour
         }
     }
 
-    IEnumerator Log_Emotions()
+    void Log_Emotions()
     {
 #if UNITY_EDITOR
-        while (true)
-        {
+        Debug.Log("Logging VAT: " + valence + "," + arousal + "," + tension);
             Grapher.Log(valence, "Valence");
             Grapher.Log(arousal, "Arousal");
             Grapher.Log(tension, "Tension");
-            //Debug.Log("Output VAT: [" + valence + "," + arousal + "," + tension + "]");
-            yield return new WaitForSecondsRealtime(0.25000f);
-        }
 #endif
     }
 

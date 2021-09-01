@@ -10,6 +10,8 @@ public enum Attribute { shields, reactor, sensors, engine };
 
 public enum enemyType { main, miniboss, boss };
 
+public enum Condition { None, Linear, Adaptive, Generative}
+
 public class GameManager : MonoBehaviour
 {
     #region Player Variables and Objects
@@ -82,6 +84,8 @@ public class GameManager : MonoBehaviour
     public static int stage = 1, encounter = 0;
 
     public static bool tutorial = false;
+
+    public static Condition condition = Condition.Generative;
 
     #endregion Gameplay Values
 

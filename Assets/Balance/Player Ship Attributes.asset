@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba4d499d2b74c934fb549b6cc19ed65c, type: 3}
   m_Name: Player Ship Attributes
   m_EditorClassIdentifier: 
-  baseHealth: 30
-  level2Health: 30
-  level3Health: 30
-  baseShield: 7.5
-  level2Shield: 7.5
-  level3Shield: 7.5
+  baseHealth: 45
+  level2Health: 45
+  level3Health: 45
+  baseShield: 10
+  level2Shield: 10
+  level3Shield: 10
   baseArmour: 0.9
   level2Armour: 0.9
   level3Armour: 0.9
