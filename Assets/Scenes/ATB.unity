@@ -6195,15 +6195,7 @@ MonoBehaviour:
     m_Id: c4dc9dba-0ff2-4bbd-89da-765ce24b0211
     m_Processors: 
     m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: bb51c410-4c61-4351-a6e0-82fbeb3f1c40
-      m_Path: <Keyboard>/q
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Quit
-      m_Flags: 0
+    m_SingletonActionBindings: []
   screenshot:
     m_Name: Screenshot
     m_Type: 0
