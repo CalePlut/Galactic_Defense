@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+#if UNITY_EDITOR
 public class DataProvider : MonoBehaviour
 {
 
@@ -73,3 +73,4 @@ public class DataProvider : MonoBehaviour
         bird, horse, alien
     }
 }
+#endif

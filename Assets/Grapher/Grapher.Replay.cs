@@ -5,6 +5,7 @@ using UnityEditor;
 using NWH;
 
 // Replay
+#if UNITY_EDITOR
 public partial class Grapher : EditorWindow
 {
     private static List<string> replayFiles = new List<string>();
@@ -103,3 +104,4 @@ public partial class Grapher : EditorWindow
         }
     }
 }
+#endif

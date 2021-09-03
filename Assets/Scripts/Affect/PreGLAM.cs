@@ -183,7 +183,7 @@ public class PreGLAM : MonoBehaviour
     void Log_Emotions()
     {
 #if UNITY_EDITOR
-        Debug.Log("Logging VAT: " + valence + "," + arousal + "," + tension);
+        //Debug.Log("Logging VAT: " + valence + "," + arousal + "," + tension);
             Grapher.Log(valence, "Valence");
             Grapher.Log(arousal, "Arousal");
             Grapher.Log(tension, "Tension");
@@ -226,6 +226,7 @@ public class PreGLAM : MonoBehaviour
 
         var return_string = valence_level + "-" + arousal_level + "-" + tension_level;
         if (is_strong_music_change()) { return_string += "-2"; }
+        //Debug.Log("Music string = " + return_string);
         return return_string;
     }
 

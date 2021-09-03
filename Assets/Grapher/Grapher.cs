@@ -8,6 +8,7 @@ using System;
 
 using NWH;
 
+#if UNITY_EDITOR
 [ExecuteInEditMode]
 public partial class Grapher : EditorWindow
 {
@@ -472,4 +473,6 @@ public partial class Grapher : EditorWindow
             return 0;
         }
     }
+
 }
+#endif

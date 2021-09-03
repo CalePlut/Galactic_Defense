@@ -3,6 +3,7 @@ using UnityEditor;
 
 namespace NWH
 {
+#if UNITY_EDITOR
     public static class TimeKeeper
     {
         private static float time = 0;
@@ -47,4 +48,5 @@ namespace NWH
         }
 
     }
+#endif
 }

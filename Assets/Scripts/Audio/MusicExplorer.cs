@@ -8,7 +8,7 @@ public class MusicExplorer : MonoBehaviour
 {
     public EliasPlayer music;
     public Music_Slider valence, arousal, tension;
-    Condition condition;
+    Condition condition = Condition.Generative;
 
     public void Set_Music_Level()
     {
@@ -17,6 +17,7 @@ public class MusicExplorer : MonoBehaviour
         var tension_level = tension.level;
         
         var music_string = string.Format("{0}-{1}-{2}", valence_level, arousal_level, tension_level);
+
         switch (condition)
         {
             case Condition.None:
@@ -25,17 +26,25 @@ public class MusicExplorer : MonoBehaviour
                 break;
             case Condition.Adaptive:
                 music_string = string.Format("Adaptive_{0}-{1}-{2}", valence_level, arousal_level, tension_level);
-                if (valence.strong || arousal.strong || tension.strong) { music_string += "-2"; }
+                if (is_strong()) { music_string += "-2"; }
                 music.RunActionPreset(music_string);
                 break;
             case Condition.Generative:
                 music_string = string.Format("{0}-{1}-{2}", valence_level, arousal_level, tension_level);
-                if (valence.strong || arousal.strong || tension.strong) { music_string += "-2"; }
+                if (is_strong()) { music_string += "-2"; }
                 music.RunActionPreset(music_string);
                 break;
         }
+        Debug.Log("Music string: " + music_string);
     }
 
+    bool is_strong()
+    {
+        Debug.Log(string.Format("V-Strong: {0}, A-strong: {1}, T_Strong: {2}", valence.strong, arousal.strong, tension.strong));
+        if (valence.strong || arousal.strong || tension.strong) { return true; }
+        else return false;
+
+    }
 
     public void SetGuitarSolo(bool solo)
     {

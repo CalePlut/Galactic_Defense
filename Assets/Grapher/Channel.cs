@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace NWH
 {
+#if UNITY_EDITOR
     public class Channel
     {
         public Grapher g;
@@ -195,4 +196,5 @@ namespace NWH
             verticalResolution = GraphSettings.DefaultVerticalResolution;
         }
     }
+#endif
 }

@@ -3,8 +3,10 @@ using UnityEngine;
 
 namespace NWH
 {
+#if UNITY_EDITOR
     public class SettingsWindow : EditorWindow
     {
+
         [MenuItem("Window/Grapher Settings")]
         public static void Init()
         {
@@ -72,5 +74,7 @@ namespace NWH
             GUILayout.EndHorizontal();
             return Mathf.Clamp(result, min, max);
         }
+
     }
+#endif
 }

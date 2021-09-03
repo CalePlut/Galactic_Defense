@@ -1090,7 +1090,10 @@ public class BasicShip : MonoBehaviour
     {
         //Debug.Log("Death triggered");
         alive = false;
+        
         myTarget().InterruptFiring();
+        InterruptLaser();
+        InterruptFiring();
 
         SFX.PlayOneShot(SFX_Explosion);
         var deathExplode = Instantiate(explosion, this.transform.position, Quaternion.identity, this.transform);
@@ -1099,8 +1102,6 @@ public class BasicShip : MonoBehaviour
 
     private IEnumerator death()
     {
-        InterruptLaser();
-        InterruptFiring();
         yield return new WaitForSeconds(1.0f);
         doneDeath();
     }

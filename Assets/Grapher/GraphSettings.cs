@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace NWH
 {
+#if UNITY_EDITOR
     [System.Serializable]
     public static class GraphSettings
     {
@@ -152,6 +153,6 @@ namespace NWH
                 IPy44jcNPPFQQ/m5Gp5VmRdrrzuIjNyc45W8VqNin7cwuWSwWpx8AOBQxgsUV/AS9yNiM0GrHYvWuH0pJ1hNyjPonU7w24jIrZbYuw/mf+/g7/+5GhqtHt1wg
                 AAAABJRU5ErkJggg==";
     }
-
+#endif
 }
 
