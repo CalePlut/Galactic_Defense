@@ -680,6 +680,8 @@ public class PlayerShip : BasicShip
     // Start is called before the first frame update
     private void Start()
     {
+        level = GameManager.difficulty_level;
+        Debug.Log("Difficulty level = " + level);
         ShipSetup();
         upgradeManager = new UpgradeManager(this);
     }

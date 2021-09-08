@@ -71,7 +71,7 @@ public class TutorialManager : MonoBehaviour
         currentSlide.SetActive(false);
         enemy.HeavyAttackTrigger();
 
-        StartCoroutine(ParryWait(2.65f, next));
+        StartCoroutine(ParryWait(2.75f, next));
         currentSlide = next;
     }
 
@@ -80,7 +80,7 @@ public class TutorialManager : MonoBehaviour
         currentSlide.SetActive(false);
         player.AbsorbTrigger();
         manager.resumeGame();
-        StartCoroutine(SlideWait(1.75f, next));
+        StartCoroutine(SlideWait(1.8f, next));
         currentSlide = next;
     }
 

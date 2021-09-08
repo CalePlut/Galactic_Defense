@@ -3171,6 +3171,7 @@ MonoBehaviour:
   textureLengthScale: 3
   manager: {fileID: 0}
   PreGLAM: {fileID: 0}
+  is_tutorial: 1
   globalCooldown: 2.5
   specialSyncDelay: 0.6
   specialAttackFrameLength: 1.5

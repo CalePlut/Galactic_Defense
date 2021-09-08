@@ -31,6 +31,11 @@ public class menuManager : MonoBehaviour
         else { GameManager.tutorial = false; }
     }
 
+    public void Set_Difficulty(int difficulty)
+    {
+        GameManager.SetDifficulty(difficulty);
+    }
+
     public void Set_Condition(int condition)
     {
         switch (condition)

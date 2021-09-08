@@ -220,7 +220,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 67.25
+  m_fontSize: 58.95
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1644,14 +1644,18 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Now let''s try some target practice. Lower your shields and begin an <color=purple>attack
-    pattern</color><sprite=0> by pressing the "Q" key on your keyboard or <color=blue>X</color>
-    on a gamepad.
+  m_text: 'The <color=blue>Vatic Savate</color> has four abilities. First, let''s
+    learn about your <color=purple>attack pattern</color>
 
 
-    Using any ability makes places all other abilities on cooldown
+    Lower your shields
+    and begin an <color=purple>attack pattern</color><sprite=0> by pressing the "Q"
+    key once on your keyboard (<color=blue>X</color> on controller)
 
-'
+
+    You only
+    need to press the button once to begin attacking, the <color=blue>Vatic Savate</color>
+    will continue firing automatically'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4ab1c744477e3a44bbdf737f6d378af, type: 2}
   m_sharedMaterial: {fileID: 9208401273420773845, guid: d4ab1c744477e3a44bbdf737f6d378af,
@@ -1679,7 +1683,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
+  m_fontSize: 63.25
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2067,8 +2071,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 174.99994}
-  m_SizeDelta: {x: -200, y: -550.00006}
+  m_AnchoredPosition: {x: 0, y: 99.99994}
+  m_SizeDelta: {x: -200, y: -400.00012}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &170420496
 MonoBehaviour:
@@ -2175,7 +2179,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
+    rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -4069,7 +4073,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
+    rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -4378,7 +4382,8 @@ MonoBehaviour:
     a unique <color=#add8e6>absorbtive reactor</color><sprite=0> \n\nThis <color=#add8e6>reactor</color><sprite=0>
     is your most powerful defense against incoming laser attacks.\r\n\nTo use your
     <color=#add8e6>reactor</color>, wait until just before your opponent fires their
-    <color=red>heavy laser</color>\n\nThe opponent will charge up their laser now"
+    <color=red>heavy laser</color>\n\nWatch as your opponent charges their laser,
+    and targets you"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4ab1c744477e3a44bbdf737f6d378af, type: 2}
   m_sharedMaterial: {fileID: 9208401273420773845, guid: d4ab1c744477e3a44bbdf737f6d378af,
@@ -4406,7 +4411,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 59.55
+  m_fontSize: 58.95
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -4523,7 +4528,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
+    rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -5673,11 +5678,15 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Your <color=purple>Heavy Laser</color> deals massive damage to <color=red>health</color>,
-    but it is ineffective against <color=blue>shields</color>\r\n\n\nBefore the <color=purple>Heavy
-    Laser</color> fires, it must breifly charge up. \n\nDuring this time, your shield
-    is down.  \nReceiving <color=red>ANY</color> damage will cancel your <color=purple>laser</color>
-    attack\n\n\n"
+  m_text: 'Your <color=purple>Heavy Laser</color> deals massive damage to <color=red>health</color>,
+    but it is less effective against <color=blue>shields</color>
+
+
+    Your shield
+    is down while the <color=purple>laser</color> charges
+
+    Receiving any damage
+    will cancel the <color=purple>laser</color>''s attack'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4ab1c744477e3a44bbdf737f6d378af, type: 2}
   m_sharedMaterial: {fileID: 9208401273420773845, guid: d4ab1c744477e3a44bbdf737f6d378af,
@@ -5705,7 +5714,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 58.75
+  m_fontSize: 72
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -5812,9 +5821,21 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "In addition to your standard weapons, the <color=blue><i>Vatic Savate</i></color>
-    is equipped with a <color=purple>Heavy Laser</color><sprite=0>\n\n Fire your
-    laser by pressing \"W\" on the keyboard, or <color=green>A</color> on a gamepad\r\n\n"
+  m_text: 'In addition to your cannons, the <color=blue><i>Vatic Savate</i></color>
+    is equipped with a <color=purple>Heavy Laser</color><sprite=0>
+
+
+    When activated,
+    there is a short delay while the <color=blue><i>Vatic Savate</i></color> targets
+    the enemy and charges its <color=purple>laser</color>
+
+
+    After the delay,
+    the <color=purple>laser</color> will automatically fire
+
+
+    Fire your laser
+    by pressing "W" once on the keyboard,  (<color=yellow>Y</color> on controller)'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4ab1c744477e3a44bbdf737f6d378af, type: 2}
   m_sharedMaterial: {fileID: 9208401273420773845, guid: d4ab1c744477e3a44bbdf737f6d378af,
@@ -5842,7 +5863,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
+  m_fontSize: 66.6
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -9015,8 +9036,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 26.5, y: 0}
-  m_SizeDelta: {x: -57, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: -10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &603793248
 MonoBehaviour:
@@ -9038,10 +9059,16 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'The enemy is about to fire!
+  m_text: 'When the enemy is about to fire their laser, press the "E" key once (<color=red>B</color>
+    on controller)
 
 
-    Hit the "E" key to activate your reactor!'
+    The <color=blue>Vatic Savate</color> will absorb the incoming
+    laser and fire a return shot. This shot will briefly disable your opponent''s
+    shields
+
+
+    Press the "E" key now to continue'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4ab1c744477e3a44bbdf737f6d378af, type: 2}
   m_sharedMaterial: {fileID: 9208401273420773845, guid: d4ab1c744477e3a44bbdf737f6d378af,
@@ -9069,7 +9096,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
+  m_fontSize: 64.35
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -10280,8 +10307,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 10, y: 0}
-  m_SizeDelta: {x: -24, y: 0}
+  m_AnchoredPosition: {x: 0, y: 62.5}
+  m_SizeDelta: {x: -20, y: -125}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &684121326
 MonoBehaviour:
@@ -10303,11 +10330,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "The <color=blue><i>Vatic Savate</i></color> is now executing its attack
-    pattern. \n\nDuring gameplay, if you wish to cancel your attack pattern, press
-    the \"Q\" key or <color=blue>X</color> button again\n\nAttack patterns start
-    firing slowly, but quickly ramp up speed and damage.\n\nYour shields are down
-    while firing weapons. \n\n"
+  m_text: "The <color=blue><i>Vatic Savate</i></color> is now attacking \n\nWhen
+    attacking, if you wish to cancel your attack pattern and raise your shields,
+    press the \"Q\" key (<color=blue>X</color> button) once. Otherwise, the <color=blue>Vatic
+    Savate</color> will automatically fire up to 8 shots\n\nAttacks begin slowly,
+    but increase in speed and damage over time\n\nYour shields are down while attacking"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4ab1c744477e3a44bbdf737f6d378af, type: 2}
   m_sharedMaterial: {fileID: 9208401273420773845, guid: d4ab1c744477e3a44bbdf737f6d378af,
@@ -10335,7 +10362,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
+  m_fontSize: 70.25
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -11650,9 +11677,9 @@ RectTransform:
   m_Father: {fileID: 704081775}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 450, y: 0}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -500, y: 0}
   m_SizeDelta: {x: 850, y: -200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &794384063
@@ -12189,7 +12216,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 61.6
+  m_fontSize: 61.55
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -14517,7 +14544,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
+    rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -15329,9 +15356,22 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Well done\n\nOnce an attack is absorbed, your <color=#add8e6>reactor</color><sprite=0>
-    will automatically retaliate with the absorbed energy. \n\nRetaliation instantly
-    lowers your opponent's <color=blue>shields</color>\r\n\n"
+  m_text: 'Well done
+
+
+    Once an attack is absorbed, your <color=#add8e6>reactor</color><sprite=0>
+    will automatically retaliate with the absorbed energy
+
+
+    Absorbing an attack
+    will also refresh all cooldowns, allowing you to instantly act again
+
+
+    Retaliation
+    lowers your opponent''s <color=blue>shields</color>
+
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4ab1c744477e3a44bbdf737f6d378af, type: 2}
   m_sharedMaterial: {fileID: 9208401273420773845, guid: d4ab1c744477e3a44bbdf737f6d378af,
@@ -15359,7 +15399,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
+  m_fontSize: 57.4
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -15555,10 +15595,10 @@ RectTransform:
   m_Father: {fileID: 704081775}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -396, y: 33.77}
-  m_SizeDelta: {x: 911.4, y: 350}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 500, y: 25}
+  m_SizeDelta: {x: 950, y: -350}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1134560236
 MonoBehaviour:
@@ -15710,7 +15750,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -30.000061}
-  m_SizeDelta: {x: -200, y: -140.00008}
+  m_SizeDelta: {x: -200, y: -140.00009}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1143203319
 MonoBehaviour:
@@ -19073,7 +19113,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
+    rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -19460,8 +19500,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 74.99997}
-  m_SizeDelta: {x: -200, y: -350.00006}
+  m_AnchoredPosition: {x: 0, y: 49.99997}
+  m_SizeDelta: {x: -200, y: -300.00006}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1439501961
 MonoBehaviour:
@@ -19559,7 +19599,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "Welcome to <i>Galactic Defense!</i> \n\nThis tutorial will familiarize
-    you with the mechanics and basic concepts of <i>Galactic Defense</i>\n"
+    you with the mechanics and basic concepts of <i>Galactic Defense</i>"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4ab1c744477e3a44bbdf737f6d378af, type: 2}
   m_sharedMaterial: {fileID: 9208401273420773845, guid: d4ab1c744477e3a44bbdf737f6d378af,
@@ -20689,8 +20729,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 26.5, y: 75}
-  m_SizeDelta: {x: -57, y: -150}
+  m_AnchoredPosition: {x: 0, y: 5}
+  m_SizeDelta: {x: -20, y: -10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1537155572
 MonoBehaviour:
@@ -20724,8 +20764,12 @@ MonoBehaviour:
     a portion of your lost health
 
 
-    Do so now, by pressing the "R" key or <color=yellow>Y</color>
-    button'
+    Do so now, by pressing the "R" key once (<color=green>A</color>
+    on controller)
+
+
+    There will be a brief delay while the <color=blue>Vatic
+    Savate</color> prepares the repair process'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4ab1c744477e3a44bbdf737f6d378af, type: 2}
   m_sharedMaterial: {fileID: 9208401273420773845, guid: d4ab1c744477e3a44bbdf737f6d378af,
@@ -20753,7 +20797,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 63.65
+  m_fontSize: 63.9
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -21712,9 +21756,9 @@ RectTransform:
   m_Father: {fileID: 704081775}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 450, y: 0}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -500, y: 0}
   m_SizeDelta: {x: 850, y: -200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1611468935
@@ -22456,8 +22500,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 74.99997}
-  m_SizeDelta: {x: -200, y: -350.00006}
+  m_AnchoredPosition: {x: 0, y: 49.99997}
+  m_SizeDelta: {x: -200, y: -300.00006}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1654568839
 MonoBehaviour:
@@ -22535,7 +22579,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 1000}
+  m_AnchoredPosition: {x: 0, y: -500}
   m_SizeDelta: {x: 250, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1680096915
@@ -22780,8 +22824,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 174.99994}
-  m_SizeDelta: {x: -200, y: -550.00006}
+  m_AnchoredPosition: {x: 0, y: 49.999954}
+  m_SizeDelta: {x: -200, y: -300.0001}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1701897048
 MonoBehaviour:
@@ -23970,7 +24014,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
+    rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -27147,7 +27191,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
+    rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -27503,7 +27547,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
+    rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -28143,7 +28187,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
+  m_fontSize: 68.15
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1

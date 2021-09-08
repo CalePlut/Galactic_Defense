@@ -11,6 +11,7 @@ public enum AttackType { foreTurret, aftTurret, specialAttack, heal, delay }
 
 public class EnemyShip : BasicShip
 {
+
     public float globalCooldown;
 
     [Tooltip("Used to synchronize special attack to hit right after last shot")]
@@ -61,6 +62,8 @@ public class EnemyShip : BasicShip
     {
         base.ShipSetup();
         SetReferences();
+        maxHealth = 10000;
+        FullHeal();
     }
 
     /// <summary>

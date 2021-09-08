@@ -74,6 +74,7 @@ public class GameManager : MonoBehaviour
     #endregion UI
 
     #region Gameplay Values
+    public static int difficulty_level = 1;
 
     private bool paused = false;
     private readonly bool atBoss = false;
@@ -277,7 +278,10 @@ public class GameManager : MonoBehaviour
         upgradeCount_text.text = "0/2";
     }
 
-
+    public static void SetDifficulty(int _difficulty) {
+        difficulty_level = _difficulty + 1;
+        Debug.Log("Difficulty set to " + difficulty_level);
+    }
 
     /// <summary>
     /// Closes upgrade and stage clear menus and brigns up the map
