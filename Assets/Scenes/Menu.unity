@@ -5370,7 +5370,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1334726102}
         m_TargetAssemblyTypeName: menuManager, Assembly-CSharp
-        m_MethodName: musicOnly
+        m_MethodName: quitGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
