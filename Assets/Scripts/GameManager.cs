@@ -14,6 +14,11 @@ public enum Condition { None, Linear, Adaptive, Generative}
 
 public class GameManager : MonoBehaviour
 {
+
+    public bool for_Video; //If it's for a video, over-write condition and level
+    public Condition video_condition = Condition.Generative;
+    public int video_difficulty;
+
     #region Player Variables and Objects
 
     [Header("Player Variables and Objects")]
@@ -51,7 +56,7 @@ public class GameManager : MonoBehaviour
     [Header("UI")]
     public Toggle focusUI;
 
-    public GameObject lossMenu;
+    public GameObject gameEndMenu;
     public TextMeshProUGUI gameOverText;
     public GameObject mapMenu;
     public GameObject timeWindow;
@@ -71,22 +76,31 @@ public class GameManager : MonoBehaviour
     public Transform playerWarpWindow;
     public Transform enemyWarpWindow;
 
-    #endregion UI
+
+    List<string> codewords = new List<string>() { "Genoise", "Sponge", "Foam", "Butter" };
+    string codeword;
+    public TextMeshProUGUI codeword_1, codeword_2;
+        #endregion UI
 
     #region Gameplay Values
-    public static int difficulty_level = 1;
+
 
     private bool paused = false;
     private readonly bool atBoss = false;
     private bool warpNext = false;
     private bool inCombat;
 
+
     [Header("Gameplay values")]
     public static int stage = 1, encounter = 0;
 
     public static bool tutorial = false;
 
+    /// <summary>
+    /// These two variables set up how the game runs! Should be Condition.generative at stock and difficulty level 1!
+    /// </summary>
     public static Condition condition = Condition.Generative;
+    public static int difficulty_level = 1;
 
     #endregion Gameplay Values
 
@@ -156,8 +170,14 @@ public class GameManager : MonoBehaviour
 
     public void LoseGame()
     {
-        lossMenu.SetActive(true);
+        gameEndMenu.SetActive(true);
         gameOverText.text = "Defeat";
+        if (!for_Video) //Just want to finish the PhD. If we're for the video, don't display the codeword. Otherwise, do.
+        {
+            var codeStr = "Codeword: " + codeword;
+            codeword_1.text = codeStr;
+            codeword_2.text = codeStr;
+        }
     }
 
     /// <summary>
@@ -165,8 +185,14 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void win()
     {
-        lossMenu.SetActive(true);
+        gameEndMenu.SetActive(true);
         gameOverText.text = "Victory!";
+        if (!for_Video)
+        {
+            var codeStr = "Codeword: " + codeword;
+            codeword_1.text = codeStr;
+            codeword_2.text = codeStr;
+        }
     }
 
     #endregion Win/Loss
@@ -757,6 +783,12 @@ public class GameManager : MonoBehaviour
         PreGLAM = GetComponent<PreGLAM>();
         PreGLAM.Start_PreGLAM();
 
+        if (for_Video)
+        {
+            difficulty_level = video_difficulty;
+            condition = video_condition;
+        }
+
         EnterHyperspace();
         if (tutorial) { tutorialManager.StartTutorial(); }
         else
@@ -773,6 +805,10 @@ public class GameManager : MonoBehaviour
         menu.Enable();
         //pause.Enable();
         focusToggle.Enable();
+
+        var whichCodeword = Random.Range(0,codewords.Count);
+        codeword = codewords[whichCodeword];
+        //Debug.Log("Codeword: " + codeword);
     }
 
     // Update is called once per frame
