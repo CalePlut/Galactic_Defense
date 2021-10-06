@@ -9,6 +9,7 @@ public class MusicExplorer : MonoBehaviour
     public EliasPlayer music;
     public Music_Slider valence, arousal, tension;
     Condition condition = Condition.Generative;
+    string prev_string;
 
     public void Set_Music_Level()
     {
@@ -26,11 +27,21 @@ public class MusicExplorer : MonoBehaviour
                 break;
             case Condition.Adaptive:
                 music_string = string.Format("Adaptive_{0}-{1}-{2}", valence_level, arousal_level, tension_level);
+                if (prev_string != music_string)
+                {
+                    music.RunActionPreset(music_string);
+                    prev_string = music_string;
+                }
                 if (is_strong()) { music_string += "-2"; }
                 music.RunActionPreset(music_string);
                 break;
             case Condition.Generative:
                 music_string = string.Format("{0}-{1}-{2}", valence_level, arousal_level, tension_level);
+                if (prev_string != music_string)
+                {
+                    music.RunActionPreset(music_string);
+                    prev_string = music_string;
+                }
                 if (is_strong()) { music_string += "-2"; }
                 music.RunActionPreset(music_string);
                 break;
